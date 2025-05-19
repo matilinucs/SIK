@@ -1,22 +1,30 @@
 <div class="products-table-container" (click)="onTableClick($event)">  <!-- Encabezado -->  <div class="table-header">
-    <h2>Productos en Cubicación - Proyecto Santa Marta</h2>
-  </div>
-    <!-- Opciones de la tabla -->
-  <div class="table-options-container">    <button mat-stroked-button color="primary" [matMenuTriggerFor]="filterMenu" class="action-button filter-button" matTooltip="Abrir filtros">
-      <mat-icon>filter_list</mat-icon> Filtros
+    <h2>Productos en Cubicación - Proyecto Santa Marta</h2>    <button mat-raised-button color="primary" class="action-button add-button" (click)="addProduct.emit()" matTooltip="Agregar producto">
+      <mat-icon>add</mat-icon> <span>Agregar Producto</span>
     </button>
-    <button mat-raised-button color="primary" [matMenuTriggerFor]="exportMenu" class="action-button export-button" matTooltip="Exportar">
-      <mat-icon>file_download</mat-icon> Exportar
+  </div>
+    <!-- Opciones de la tabla -->  <div class="table-options-container">    <button mat-stroked-button color="primary" [matMenuTriggerFor]="filterMenu" class="action-button filter-button" matTooltip="Abrir filtros">
+      <mat-icon>filter_list</mat-icon> <span>Filtros</span>
+    </button>    <button mat-raised-button color="primary" [matMenuTriggerFor]="exportMenu" class="action-button export-button" matTooltip="Exportar">
+      <mat-icon>file_download</mat-icon> <span>Exportar</span>
     </button>
     <mat-menu #exportMenu="matMenu">
       <button mat-menu-item (click)="exportToExcel()">
         <mat-icon>description</mat-icon>
         <span>Exportar Excel</span>
       </button>
-    </mat-menu>
-    <div class="spacer"></div>
-    <button mat-raised-button color="primary" class="action-button add-button" (click)="addProduct.emit()" matTooltip="Agregar producto">
-      <mat-icon>add</mat-icon> Agregar Producto
+    </mat-menu>    <button mat-stroked-button color="accent" class="action-button copy-button" (click)="copySelectedRowsButton()" [disabled]="selectedProductIds.size === 0" matTooltip="Copiar filas seleccionadas (Ctrl+C)">
+      <mat-icon>content_copy</mat-icon> <span>Copiar</span>
+    </button>    <button mat-stroked-button color="accent" class="action-button paste-button" (click)="pasteFromClipboardButton()" matTooltip="Pegar desde el portapapeles (Ctrl+V)">
+      <mat-icon>content_paste</mat-icon> <span>Pegar</span>
+    </button>
+    
+    <button mat-stroked-button class="action-button undo-button" (click)="undoLastAction()" matTooltip="Deshacer (Ctrl+Z / Cmd+Z)">
+      <mat-icon>undo</mat-icon> <span>Deshacer</span>
+    </button>
+    
+    <button mat-stroked-button class="action-button redo-button" (click)="redoLastAction()" matTooltip="Rehacer (Ctrl+Y / Cmd+Shift+Z)">
+      <mat-icon>redo</mat-icon> <span>Rehacer</span>
     </button>
 
     <mat-menu #filterMenu="matMenu" class="custom-filter-menu">

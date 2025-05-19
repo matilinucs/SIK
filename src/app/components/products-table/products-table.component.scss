@@ -23,7 +23,6 @@
   overflow: hidden;
   background-color: $color-white;
   border-radius: $border-radius-md;
-
   // --- Cabecera de la tabla ---
   .table-header {
     display: flex;
@@ -34,12 +33,25 @@
     background-color: $color-white; // Fondo para la cabecera
     flex-shrink: 0; // No se encoge
 
-    .header-title {
-      h2 {
-        margin: 0;
-        font-size: $font-size-large; // Corregido de $font-size-lg
-        font-weight: 500;
-        color: $color-black; // Corregido de $color-text-primary
+    h2 {
+      margin: 0;
+      font-size: $font-size-large;
+      font-weight: 500;
+      color: $color-black;
+      flex: 1; // Para que el título ocupe el espacio disponible
+    }
+
+    .action-button.add-button {
+      background-color: $color-primary !important;
+      color: $color-white !important;
+      margin-left: $spacing-md;
+      
+      &:hover {
+        background-color: color.adjust($color-primary, $lightness: -10%) !important;
+      }
+
+      mat-icon {
+        margin-right: $spacing-xs;
       }
     }
 
@@ -148,6 +160,75 @@
 
         &:hover {
           background-color: rgba($color-success, 0.1) !important;
+        }
+      }
+      
+      // Botón Copiar
+      &.copy-button {
+        background-color: $color-white !important;
+        color: $color-blue-vibrant !important;
+        border: 1px solid $color-blue-vibrant !important;
+        
+        mat-icon {
+          color: $color-blue-vibrant !important;
+        }
+        
+        &:hover:not([disabled]) {
+          background-color: rgba($color-blue-vibrant, 0.1) !important;
+        }
+        
+        &[disabled] {
+          color: $color-gray-mid !important;
+          border-color: $color-gray-mid !important;
+          
+          mat-icon {
+            color: $color-gray-mid !important;
+          }
+        }
+      }
+      
+      // Botón Pegar
+      &.paste-button {
+        background-color: $color-white !important;
+        color: $color-blue-vibrant !important;
+        border: 1px solid $color-blue-vibrant !important;
+        
+        mat-icon {
+          color: $color-blue-vibrant !important;
+        }
+        
+        &:hover {
+          background-color: rgba($color-blue-vibrant, 0.1) !important;
+        }
+      }
+      
+      // Botón Deshacer
+      &.undo-button {
+        background-color: $color-white !important;
+        color: $color-gray-dark !important;
+        border: 1px solid $color-gray-dark !important;
+        
+        mat-icon {
+          color: $color-gray-dark !important;
+        }
+        
+        &:hover {
+          background-color: rgba($color-gray-dark, 0.1) !important;
+        }
+      }
+      
+      // Botón Rehacer
+      &.redo-button {
+        background-color: $color-white !important;
+        color: $color-gray-dark !important;
+        border: 1px solid $color-gray-dark !important;
+        
+        mat-icon {
+          color: $color-gray-dark !important;
+        }
+        
+        &:hover {
+          background-color: rgba($color-gray-dark, 0.1) !important;
         }
       }
     }
@@ -455,26 +536,44 @@
   .products-table-container {
     .table-header {
       flex-direction: column;
-      align-items: stretch; // Los elementos ocupan todo el ancho
-      gap: $spacing-md;
+      align-items: center; // Centrar los elementos
+      gap: $spacing-sm;
+      padding-bottom: $spacing-lg;
 
-      .header-title {
+      h2 {
         text-align: center; // Centra el título en móviles
+        margin-bottom: $spacing-sm;
+      }      .action-button.add-button {
+        margin-left: 0; // Eliminar margen en vista móvil
+        font-size: $font-size-small;
+        
+        span {
+          display: none; // Ocultar texto en botón de agregar
+        }
+        
+        mat-icon {
+          margin-right: 0; // Eliminar margen del ícono
+        }
       }
     }
-    
-    .table-options-container {
+      .table-options-container {
       flex-direction: row; // Mantener los botones en la misma fila
       justify-content: space-between; // Distribuir el espacio entre los botones
       flex-wrap: nowrap; // Evitar que los botones se envuelvan
       
       .action-button {
         flex: 1; // Cada botón ocupa el mismo espacio
-        font-size: $font-size-xs; // Texto más pequeño para botones
+        min-width: 36px;
+        padding: 0 $spacing-xs;
         
         mat-icon {
-          margin-right: $spacing-xs * 0.5; // Menos espacio entre ícono y texto
+          margin-right: 0; // Eliminar margen entre ícono y texto
           font-size: 18px; // Ícono más pequeño
+        }
+        
+        // Ocultar el texto de los botones en vista móvil
+        span:not(.mat-icon) {
+          display: none;
         }
       }
     }
@@ -650,4 +749,45 @@
 @keyframes fadeOut {
   from { opacity: 1; transform: translateY(0); }
   to { opacity: 0; transform: translateY(20px); }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ESPECÍFICO PARA VISTA DIVIDIDA O MÓVIL
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@media screen and (max-width: 576px) {
+  .products-table-container {
+    .table-options-container {
+      gap: $spacing-xxs; // Reducir espacio entre botones
+      padding: $spacing-sm; // Reducir el padding
+      
+      .action-button {
+        min-width: 32px;
+        max-width: 32px;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%; // Hacer botones circulares
+        
+        mat-icon {
+          font-size: 16px; // Reducir tamaño de íconos
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+// Haciendo los tooltips más visibles en dispositivos móviles
+::ng-deep .mat-mdc-tooltip {
+  font-size: $font-size-small !important;
+  
+  @media screen and (max-width: 768px) {
+    max-width: 200px !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.2 !important;
+  }
 }

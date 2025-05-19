@@ -65,6 +65,10 @@ export class ProductsTableComponent {
     this.filterForm.valueChanges.subscribe(() => {
       this.applyFilters(); // Asegúrate de que applyFilters se llama aquí
     });
+    
+    // Inicializar historial de acciones
+    this.undoHistory = [];
+    this.historyIndex = -1;
   }
   
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -80,6 +84,11 @@ export class ProductsTableComponent {
     this.productsDataSource.data = this._products; // Actualizar directamente los datos de la tabla
     this.updateFilterOptions(); // Update options based on the new set of products
     this.applyFilters(); // Apply filters now that products are available or cleared
+    
+    // Guardar el estado inicial solo si es la primera vez que se cargan productos
+    if (value && value.length > 0 && this.undoHistory.length === 0) {
+      this.saveStateToHistory('Estado inicial');
+    }
   }
   /**
    * Indica si la tabla se está mostrando en modo de pantalla completa.
@@ -141,6 +150,17 @@ export class ProductsTableComponent {
    * Temporizador para ocultar automáticamente la notificación.
    */
   private notificationTimeout: any;
+
+  /**
+   * Historial de estados para la funcionalidad de deshacer/rehacer.
+   * Almacena snapshots de los productos en diferentes momentos.
+   */
+  private undoHistory: Product3[][] = [];
+
+  /**
+   * Posición actual en el historial para deshacer/rehacer.
+   */
+  private historyIndex: number = -1;
 
   /**
    * Fuente de datos para MatTable. Se inicializa con un array vacío.
@@ -362,9 +382,10 @@ export class ProductsTableComponent {
    * para un producto específico.
    * @param product El producto que se va a eliminar.
    * @param event El evento del mouse para detener la propagación.
-   */
-  onDelete(product: Product3, event?: MouseEvent): void { // Added optional event
+   */  onDelete(product: Product3, event?: MouseEvent): void { // Added optional event
     event?.stopPropagation();
+    // Guardar estado actual antes de eliminar
+    this.saveStateToHistory('Eliminar producto');
     this.deleteProduct.emit(product);
   }
   
@@ -372,9 +393,11 @@ export class ProductsTableComponent {
    * Maneja la acción de fijar/desfijar un producto.
    * @param product El producto a fijar/desfijar.
    * @param event El evento del mouse para detener la propagación.
-   */
-  onPin(product: Product3, event: MouseEvent): void {
+   */  onPin(product: Product3, event: MouseEvent): void {
     event.stopPropagation(); 
+    // Guardar estado actual antes de fijar/desfijar
+    this.saveStateToHistory(this.pinnedProductIds.has(product.id) ? 'Desfijar producto' : 'Fijar producto');
+    
     if (this.pinnedProductIds.has(product.id)) {
       this.pinnedProductIds.delete(product.id);
     } else {
@@ -387,11 +410,28 @@ export class ProductsTableComponent {
    * Duplica un producto.
    * @param product El producto a duplicar.
    * @param event El evento del mouse para detener la propagación.
-   */
-  onDuplicate(product: Product3, event: MouseEvent): void {
+   */  onDuplicate(product: Product3, event: MouseEvent): void {
     event.stopPropagation();
     console.log('Duplicar producto:', product.id);
-    // Lógica de duplicación (ej. emitir evento al componente padre)
+    
+    // Guardar estado actual antes de duplicar
+    this.saveStateToHistory('Duplicar producto');
+    
+    // Crear una copia del producto con un nuevo ID
+    const duplicatedProduct: Product3 = {
+      ...JSON.parse(JSON.stringify(product)),
+      id: 'dup-' + Date.now(),
+      productCode: product.productCode + '-copia'
+    };
+    
+    // Añadir el producto duplicado a la lista
+    this._products = [...this._products, duplicatedProduct];
+    this.productsDataSource.data = this._products;
+    this.updateFilterOptions();
+    this.applyFilters();
+    
+    // Mostrar notificación
+    this.showNotification('Producto duplicado correctamente');
   }
 
   /**
@@ -402,7 +442,27 @@ export class ProductsTableComponent {
   onRepeat(product: Product3, event: MouseEvent): void {
     event.stopPropagation();
     console.log('Repetir producto:', product.id);
-    // Lógica de repetición (ej. emitir evento al componente padre)
+    
+    // Guardar estado actual antes de repetir
+    this.saveStateToHistory('Repetir producto');
+    
+    // Crear una copia del producto con un nuevo ID y incrementar la cantidad
+    const repeatedProduct: Product3 = {
+      ...JSON.parse(JSON.stringify(product)),
+      id: 'rep-' + Date.now(),
+      quantity: (product.quantity || 1) + 1,
+      totalArea: ((product.totalArea || 0) / (product.quantity || 1)) * ((product.quantity || 1) + 1),
+      budget: ((product.budget || 0) / (product.quantity || 1)) * ((product.quantity || 1) + 1)
+    };
+    
+    // Añadir el producto repetido a la lista
+    this._products = [...this._products, repeatedProduct];
+    this.productsDataSource.data = this._products;
+    this.updateFilterOptions();
+    this.applyFilters();
+    
+    // Mostrar notificación
+    this.showNotification('Producto repetido correctamente');
   }
 
   /**
@@ -528,23 +588,35 @@ export class ProductsTableComponent {
       return 0;
     });
     this.productsDataSource.data = sortedData;
-  }
-  /**
-   * Manejador de eventos de teclado para capturar Ctrl+C y Ctrl+V
-   * Cuando se detecta Ctrl+C, copia las filas seleccionadas al portapapeles
-   * Cuando se detecta Ctrl+V, intenta pegar datos del portapapeles
+  }  /**
+   * Manejador de eventos de teclado para capturar Ctrl+C, Ctrl+V, Ctrl+Z, y Ctrl+Y
+   * También maneja Command+Z y Command+Shift+Z para usuarios de MacOS
+   * Cuando se detecta el atajo correspondiente, ejecuta la acción asociada
    */
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
-    if (event.ctrlKey && event.key === 'c') {
+    // Control+C o Command+C (Copiar)
+    if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
       event.preventDefault();
       this.copySelectedRows();
-    } else if (event.ctrlKey && event.key === 'v') {
+    } 
+    // Control+V o Command+V (Pegar)
+    else if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
       event.preventDefault();
       this.pasteFromClipboard();
     }
+    // Control+Z o Command+Z (Deshacer)
+    else if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.key === 'z') {
+      event.preventDefault();
+      this.undoLastAction();
+    }
+    // Control+Y o Command+Shift+Z (Rehacer)
+    else if (((event.ctrlKey && event.key === 'y') || 
+              (event.metaKey && event.shiftKey && event.key === 'z'))) {
+      event.preventDefault();
+      this.redoLastAction();
+    }
   }
-
   /**
    * Copia las filas de productos seleccionadas al portapapeles
    * Las formatea en un formato de tabla con separadores de tabulación
@@ -552,6 +624,7 @@ export class ProductsTableComponent {
    */
   copySelectedRows(): void {
     if (this.selectedProductIds.size === 0) {
+      this.showNotification('Primero seleccione los productos a copiar');
       return; // No hacer nada si no hay filas seleccionadas
     }
 
@@ -598,23 +671,15 @@ export class ProductsTableComponent {
     // Copiar al portapapeles
     navigator.clipboard.writeText(textToCopy).then(() => {
       // Mostrar notificación
-      this.showCopyNotification = true;
-      this.copyNotificationMessage = `${this.selectedProductIds.size} producto(s) copiado(s) al portapapeles`;
-      
-      // Ocultar la notificación después de 3 segundos
-      if (this.notificationTimeout) {
-        clearTimeout(this.notificationTimeout);
-      }
-      this.notificationTimeout = setTimeout(() => {
-        this.showCopyNotification = false;
-      }, 3000);
+      this.showNotification(`${this.selectedProductIds.size} producto(s) copiado(s) al portapapeles`);
     }).catch(err => {
       console.error('Error al copiar al portapapeles:', err);
+      this.showNotification('Error al copiar al portapapeles');
     });
   }
-
   /**
-   * Intenta pegar datos desde el portapapeles
+   * Intenta pegar datos desde el portapapeles y los añade a la tabla
+   * Si el formato es compatible (tabulaciones como separador), crea nuevas filas de producto
    * Muestra una notificación al usuario cuando se completa la operación
    */
   pasteFromClipboard(): void {
@@ -623,39 +688,187 @@ export class ProductsTableComponent {
         return; // No hay contenido en el portapapeles
       }
       
-      // Mostrar notificación de que se ha pegado el contenido
-      this.showCopyNotification = true;
-      this.copyNotificationMessage = 'Contenido pegado del portapapeles';
-      
-      // Aquí puedes implementar la lógica para procesar los datos pegados
-      console.log('Contenido pegado:', clipboardText);
-      
-      // Por ejemplo, podrías intentar convertir el texto en filas de producto
-      // dependiendo del formato esperado
-      // const rows = clipboardText.split('\n');
-      // processClipboardData(rows);
-      
-      // Ocultar la notificación después de 3 segundos
-      if (this.notificationTimeout) {
-        clearTimeout(this.notificationTimeout);
+      try {
+        // Dividir el texto pegado en líneas
+        const lines = clipboardText.trim().split('\n');
+        if (lines.length === 0) {
+          throw new Error('No se encontraron datos para pegar');
+        }
+        
+        // La primera línea puede ser un encabezado
+        const isFirstRowHeader = this.detectIfFirstRowIsHeader(lines[0]);
+        const dataStartIndex = isFirstRowHeader ? 1 : 0;
+        
+        // Verificar que hay datos para procesar
+        if (lines.length <= dataStartIndex) {
+          throw new Error('No se encontraron datos para pegar');
+        }
+        
+        // Convertir las líneas restantes en productos
+        const newProducts = this.convertLinesToProducts(lines.slice(dataStartIndex));
+        if (newProducts.length === 0) {
+          throw new Error('No se pudieron crear productos con los datos pegados');
+        }
+        
+        // Agregar los nuevos productos a la lista existente
+        const updatedProducts = [...this._products, ...newProducts];
+        
+        // Actualizar la tabla con los nuevos productos
+        this._products = updatedProducts;
+        this.productsDataSource.data = this._products;
+        this.updateFilterOptions();
+        this.applyFilters();
+        
+        // Mostrar notificación de éxito
+        this.showNotification(`${newProducts.length} producto(s) agregado(s) desde el portapapeles`);
+        
+        // Guardar estado en el historial para deshacer
+        this.saveStateToHistory('Pegar productos desde el portapapeles');
+      } catch (error) {
+        console.error('Error al procesar datos pegados:', error);
+        
+        // Mostrar notificación de error
+        this.showNotification('Error al procesar el contenido pegado');
       }
-      this.notificationTimeout = setTimeout(() => {
-        this.showCopyNotification = false;
-      }, 3000);
     }).catch(err => {
       console.error('Error al acceder al portapapeles:', err);
       
       // Mostrar notificación de error
-      this.showCopyNotification = true;
-      this.copyNotificationMessage = 'Error al acceder al portapapeles';
-      
-      // Ocultar la notificación de error después de 3 segundos
-      if (this.notificationTimeout) {
-        clearTimeout(this.notificationTimeout);
-      }
-      this.notificationTimeout = setTimeout(() => {
-        this.showCopyNotification = false;
-      }, 3000);
+      this.showNotification('Error al acceder al portapapeles');
     });
+  }
+
+  /**
+   * Determina si la primera fila es un encabezado basado en el contenido
+   * @param firstLine La primera línea del texto pegado
+   * @returns true si parece ser un encabezado
+   */
+  private detectIfFirstRowIsHeader(firstLine: string): boolean {
+    const columnsLower = firstLine.toLowerCase().split('\t');
+    const headerKeywords = ['código', 'type', 'tipo', 'cantidad', 'area', 'área', 'presupuesto'];
+    
+    // Si alguna columna contiene palabras clave de encabezados, asumimos que es un encabezado
+    return headerKeywords.some(keyword => 
+      columnsLower.some(col => col.includes(keyword))
+    );
+  }
+
+  /**
+   * Convierte líneas de texto en objetos Product3
+   * @param lines Líneas de texto (sin encabezados) con valores separados por tabulaciones
+   * @returns Array de productos creados
+   */
+  private convertLinesToProducts(lines: string[]): Product3[] {
+    return lines.map((line, index) => {
+      const columns = line.split('\t');
+      if (columns.length < 2) return null; // Mínimo necesitamos código y tipo
+      
+      // Crear un objeto producto con los datos de la línea
+      return {
+        id: `paste-${Date.now()}-${index}`,
+        productCode: columns[0] || `NP-${Math.floor(Math.random() * 1000)}`,
+        type: columns[1] || 'Sin tipo',
+        quantity: columns.length > 2 ? Number(columns[2]) || 1 : 1,
+        totalArea: columns.length > 3 ? Number(columns[3]) || 0 : 0,
+        budget: columns.length > 4 ? Number(columns[4]) || 0 : 0,
+        description: columns.length > 5 ? columns[5] || '' : '',
+        material: {
+          type: columns.length > 6 ? columns[6] || 'No especificado' : 'No especificado',
+          profile: columns.length > 7 ? columns[7] || '' : '',
+          color: columns.length > 8 ? columns[8] || '' : ''
+        },
+        dimensions: {
+          width: columns.length > 9 ? Number(columns[9]) || 0 : 0,
+          height: columns.length > 10 ? Number(columns[10]) || 0 : 0,
+          length: columns.length > 11 ? Number(columns[11]) || 0 : 0,
+          unit: 'cm'
+        }
+      };
+    }).filter(Boolean) as Product3[];
+  }
+  
+  /**
+   * Añade el estado actual al historial para poder deshacerlo
+   * @param action Descripción de la acción realizada para mostrar en notificaciones
+   */
+  private saveStateToHistory(action: string): void {
+    // Truncar el historial si estamos en una posición anterior
+    if (this.historyIndex < this.undoHistory.length - 1) {
+      this.undoHistory = this.undoHistory.slice(0, this.historyIndex + 1);
+    }
+    
+    // Guardar copia profunda de los productos actuales
+    const productsCopy = JSON.parse(JSON.stringify(this._products));
+    this.undoHistory.push(productsCopy);
+    this.historyIndex = this.undoHistory.length - 1;
+    
+    console.log(`Acción registrada: ${action} - Historial: ${this.historyIndex + 1}/${this.undoHistory.length}`);
+  }
+
+  /**
+   * Deshace la última acción realizada en la tabla
+   */
+  undoLastAction(): void {
+    if (this.historyIndex <= 0) {
+      this.showNotification('No hay acciones para deshacer');
+      return;
+    }
+
+    this.historyIndex--;
+    this._products = JSON.parse(JSON.stringify(this.undoHistory[this.historyIndex]));
+    this.productsDataSource.data = this._products;
+    this.updateFilterOptions();
+    this.applyFilters();
+    
+    this.showNotification('Acción deshecha');
+  }
+
+  /**
+   * Rehace la última acción deshecha en la tabla
+   */
+  redoLastAction(): void {
+    if (this.historyIndex >= this.undoHistory.length - 1) {
+      this.showNotification('No hay acciones para rehacer');
+      return;
+    }
+
+    this.historyIndex++;
+    this._products = JSON.parse(JSON.stringify(this.undoHistory[this.historyIndex]));
+    this.productsDataSource.data = this._products;
+    this.updateFilterOptions();
+    this.applyFilters();
+    
+    this.showNotification('Acción rehecha');
+  }
+
+  /**
+   * Muestra una notificación al usuario
+   * @param message El mensaje a mostrar
+   */
+  private showNotification(message: string): void {
+    this.showCopyNotification = true;
+    this.copyNotificationMessage = message;
+    
+    if (this.notificationTimeout) {
+      clearTimeout(this.notificationTimeout);
+    }
+    this.notificationTimeout = setTimeout(() => {
+      this.showCopyNotification = false;
+    }, 3000);
+  }
+
+  /**
+   * Maneja el clic en el botón de copiar
+   */
+  copySelectedRowsButton(): void {
+    this.copySelectedRows();
+  }
+  
+  /**
+   * Maneja el clic en el botón de pegar
+   */
+  pasteFromClipboardButton(): void {
+    this.saveStateToHistory('Pegar desde el portapapeles');
+    this.pasteFromClipboard();  
   }
 }
