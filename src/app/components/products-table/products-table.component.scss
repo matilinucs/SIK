@@ -112,12 +112,9 @@
     background-color: $color-background-light; // Un fondo sutil para la sección de opciones
     border-radius: $border-radius-md;
     border: 1px solid $color-divider;
+    position: relative;
     
-    .spacer {
-      flex: 1;  // Elemento flexible que ocupa todo el espacio disponible
-    }
-    
-    // Estilos para los botones de acción
+    // Botones normales a la izquierda
     .action-button {
       min-width: auto; // Ajusta el ancho al contenido
       padding: 0 $spacing-sm;
@@ -204,31 +201,31 @@
       
       // Botón Deshacer
       &.undo-button {
-        background-color: $color-white !important;
-        color: $color-gray-dark !important;
-        border: 1px solid $color-gray-dark !important;
+        background-color: #FF9800 !important; // Naranja
+        color: white !important;
+        margin-left: auto; // Empuja los botones hacia la derecha
         
         mat-icon {
-          color: $color-gray-dark !important;
+          color: white !important;
         }
         
         &:hover {
-          background-color: rgba($color-gray-dark, 0.1) !important;
+          background-color: darken(#FF9800, 10%) !important;
         }
       }
       
       // Botón Rehacer
       &.redo-button {
-        background-color: $color-white !important;
-        color: $color-gray-dark !important;
-        border: 1px solid $color-gray-dark !important;
+        background-color: #FF9800 !important; // Naranja
+        color: white !important;
+        margin-left: $spacing-xs;
         
         mat-icon {
-          color: $color-gray-dark !important;
+          color: white !important;
         }
         
         &:hover {
-          background-color: rgba($color-gray-dark, 0.1) !important;
+          background-color: darken(#FF9800, 10%) !important;
         }
       }
     }
@@ -789,5 +786,62 @@
     white-space: normal !important;
     overflow-wrap: break-word !important;
     line-height: 1.2 !important;
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// FIN DE ESTILOS GENERALES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// Mover la regla de ocultar texto al media query de vista dividida
+@media screen and (max-width: 576px) {
+  .products-table-container {
+    .table-options-container {
+      .action-button {
+        span {
+          display: none !important;
+        }
+      }
+    }
+  }
+}
+
+.products-table-container {
+  .table-options-container {
+    .action-button.add-button {
+      background-color: $color-primary !important;
+      color: $color-white !important;
+      padding: 0 $spacing-sm;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      span {
+        display: inline-block !important;
+      }
+      mat-icon {
+        margin-right: $spacing-xs !important;
+      }
+    }
+  }
+}
+
+.products-table-container.split-view {
+  .table-options-container {
+    .action-button {
+      span {
+        display: none !important;
+      }
+      mat-icon {
+        margin-right: 0 !important;
+      }
+      &.add-button {
+        span {
+          display: inline-block !important;
+        }
+        mat-icon {
+          margin-right: $spacing-xs !important;
+        }
+      }
+    }
   }
 }

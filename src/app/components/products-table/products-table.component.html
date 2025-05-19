@@ -1,6 +1,7 @@
 <div class="products-table-container" (click)="onTableClick($event)">  <!-- Encabezado -->  <div class="table-header">
-    <h2>Productos en Cubicación - Proyecto Santa Marta</h2>    <button mat-raised-button color="primary" class="action-button add-button" (click)="addProduct.emit()" matTooltip="Agregar producto">
-      <mat-icon>add</mat-icon> <span>Agregar Producto</span>
+    <h2>Productos en Cubicación - Proyecto Santa Marta</h2>
+    <button mat-raised-button color="primary" class="action-button add-button" (click)="addProduct.emit()" matTooltip="Agregar producto">
+      <mat-icon>add</mat-icon> Agregar Producto
     </button>
   </div>
     <!-- Opciones de la tabla -->  <div class="table-options-container">    <button mat-stroked-button color="primary" [matMenuTriggerFor]="filterMenu" class="action-button filter-button" matTooltip="Abrir filtros">
@@ -18,16 +19,16 @@
     </button>    <button mat-stroked-button color="accent" class="action-button paste-button" (click)="pasteFromClipboardButton()" matTooltip="Pegar desde el portapapeles (Ctrl+V)">
       <mat-icon>content_paste</mat-icon> <span>Pegar</span>
     </button>
-    
-    <button mat-stroked-button class="action-button undo-button" (click)="undoLastAction()" matTooltip="Deshacer (Ctrl+Z / Cmd+Z)">
-      <mat-icon>undo</mat-icon> <span>Deshacer</span>
+      <!-- Botones de deshacer/rehacer solo con íconos -->
+    <button mat-mini-fab class="action-button undo-button" (click)="undoLastAction()" matTooltip="Deshacer (Ctrl+Z / Cmd+Z)">
+      <mat-icon>undo</mat-icon>
     </button>
     
-    <button mat-stroked-button class="action-button redo-button" (click)="redoLastAction()" matTooltip="Rehacer (Ctrl+Y / Cmd+Shift+Z)">
-      <mat-icon>redo</mat-icon> <span>Rehacer</span>
+    <button mat-mini-fab class="action-button redo-button" (click)="redoLastAction()" matTooltip="Rehacer (Ctrl+Y / Cmd+Shift+Z)">
+      <mat-icon>redo</mat-icon>
     </button>
 
-    <mat-menu #filterMenu="matMenu" class="custom-filter-menu">
+    <mat-menu #filterMenu="matMenu"class="custom-filter-menu">
       <div (click)="$event.stopPropagation()" class="filter-menu-content">
         <form [formGroup]="filterForm" class="filters-form-dropdown">
           
