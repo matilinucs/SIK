@@ -6,10 +6,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatMenuModule } from '@angular/material/menu';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule, MatCheckboxChange } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import * as XLSX from 'xlsx';
 
 import { Product3 } from '../../models/product.model';
@@ -32,9 +35,12 @@ import { Product3 } from '../../models/product.model';
     MatIconModule,
     MatTooltipModule,
     MatFormFieldModule,
+    MatInputModule,
     MatSelectModule,
     MatMenuModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ]
 })
 export class ProductsTableComponent {
@@ -42,18 +48,23 @@ export class ProductsTableComponent {
    * Constructor del componente.
    */
   constructor(private fb: FormBuilder, private elementRef: ElementRef) {
-    // Inicializar formulario de filtros
+    // Inicializar el formulario de filtros
     this.filterForm = this.fb.group({
       search: [''],
-      type: [''],
-      material: [''],
-      minQuantity: [''],
-      maxQuantity: [''],
-      minBudget: [''],
-      maxBudget: ['']
+      type: [null],
+      materialType: [null],
+      minQuantity: [null],
+      maxQuantity: [null],
+      minBudget: [null],
+      maxBudget: [null],
+      minArea: [null],
+      maxArea: [null]
     });
-    // Escuchar cambios en filtros y aplicar
-    this.filterForm.valueChanges.subscribe(() => this.applyFilters());
+
+    // Suscribirse a los cambios en el formulario
+    this.filterForm.valueChanges.subscribe(() => {
+      this.applyFilters();
+    });
   }
   
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -64,12 +75,11 @@ export class ProductsTableComponent {
    * Lista de productos a mostrar en la tabla.
    * Cuando se actualiza, también se actualiza el MatTableDataSource.
    * @param value Array de objetos Product3.
-   */
-  @Input() set products(value: Product3[]) {
-    this._products = value;
-    this.productsDataSource.data = value;
-    this.updateFilterOptions();
-    this.applyFilters(); // Aplica filtros al cargar productos
+   */  @Input() set products(value: Product3[] | null | undefined) { // Allow null or undefined
+    this._products = value ? [...value] : []; // Ensure _products is always an array and take a copy
+    this.productsDataSource.data = this._products; // Actualizar directamente los datos de la tabla
+    this.updateFilterOptions(); // Update options based on the new set of products
+    this.applyFilters(); // Apply filters now that products are available or cleared
   }
   /**
    * Indica si la tabla se está mostrando en modo de pantalla completa.
@@ -397,79 +407,111 @@ export class ProductsTableComponent {
   }
   
   /**
-   * Aplica los filtros del formulario a la tabla de productos.
-   * Filtra por texto, tipo, material, cantidad y presupuesto.
-   * También ordena los productos para mostrar los fijados primero.
+   * Limpia todos los campos del formulario de filtros y reaplica los filtros.
    */
-  applyFilters(): void {
-    const {
-      search, type, material, minQuantity, maxQuantity, minBudget, maxBudget
-    } = this.filterForm.value;
-    let filteredData = [...this._products];
-
-    // Filtro de texto general (en código, descripción, tipo, material)
-    if (search) {
-      const s = search.toLowerCase();
-      filteredData = filteredData.filter(p =>
-        p.productCode?.toLowerCase().includes(s) ||
-        p.description?.toLowerCase().includes(s) ||
-        p.type?.toLowerCase().includes(s) ||
-        p.material?.type?.toLowerCase().includes(s)
-      );
-    }
-    // Filtro por tipo
-    if (type) {
-      filteredData = filteredData.filter(p => p.type === type);
-    }
-    // Filtro por material
-    if (material) {
-      filteredData = filteredData.filter(p => p.material?.type === material);
-    }
-    // Filtro por cantidad
-    if (minQuantity) {
-      filteredData = filteredData.filter(p => (p.quantity || 0) >= +minQuantity);
-    }
-    if (maxQuantity) {
-      filteredData = filteredData.filter(p => (p.quantity || 0) <= +maxQuantity);
-    }
-    // Filtro por presupuesto
-    if (minBudget) {
-      filteredData = filteredData.filter(p => (p.budget || 0) >= +minBudget);
-    }
-    if (maxBudget) {
-      filteredData = filteredData.filter(p => (p.budget || 0) <= +maxBudget);
-    }
-
-    // Ordenar: productos fijados primero, luego el resto
-    filteredData.sort((a, b) => {
-      const aIsPinned = this.pinnedProductIds.has(a.id);
-      const bIsPinned = this.pinnedProductIds.has(b.id);
-      if (aIsPinned && !bIsPinned) return -1;
-      if (!aIsPinned && bIsPinned) return 1;
-      // Criterio de ordenación secundario (opcional, ej. por productCode)
-      // return a.productCode.localeCompare(b.productCode);
-      return 0;
+  clearFilters(): void {
+    this.filterForm.reset({
+      search: '',
+      type: null,
+      materialType: null,
+      minQuantity: null,
+      maxQuantity: null,
+      minBudget: null,
+      maxBudget: null,
+      minArea: null,
+      maxArea: null
     });
-
-    this.productsDataSource.data = filteredData;
+    this.applyFilters();
   }
 
   /**
-   * Actualiza las listas de tipos y materiales únicos para los filtros selectores.
-   * Llamar después de cargar productos.
+   * Actualiza las opciones de los filtros basándose en los productos disponibles
    */
-  updateFilterOptions(): void {
-    const types = new Set<string>();
-    const materials = new Set<string>();
-    this._products.forEach(product => {
-      if (product.type) {
-        types.add(product.type);
+  private updateFilterOptions(): void {
+    if (this._products) {
+      // Extraer tipos y materiales únicos de los productos
+      const types = new Set<string>();
+      const materials = new Set<string>();
+
+      this._products.forEach(product => {
+        if (product.type) types.add(product.type);
+        if (product.material?.type) materials.add(product.material.type);
+      });
+
+      this.productTypes = Array.from(types).sort();
+      this.productMaterials = Array.from(materials).sort();
+    }
+  }
+
+  /**
+   * Aplica los filtros actuales a la tabla
+   */
+  private applyFilters(): void {
+    if (!this.productsDataSource) return;
+
+    const filterValues = this.filterForm.value;
+
+    this.productsDataSource.filterPredicate = (product: Product3, _: string) => {
+      // Búsqueda general
+      if (filterValues.search) {
+        const searchStr = filterValues.search.toLowerCase();
+        const matchSearch = 
+          product.productCode?.toLowerCase().includes(searchStr) ||
+          product.type?.toLowerCase().includes(searchStr) ||
+          product.material?.type?.toLowerCase().includes(searchStr) ||
+          product.description?.toLowerCase().includes(searchStr);
+        
+        if (!matchSearch) return false;
       }
-      if (product.material?.type) {
-        materials.add(product.material.type);
+
+      // Filtro por tipo
+      if (filterValues.type && product.type !== filterValues.type) {
+        return false;
       }
+
+      // Filtro por tipo de material
+      if (filterValues.materialType && product.material?.type !== filterValues.materialType) {
+        return false;
+      }
+
+      // Filtros de rango numérico
+      if (filterValues.minQuantity !== null && product.quantity < filterValues.minQuantity) {
+        return false;
+      }
+      if (filterValues.maxQuantity !== null && product.quantity > filterValues.maxQuantity) {
+        return false;
+      }
+
+      if (filterValues.minBudget !== null && product.budget < filterValues.minBudget) {
+        return false;
+      }
+      if (filterValues.maxBudget !== null && product.budget > filterValues.maxBudget) {
+        return false;
+      }
+
+      if (filterValues.minArea !== null && product.totalArea < filterValues.minArea) {
+        return false;
+      }
+      if (filterValues.maxArea !== null && product.totalArea > filterValues.maxArea) {
+        return false;
+      }
+
+      return true;
+    };    // Primero actualizamos los datos base con todos los productos
+    this.productsDataSource.data = this._products.slice();
+    
+    // Luego aplicamos el filtro
+    this.productsDataSource.filter = Date.now().toString();
+
+    // Finalmente ordenamos los productos fijados al principio
+    const sortedData = this.productsDataSource.filteredData.slice();
+    sortedData.sort((a, b) => {
+      const isPinnedA = this.pinnedProductIds.has(a.id);
+      const isPinnedB = this.pinnedProductIds.has(b.id);
+      if (isPinnedA && !isPinnedB) return -1;
+      if (!isPinnedA && isPinnedB) return 1;
+      return 0;
     });
-    this.productTypes = Array.from(types);
-    this.productMaterials = Array.from(materials);
+    this.productsDataSource.data = sortedData;
   }
 }

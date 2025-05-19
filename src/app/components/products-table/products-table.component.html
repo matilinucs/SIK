@@ -9,13 +9,99 @@
           <mat-icon>description</mat-icon>
           <span>Exportar Excel</span>
         </button>
-      </mat-menu>
-      <button mat-raised-button color="primary" class="action-button add-button" matTooltip="Agregar producto">
-        <mat-icon>add</mat-icon> Agrega
+      </mat-menu>      <button mat-raised-button color="primary" class="action-button add-button" (click)="addProduct.emit()" matTooltip="Agregar producto">
+        <mat-icon>add</mat-icon> Agregar Producto
       </button>
     </div>
   </div>
   
+  <!-- Sección de Filtros -->
+  <div class="filters-container">
+    <form [formGroup]="filterForm" class="filters-form">
+      <!-- Búsqueda general -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Buscar producto</mat-label>
+        <input matInput formControlName="search" 
+               placeholder="Buscar por código, tipo, material...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <!-- Filtro por tipo de ventana -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Tipo de Ventana</mat-label>
+        <mat-select formControlName="type">
+          <mat-option [value]="null">Todos</mat-option>
+          <mat-option *ngFor="let type of productTypes" [value]="type">
+            {{type}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Filtro por tipo de material -->
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Material</mat-label>
+        <mat-select formControlName="materialType">
+          <mat-option [value]="null">Todos</mat-option>
+          <mat-option *ngFor="let material of productMaterials" [value]="material">
+            {{material}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Filtros de rango de cantidad -->
+      <div class="filter-group">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Cantidad Mín.</mat-label>
+          <input matInput type="number" formControlName="minQuantity" 
+                 placeholder="0" min="0">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Cantidad Máx.</mat-label>
+          <input matInput type="number" formControlName="maxQuantity" 
+                 placeholder="999" min="0">
+        </mat-form-field>
+      </div>
+
+      <!-- Filtros de rango de presupuesto -->
+      <div class="filter-group">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Presupuesto Mín.</mat-label>
+          <input matInput type="number" formControlName="minBudget" 
+                 placeholder="0" min="0">
+          <span matPrefix>$&nbsp;</span>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Presupuesto Máx.</mat-label>
+          <input matInput type="number" formControlName="maxBudget" 
+                 placeholder="999999" min="0">
+          <span matPrefix>$&nbsp;</span>
+        </mat-form-field>
+      </div>
+
+      <!-- Filtros de rango de superficie -->
+      <div class="filter-group">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Superficie Mín. (m²)</mat-label>
+          <input matInput type="number" formControlName="minArea" 
+                 placeholder="0" min="0">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Superficie Máx. (m²)</mat-label>
+          <input matInput type="number" formControlName="maxArea" 
+                 placeholder="999" min="0">
+        </mat-form-field>
+      </div>
+
+      <!-- Botón para limpiar filtros -->
+      <div class="button-container">
+        <button mat-stroked-button color="warn" (click)="clearFilters()" class="clear-filters-button">
+          <mat-icon>clear_all</mat-icon>
+          Limpiar Filtros
+        </button>
+      </div>
+    </form>
+  </div>
+
   <!-- Contenedor principal con scroll -->
   <div class="table-content">
     <div class="table-scroll">

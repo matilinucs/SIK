@@ -91,6 +91,59 @@
   }
 
   // ────────────────────────────────────────────────────────────────────────────────
+  // FILTROS DE LA TABLA (ADAPTADO DE LIST-QUOTATION)
+  // ────────────────────────────────────────────────────────────────────────────────
+  .filters-container {
+    padding: $spacing-md;
+    margin-bottom: $spacing-md;
+    background-color: $color-background-light; // Un fondo sutil para la sección de filtros
+    border-radius: $border-radius-md;
+    border: 1px solid $color-divider;
+
+    .filters-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: $spacing-md; // Espacio entre los campos de filtro
+      align-items: flex-start; // Alinea los elementos al inicio si tienen alturas diferentes
+
+      .filter-field {
+        flex: 1 1 200px; // Permite que los campos crezcan y se encojan, base de 200px
+        min-width: 180px; // Ancho mínimo para cada campo
+      }
+
+      .filter-group {
+        display: flex;
+        gap: $spacing-sm;
+        flex: 1 1 400px; // Ocupa más espacio para dos campos
+        min-width: 360px;
+
+        .filter-field {
+          flex: 1 1 auto; // Los campos dentro del grupo se reparten el espacio
+        }
+      }
+      
+      .quantity-field, .budget-field {
+        // Estilos específicos si son necesarios para campos de cantidad/presupuesto
+      }
+
+      .button-container {
+        display: flex;
+        align-items: center; // Centra el botón verticalmente con los campos
+        flex-basis: 100%; // Ocupa todo el ancho en una nueva línea si es necesario
+        justify-content: flex-end; // Alinea el botón a la derecha
+        margin-top: $spacing-sm; // Espacio arriba del botón
+
+        .clear-filters-button {
+          // Estilos específicos para el botón de limpiar si son necesarios
+          mat-icon {
+            margin-right: $spacing-xs;
+          }
+        }
+      }
+    }
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────────
   // 2. CONTENEDOR DE LA TABLA (TABLE-CONTAINER)
   // ────────────────────────────────────────────────────────────────────────────────
   // Envuelve la mat-table y maneja el scroll vertical y horizontal.
