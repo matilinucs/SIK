@@ -121,9 +121,30 @@
           flex: 1 1 auto; // Los campos dentro del grupo se reparten el espacio
         }
       }
-      
-      .quantity-field, .budget-field {
-        // Estilos específicos si son necesarios para campos de cantidad/presupuesto
+
+      .filter-group-with-subtitle {
+        display: flex;
+        flex-direction: column;
+        gap: ($spacing-xs * 0.5); // Espacio muy pequeño entre subtítulo y grupo
+
+        .filter-group-subtitle {
+          font-size: 0.65rem; // Tamaño de fuente pequeño para el subtítulo
+          font-weight: 500;   // Ligeramente más grueso que el texto normal
+          color: $color-gray-dark; // Color de texto secundario
+          margin: 0 0 ($spacing-xs * 0.5) 0; // Margen inferior pequeño, sin margen superior
+          padding-left: $spacing-xs; // Pequeña sangría para alinear con campos si es necesario
+          line-height: 1.2;
+        }
+
+        // Ajustes específicos para el prefijo de dólar en el menú de filtros
+        .filter-field {
+          ::ng-deep .mat-mdc-form-field-prefix {
+            padding-right: 4px !important; // Añade un pequeño espacio a la derecha del signo $
+          }
+          ::ng-deep .mat-mdc-form-field-suffix {
+            padding-left: 4px !important; // Añade un pequeño espacio a la izquierda del signo $
+          }
+        }
       }
 
       .button-container {
@@ -522,10 +543,15 @@
   .filters-form-dropdown {
     display: flex;
     flex-direction: column;
-    gap: $spacing-md;
+    gap: $spacing-sm; // Reducido de $spacing-md para menos espacio entre campos
 
     .filter-field {
       width: 100%;
+
+      // Reducir el tamaño de la fuente de las etiquetas
+      ::ng-deep .mat-mdc-label {
+        font-size: 0.5rem !important; // Reducido de $font-size-xs para etiquetas más pequeñas
+      }
     }
 
     .filter-group {
@@ -533,6 +559,21 @@
       gap: $spacing-sm;
       .filter-field {
         flex: 1;
+      }
+    }
+
+    .filter-group-with-subtitle {
+      display: flex;
+      flex-direction: column;
+      gap: ($spacing-xs * 0.5); // Espacio muy pequeño entre subtítulo y grupo
+
+      .filter-group-subtitle {
+        font-size: 0.65rem; // Tamaño de fuente pequeño para el subtítulo
+        font-weight: 500;   // Ligeramente más grueso que el texto normal
+        color: $color-gray-dark; // Color de texto secundario
+        margin: 0 0 ($spacing-xs * 0.5) 0; // Margen inferior pequeño, sin margen superior
+        padding-left: $spacing-xs; // Pequeña sangría para alinear con campos si es necesario
+        line-height: 1.2;
       }
     }
 

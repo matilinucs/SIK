@@ -51,39 +51,46 @@
             </mat-select>
           </mat-form-field>
 
-          <div class="filter-group">
-            <mat-form-field appearance="outline" class="filter-field">
-              <mat-label>Cantidad Mín.</mat-label>
-              <input matInput type="number" formControlName="minQuantity" placeholder="0" min="0">
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="filter-field">
-              <mat-label>Cantidad Máx.</mat-label>
-              <input matInput type="number" formControlName="maxQuantity" placeholder="999" min="0">
-            </mat-form-field>
+          <div class="filter-group-with-subtitle">
+            <h4 class="filter-group-subtitle">Rango de Cantidad</h4>
+            <div class="filter-group">
+              <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Mínimo</mat-label>
+                <input matInput type="number" formControlName="minQuantity" placeholder="0" min="0">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Máximo</mat-label>
+                <input matInput type="number" formControlName="maxQuantity" placeholder="999" min="0">
+              </mat-form-field>
+            </div>
           </div>
 
-          <div class="filter-group">
-            <mat-form-field appearance="outline" class="filter-field">
-              <mat-label>Presupuesto Mín.</mat-label>
-              <input matInput type="number" formControlName="minBudget" placeholder="0" min="0">
-              <span matPrefix>$&nbsp;</span>
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="filter-field">
-              <mat-label>Presupuesto Máx.</mat-label>
-              <input matInput type="number" formControlName="maxBudget" placeholder="999999" min="0">
-              <span matPrefix>$&nbsp;</span>
-            </mat-form-field>
+          <div class="filter-group-with-subtitle">
+            <h4 class="filter-group-subtitle">Rango de Presupuesto(USD)</h4>
+            <div class="filter-group">
+              <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Mínimo $</mat-label>
+                <input matInput type="number" formControlName="minBudget" placeholder="0" min="0">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Máximo $</mat-label>
+                <input matInput type="number" formControlName="maxBudget" placeholder="999999" min="0">
+              </mat-form-field>
+            </div>
           </div>
 
-          <div class="filter-group">
-            <mat-form-field appearance="outline" class="filter-field">
-              <mat-label>Superficie Mín. (m²)</mat-label>
-              <input matInput type="number" formControlName="minArea" placeholder="0" min="0">
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="filter-field">
-              <mat-label>Superficie Máx. (m²)</mat-label>
-              <input matInput type="number" formControlName="maxArea" placeholder="999" min="0">
-            </mat-form-field>
+          <div class="filter-group-with-subtitle">
+            <h4 class="filter-group-subtitle">Rango de Superficie(m²)</h4>
+            <div class="filter-group">
+              <mat-form-field appearance="outline" class="filter-field">
+                <mat-label> Mínimo (m²)</mat-label>
+                <input matInput type="number" formControlName="minArea" placeholder="0" min="0">
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Máximo (m²)</mat-label>
+                <input matInput type="number" formControlName="maxArea" placeholder="999" min="0">
+              </mat-form-field>
+            </div>
           </div>
           
           <div class="filter-actions-dropdown">
