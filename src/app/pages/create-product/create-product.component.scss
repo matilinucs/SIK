@@ -1,0 +1,142 @@
+@use "sass:color";
+@use '../../../styles.scss' as *;
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CREATE PRODUCT COMPONENT STYLES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Responsable de la maquetación general de la página de creación/gestión de productos.
+// Incluye la lógica para alternar entre una vista dividida (tabla y formulario)
+// y una vista de tabla a pantalla completa con formulario modal.
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// ────────────────────────────────────────────────────────────────────────────────
+// 1. CONTENEDOR PRINCIPAL (CREATE-PRODUCT-CONTAINER)
+// ────────────────────────────────────────────────────────────────────────────────
+// Contenedor raíz para toda la página.
+// Utiliza posicionamiento fijo para ocupar el espacio disponible restando el header y el sidebar.
+// En pantallas pequeñas, cambia a posicionamiento relativo y flujo de columna.
+// ────────────────────────────────────────────────────────────────────────────────
+.create-product-container {
+  // Dimensiones y Posicionamiento
+  position: fixed;
+  top: var(--header-height, 64px); // Altura del header global
+  left: var(--sidebar-width, 250px); // Ancho del sidebar global
+  right: 0;
+  bottom: 0;
+  height: calc(100vh - var(--header-height, 64px));
+  width: calc(100vw - var(--sidebar-width, 250px));
+  
+  // Display y Flujo
+  display: flex;
+  flex-direction: column; // Para el botón de toggle y el content-area
+  
+  // Apariencia
+  background-color: $color-background-light; // Usar la variable definida globalmente
+  padding: $spacing-md;
+  box-sizing: border-box;
+  overflow: hidden; // Evita scrollbars en el contenedor principal
+
+  // --- Media Query para pantallas pequeñas (tablets y móviles) ---
+  @media (max-width: 1024px) {
+    position: relative; // Cambia a relativo para flujo normal en la página
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto; // Altura automática para acomodar contenido
+    min-height: calc(100vh - var(--header-height, 64px));
+    padding: $spacing-sm;
+    overflow-y: auto; // Permite scroll si el contenido excede la altura
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────────────────
+// 2. CONTENEDOR DEL BOTÓN DE CAMBIO DE VISTA (VIEW-TOGGLE-CONTAINER)
+// ────────────────────────────────────────────────────────────────────────────────
+// Contenedor para el botón que alterna entre la vista dividida y la tabla completa.
+// ────────────────────────────────────────────────────────────────────────────────
+.view-toggle-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: $spacing-md;
+
+  button {
+    mat-icon {
+      margin-right: $spacing-xs;
+    }
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────────────────
+// 3. ÁREA DE CONTENIDO PRINCIPAL (CONTENT-AREA)
+// ────────────────────────────────────────────────────────────────────────────────
+// Contiene la tabla de productos y el formulario (en vista dividida).
+// Utiliza flexbox para distribuir el espacio entre la tabla y el formulario.
+// ────────────────────────────────────────────────────────────────────────────────
+.content-area {
+  display: flex;
+  flex-direction: row; // Tabla a la izquierda, formulario a la derecha por defecto
+  gap: $spacing-md;
+  flex-grow: 1; // Ocupa el espacio vertical restante
+  min-height: 0; // Necesario para que flex-grow funcione correctamente en un contenedor flex anidado
+  overflow: hidden; // Evita que los hijos causen scrollbars inesperados aquí
+
+  // --- Estilos cuando la tabla está en pantalla completa ---
+  // &.full-screen-table-active {
+  //   // No se necesitan cambios específicos aquí si el product-form-wrapper se oculta con *ngIf
+  //   // Eliminado o comentado ya que estaba vacío.
+  // }
+
+  // --- Media Query para pantallas pequeñas (apila los elementos) ---
+  @media (max-width: 1024px) {
+    flex-direction: column; // Apila la tabla y el formulario
+    overflow: visible; // Permite que el contenido interno determine el scroll
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────────────────
+// 4. ENVOLTORIOS PARA LA TABLA Y EL FORMULARIO (WRAPPERS)
+// ────────────────────────────────────────────────────────────────────────────────
+// Clases base para los contenedores de la tabla y el formulario.
+// Definen el tamaño, padding, bordes y overflow.
+// ────────────────────────────────────────────────────────────────────────────────
+.products-table-wrapper,
+.product-form-wrapper {
+  // Dimensiones y Flexibilidad
+  flex: 1; // Por defecto, ambos ocupan el 50% del espacio disponible en .content-area
+  min-width: 0; // Previene que el contenido empuje el layout
+  min-height: 0; // Previene problemas de overflow en contenedores flex
+  
+  // Display y Flujo Interno
+  display: flex; // Para que el componente hijo (tabla/formulario) pueda crecer
+  flex-direction: column; // El componente hijo se expandirá verticalmente
+  
+  // Apariencia
+  background-color: $color-white;
+  border-radius: $border-radius-md; // Usar la variable definida globalmente
+  box-shadow: $shadow-dp2; // Usar la variable definida globalmente
+  padding: $spacing-md;
+  box-sizing: border-box;
+  overflow: overlay; // El scroll debe ser manejado por el componente hijo si es necesario
+
+  // --- Media Query para pantallas pequeñas ---
+  @media (max-width: 1024px) {
+    flex: 0 0 auto; // No crecen ni se encogen, toman la altura de su contenido
+    height: auto; // Altura basada en el contenido
+    // max-height: 60vh; // Opcional: Limitar altura en móviles y permitir scroll interno
+    // overflow-y: auto; // Si se usa max-height
+  }
+}
+
+// --- Modificador para la tabla cuando está en pantalla completa ---
+.products-table-wrapper.full-width {
+  flex: 1 0 100%; // Ocupa todo el ancho disponible en .content-area
+}
+
+// --- Estilos específicos para el product-form-wrapper (si fueran necesarios) ---
+// .product-form-wrapper {
+//   // Estilos adicionales si el formulario necesita un comportamiento diferente
+// }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// FIN DE ESTILOS CREATE PRODUCT COMPONENT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

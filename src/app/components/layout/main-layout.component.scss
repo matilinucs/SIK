@@ -1,0 +1,106 @@
+@use '../../../styles.scss' as *;
+
+// Uso de variables para medidas que pueden ajustarse en diferentes contextos
+:host {
+  --sidebar-width: 250px;
+  --content-spacing: 1.5rem;
+}
+
+.layout-container {
+  display: grid;
+  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-areas: "sidebar content";
+  min-height: 100vh;
+  width: 100%;
+  background-color: white;
+}
+
+// Sidebar
+.layout-sidebar {
+  grid-area: sidebar;
+  position: fixed; // Mantiene fijo el sidebar
+  width: var(--sidebar-width);
+  height: 100vh;
+  z-index: 10;
+}
+
+// Zona de contenido (header + main)
+.layout-content {
+  grid-area: content;
+  display: flex;
+  flex-direction: column; // Organización vertical
+  min-height: 100vh;
+  width: 100%;
+}
+
+// Header
+.layout-header {
+  position: sticky;
+  top: 0;
+  height: var(--header-height);
+  width: 100%;
+  z-index: 5;
+  background-color: white;
+}
+
+// Área principal de contenido
+.layout-main {
+  flex: 1; // Ocupa el resto del espacio disponible
+  padding: var(--content-spacing);
+  overflow-y: hidden;
+  background-color: white;
+}
+
+// Contenedor para el contenido inyectado por router-outlet
+.content-wrapper {
+  height: 100%;
+  max-width: 1600px; // Evita que el contenido sea demasiado ancho en pantallas enormes
+  margin: 0 auto; // Centra el contenido horizontalmente
+  
+  // Estilo de tarjeta aplicado al contenido
+  background-color: white;
+  border-radius: 8px;
+  overflow-y: clip;
+  padding: var(--content-spacing);
+}
+
+// Media queries utilizando CSS moderno
+@media (max-width: 1366px) {
+  :host {
+    --sidebar-width: 220px;
+    --content-spacing: 1.25rem;
+  }
+}
+
+// Tablets y pantallas pequeñas
+@media (max-width: 992px) {
+  .layout-container {
+    grid-template-columns: 1fr;
+    grid-template-areas: "content";
+  }
+  
+  .layout-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    
+    &.show {
+      transform: translateX(0);
+    }
+  }
+  
+  .layout-content {
+    margin-left: 0;
+  }
+}
+
+// Pantallas grandes / monitores
+@media (min-width: 1921px) {
+  :host {
+    --sidebar-width: 280px;
+    --content-spacing: 2rem;
+  }
+  
+  .content-wrapper {
+    max-width: 1800px;
+  }
+}

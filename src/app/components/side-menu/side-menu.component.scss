@@ -1,0 +1,247 @@
+@use '../../../styles.scss' as *;
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📋 SIDEBAR PRINCIPAL
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.sidebar {
+  // Estructura y posicionamiento
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: -webkit-fill-available;
+  width: 250px;
+  z-index: 2;
+  overflow-y: unset;
+  
+  // Diseño mediante Grid
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "logo"
+    "nav"
+    "footer";
+  gap: 0.5rem;
+  
+  // Estilos visuales
+  background-color: $color-white;
+  padding: 0.75rem;
+  box-shadow: 2px 0 5px $color-shadow-base;
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🏢 SECCIÓN: LOGO DE LA APLICACIÓN
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  .logo {
+    grid-area: logo;
+    text-align: center;
+    padding-top: 0.5rem;
+    padding-bottom: 0.75rem;
+    
+    img {
+      max-width: 170px;
+    }
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🧭 SECCIÓN: NAVEGACIÓN PRINCIPAL
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  .nav-links {
+    grid-area: nav;
+    overflow-y: unset;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+
+    a {
+      display: block;
+      padding: 0.5rem;
+      margin-bottom: 0.25rem;
+      color: $color-black;
+      border-radius: 3px;
+      font-size: 1rem;
+      width: 100%;
+
+      &:hover {
+        padding-left: 0.75rem;
+      }
+    }
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━
+    // 📂 SUBSECCIÓN: CATEGORÍAS
+    // ━━━━━━━━━━━━━━━━━━━━━━━━
+    .nav-category {
+      margin-bottom: 0.75rem;
+      border-bottom: 1px solid #eaeaea;
+      padding-bottom: 0.5rem;
+      width: 100%;
+      
+      &:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+
+      // Título de la categoría
+      .category-title {
+        display: flex;
+        align-items: center;
+        margin: 0 0 0.25rem 0;
+        padding: 0.5rem 0;
+        font-size: 1.1rem;
+        color: $color-black;
+        font-weight: 600;
+        border-bottom: 1px solid #f5f5f5;
+        width: 100%;
+        
+        i {
+          margin-right: 0.5rem;
+          width: 20px;
+          text-align: center;
+          color: $color-black;
+          font-size: 1.1rem;
+        }
+        
+        span {
+          flex-grow: 1;
+        }
+        
+        // Estado activo para la categoría
+        &.active {
+          color: $color-red-kinetta;
+          
+          i {
+            color: $color-red-kinetta;
+          }
+        }
+        
+        &:hover {
+          color: $color-red-kinetta;
+          
+          i {
+            color: $color-red-kinetta;
+          }
+        }
+      }
+
+      // Ítems de la categoría
+      .category-items {
+        padding-left: 0.25rem;
+        margin-top: 0.25rem;
+        padding-top: 0.25rem;
+        width: 100%;
+        
+        a {
+          display: flex;
+          align-items: center;
+          padding: 0.5rem;
+          margin-bottom: 0.2rem;
+          border-radius: 3px;
+          font-size: 1rem;
+          border-left: 2px solid transparent;
+          
+          i {
+            margin-right: 0.5rem;
+            width: 20px;
+            text-align: center;
+            color: $color-black;
+          }
+          
+          span {
+            flex-grow: 1;
+          }
+          
+          &:hover {
+            color: $color-red-kinetta;
+            border-left-color: $color-red-kinetta;
+            
+            i {
+              color: $color-red-kinetta;
+            }
+          }
+          
+          // Estado activo para el ítem o subcategoría
+          &.active {
+            background-color: rgba($color-red-kinetta, 0.05);
+            color: $color-red-kinetta;
+            border-left-color: $color-red-kinetta;
+            font-weight: 600;
+            width: auto;
+            
+            i {
+              color: $color-red-kinetta;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 👣 SECCIÓN: ENLACES DEL PIE DE PÁGINA
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  .footer-links {
+    grid-area: footer;
+    text-align: center;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 0.5rem;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+
+    a {
+      display: inline-block;
+      margin-right: 0.35rem;
+      font-size: 0.8rem;
+      color: $color-black;
+      
+      &:hover {
+        color: $color-red-kinetta;
+      }
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🖥️ DISEÑO RESPONSIVO PARA DIFERENTES MONITORES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// Monitores pequeños (portátiles, 1366px)
+@media (max-width: 1366px) {
+  .sidebar {
+    width: 220px;
+    
+    .logo img {
+      max-width: 150px;
+    }
+    
+    .nav-links .nav-category .category-items a {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+// Monitores medianos (1920px)
+@media (min-width: 1367px) and (max-width: 1920px) {
+  .sidebar {
+    width: 240px;
+    
+    .logo img {
+      max-width: 180px;
+    }
+  }
+}
+
+// Monitores grandes (>1920px)
+@media (min-width: 1921px) {
+  .sidebar {
+    width: 280px;
+    
+    .logo img {
+      max-width: 200px;
+    }
+    
+    .nav-links a, 
+    .nav-links .nav-category .category-items a {
+      font-size: 1.1rem;
+    }
+  }
+}

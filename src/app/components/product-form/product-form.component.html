@@ -1,0 +1,479 @@
+<div class="product-form-container">
+  <div class="header-container">
+    <h1 class="page-title">{{ initialProduct ? 'Editar Producto' : 'Agregar Producto' }}</h1>
+    <div class="actions-container">
+      <!-- Botón Guardar ahora llama a onSubmit() y es de tipo submit -->
+      <button mat-raised-button color="primary" type="submit" form="productFormId" class="save-button">
+        <mat-icon>save</mat-icon> {{ initialProduct ? 'Guardar Cambios' : 'Guardar Producto' }}
+      </button>
+      <!-- Botón Cancelar (opcional, si quieres uno en el encabezado) -->
+      <button mat-stroked-button type="button" (click)="onCancel()" class="cancel-button">
+        <mat-icon>cancel</mat-icon> Cancelar
+      </button>
+    </div>
+  </div>
+
+  <!-- Se añade id al form y se vincula ngSubmit -->
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" id="productFormId" class="product-form">
+    <!-- Pestañas del formulario -->
+    <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" animationDuration="500ms">
+      <!-- 1️⃣ PESTAÑA: DATOS GENERALES -->
+      <mat-tab label="Datos Generales">
+        <div class="tab-content" formGroupName="generalData">
+          <div class="form-section general-data-section">
+            <!-- Tipo de Producto -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="product-type-field">
+                <mat-label>
+                  <span class="label-icon"><mat-icon>category</mat-icon></span>
+                  <span class="label-text">Tipo de Producto</span>
+                </mat-label>
+                <mat-select formControlName="productType">
+                  <mat-option value="ventana">Ventana</mat-option>
+                  <mat-option value="piso">Piso Vitrificado</mat-option>
+                  <mat-option value="escalon">Escalones</mat-option>
+                </mat-select>
+                <mat-error *ngIf="productForm.get('generalData.productType')?.hasError('required')">
+                  El tipo de producto es obligatorio
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Código y Cantidad -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="code-field">
+                <mat-label>
+                  <span class="label-icon"><mat-icon>qr_code</mat-icon></span>
+                  <span class="label-text">Código del Producto</span>
+                </mat-label>
+                <input matInput formControlName="productCode" placeholder="WIN-2025-001">
+                <mat-error *ngIf="productForm.get('generalData.productCode')?.hasError('required')">
+                  El código es obligatorio
+                </mat-error>
+                <mat-error *ngIf="productForm.get('generalData.productCode')?.hasError('pattern')">
+                  Formato inválido. Debe ser WIN-YYYY-XXX
+                </mat-error>
+              </mat-form-field>
+
+              <div class="quantity-field">
+                <mat-label class="styled-label">
+                  <span class="label-icon"><mat-icon>format_list_numbered</mat-icon></span>
+                  <span class="label-text">Cantidad</span>
+                </mat-label>
+                <div class="quantity-input-group">
+                  <button type="button" mat-icon-button color="primary" (click)="decrementQuantity()">
+                    <mat-icon>remove</mat-icon>
+                  </button>
+                  <input type="number" matInput formControlName="quantity" min="1">
+                  <button type="button" mat-icon-button color="primary" (click)="incrementQuantity()">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dimensiones -->
+            <div class="form-row">
+              <div formGroupName="dimensions" class="dimensions-container">
+                <mat-label class="styled-label">
+                  <span class="label-icon"><mat-icon>straighten</mat-icon></span>
+                  <span class="label-text">Dimensiones</span>
+                </mat-label>
+                
+                <div class="dimensions-grid">
+                  <div class="dimension-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Ancho</mat-label>
+                      <input matInput type="number" formControlName="width" min="0.001">
+                      <mat-error *ngIf="productForm.get('generalData.dimensions.width')?.hasError('required')">
+                        El ancho es obligatorio
+                      </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Alto</mat-label>
+                      <input matInput type="number" formControlName="height" min="0.001">
+                      <mat-error *ngIf="productForm.get('generalData.dimensions.height')?.hasError('required')">
+                        El alto es obligatorio
+                      </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Profundidad</mat-label>
+                      <input matInput type="number" formControlName="length" min="0.001">
+                      <mat-error *ngIf="productForm.get('generalData.dimensions.length')?.hasError('required')">
+                        La profundidad es obligatoria
+                      </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                      <mat-label>Unidad</mat-label>
+                      <mat-select formControlName="unit">
+                        <mat-option *ngFor="let unit of measurementUnits" [value]="unit.value">
+                          {{unit.label}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="description-field">
+                <mat-label>
+                  <span class="label-icon"><mat-icon>description</mat-icon></span>
+                  <span class="label-text">Descripción del Producto</span>
+                </mat-label>
+                <textarea matInput formControlName="description" rows="4" 
+                  placeholder="Ventana corredera de aluminio con doble vidrio templado, perfiles de alta resistencia y sistema de apertura deslizante..."></textarea>
+                <mat-hint align="end">{{productForm.get('generalData.description')?.value?.length || 0}}/200</mat-hint>
+                <mat-error *ngIf="productForm.get('generalData.description')?.hasError('required')">
+                  La descripción es obligatoria
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+      
+      <!-- 2️⃣ PESTAÑA: ESPECIFICACIONES TÉCNICAS -->
+      <mat-tab label="Especificaciones Técnicas">
+        <div class="tab-content" formGroupName="technicalSpecs">
+          <div class="form-section">
+            <!-- Acordeón de Material -->
+            <mat-accordion class="specs-accordion" multi>
+              <mat-expansion-panel expanded>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>hardware</mat-icon> Material
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                
+                <div formGroupName="material" class="accordion-content">
+                  <div class="form-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Tipo de Material</mat-label>
+                      <mat-select formControlName="type" required>
+                        <mat-option *ngFor="let type of materialTypes" [value]="type">
+                          {{type}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline">
+                      <mat-label>Perfil</mat-label>
+                      <mat-select formControlName="profile">
+                        <mat-option *ngFor="let profile of profileTypes" [value]="profile">
+                          {{profile}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  
+                  <div class="form-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Color</mat-label>
+                      <mat-select formControlName="color">
+                        <mat-option *ngFor="let color of colorOptions" [value]="color">
+                          {{color}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline" *ngIf="productForm.get('technicalSpecs.material.color')?.value === 'CUSTOM'">
+                      <mat-label>Color Personalizado</mat-label>
+                      <input matInput formControlName="customColor" type="text">
+                      <input matInput type="color" class="color-picker">
+                    </mat-form-field>
+                  </div>
+                </div>
+              </mat-expansion-panel>
+              
+              <!-- Acordeón de Vidrio -->
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>view_carousel</mat-icon> Vidrio
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                
+                <div formGroupName="glass" class="accordion-content">
+                  <div class="form-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Tipo de Vidrio</mat-label>
+                      <mat-select formControlName="type">
+                        <mat-option *ngFor="let type of glassTypes" [value]="type">
+                          {{type}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline">
+                      <mat-label>Espesor</mat-label>
+                      <mat-select formControlName="thickness">
+                        <mat-option *ngFor="let thickness of glassThickness" [value]="thickness">
+                          {{thickness}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                  
+                  <div class="form-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Protección</mat-label>
+                      <mat-select formControlName="protection">
+                        <mat-option *ngFor="let protection of protectionOptions" [value]="protection">
+                          {{protection}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </mat-expansion-panel>
+              
+              <!-- Acordeón de Sistema de Apertura -->
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>meeting_room</mat-icon> Apertura
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                
+                <div formGroupName="opening" class="accordion-content">
+                  <div class="form-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Sistema</mat-label>
+                      <mat-select formControlName="system">
+                        <mat-option *ngFor="let system of openingSystems" [value]="system">
+                          {{system}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline">
+                      <mat-label>Manija</mat-label>
+                      <mat-select formControlName="handle">
+                        <mat-option *ngFor="let handle of handleOptions" [value]="handle">
+                          {{handle}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </mat-expansion-panel>
+              
+              <!-- Acordeón de Instalación -->
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>construction</mat-icon> Instalación
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                
+                <div formGroupName="installation" class="accordion-content">
+                  <div class="form-row">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Resistencia Climática</mat-label>
+                      <mat-select formControlName="climateResistance">
+                        <mat-option *ngFor="let climate of climateOptions" [value]="climate">
+                          {{climate}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    
+                    <mat-form-field appearance="outline">
+                      <mat-label>Normativa</mat-label>
+                      <mat-select formControlName="regulation">
+                        <mat-option *ngFor="let reg of regulationOptions" [value]="reg">
+                          {{reg}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+              </mat-expansion-panel>
+              
+              <!-- Características adicionales -->
+              <mat-expansion-panel>
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <mat-icon>add_circle</mat-icon> Características Adicionales
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+                
+                <div class="accordion-content additional-features">
+                  <div class="form-row features-header">
+                    <button type="button" mat-raised-button color="primary" (click)="addFeature()">
+                      <mat-icon>add</mat-icon> Agregar Característica
+                    </button>
+                  </div>
+                  
+                  <div *ngFor="let feature of additionalFeatures.controls; let i = index" class="feature-item">
+                    <div class="form-row" [formGroup]="getFeatureFormGroup(i)">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Nombre</mat-label>
+                        <input matInput formControlName="name" placeholder="Ej. Aislamiento">
+                      </mat-form-field>
+                      
+                      <mat-form-field appearance="outline">
+                        <mat-label>Valor</mat-label>
+                        <input matInput formControlName="value" placeholder="Ej. 32dB">
+                      </mat-form-field>
+                      
+                      <button mat-icon-button color="warn" (click)="removeFeature(i)" aria-label="Eliminar característica">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <p *ngIf="additionalFeatures.length === 0" class="no-features-message">
+                    No hay características adicionales. Haga clic en "Agregar Característica" para añadir una.
+                  </p>
+                </div>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </div>
+        </div>
+      </mat-tab>
+      
+      <!-- 3️⃣ PESTAÑA: COSTOS -->
+      <mat-tab label="Costos">
+        <div class="tab-content" formGroupName="costs">
+          <div class="form-section">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Precio Unitario</mat-label>
+                <input matInput type="number" formControlName="unitPrice" min="0" step="0.01">
+                <mat-error *ngIf="productForm.get('costs.unitPrice')?.hasError('required')">
+                  El precio es requerido
+                </mat-error>
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline">
+                <mat-label>Moneda</mat-label>
+                <mat-select formControlName="currency">
+                  <mat-option *ngFor="let currency of currencyOptions" [value]="currency">
+                    {{currency}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>IVA</mat-label>
+                <mat-select formControlName="tax">
+                  <mat-option *ngFor="let tax of taxOptions" [value]="tax.value">
+                    {{tax.label}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            
+            <!-- Total calculado automáticamente -->
+            <div class="total-container">
+              <div class="total-label">
+                <h3>Costo Total</h3>
+                <p class="calculation-formula">
+                  Cantidad × Precio Unitario + IVA
+                </p>
+              </div>
+              <div class="total-amount">
+                <span class="currency-symbol">{{productForm.get('costs.currency')?.value}}</span>
+                <span class="amount">{{totalCost | number:'1.2-2'}}</span>
+              </div>
+            </div>
+            
+            <div class="info-message">
+              <mat-icon>info</mat-icon>
+              <span>El costo se actualiza automáticamente al modificar cantidad o precio</span>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+      
+      <!-- 4️⃣ PESTAÑA: PLANOS E IMÁGENES -->
+      <mat-tab label="Planos e Imágenes">
+        <div class="tab-content" formGroupName="plans">
+          <div class="form-section">
+            <!-- Subida de imagen de producto -->
+            <h3 class="section-title">
+              <mat-icon>photo_camera</mat-icon>
+              Imagen del Producto
+            </h3>
+            <div class="form-row image-upload-container">
+              <div class="upload-area">
+                <input #imageInput type="file" hidden (change)="onImageSelected($event)" accept="image/jpeg,image/png">
+                <button type="button" mat-raised-button color="primary" (click)="imageInput.click()">
+                  <mat-icon>photo_camera</mat-icon> Subir Foto del Producto
+                </button>
+                <div class="upload-hints">
+                  <p><mat-icon>info</mat-icon> Formatos: JPG/PNG (máx. 5MB)</p>
+                </div>
+              </div>
+              
+              <div class="image-preview" *ngIf="imagePreview">
+                <img [src]="imagePreview" alt="Vista previa">
+                <button mat-icon-button color="warn" (click)="imagePreview = null">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <mat-divider class="section-divider"></mat-divider>
+            
+            <!-- Subida de plano técnico -->
+            <h3 class="section-title">
+              <mat-icon>architecture</mat-icon>
+              Plano Técnico
+            </h3>
+            <div class="form-row plan-upload-container">
+              <div class="upload-area">
+                <input #planInput type="file" hidden (change)="onPlanSelected($event)" accept="application/pdf,image/jpeg,.dwg">
+                <button type="button" mat-raised-button color="primary" (click)="planInput.click()">
+                  <mat-icon>upload_file</mat-icon> Subir Plano Técnico
+                </button>
+                <div class="upload-hints">
+                  <p><mat-icon>info</mat-icon> Formatos: PDF/DWG/JPEG (máx. 10MB)</p>
+                </div>
+              </div>
+              
+              <div class="plan-preview" *ngIf="planPreview">
+                <div class="preview-container" [ngClass]="{'pdf-preview': planPreview.includes('application/pdf')}">
+                  <img *ngIf="!planPreview.includes('application/pdf')" [src]="planPreview" alt="Vista previa del plano">
+                  <div *ngIf="planPreview.includes('application/pdf')" class="pdf-icon">
+                    <mat-icon>picture_as_pdf</mat-icon>
+                    <span>Archivo PDF</span>
+                  </div>
+                  <div *ngIf="planPreview.includes('dwg')" class="dwg-icon">
+                    <mat-icon>architecture</mat-icon>
+                    <span>Archivo DWG</span>
+                  </div>
+                </div>
+                <div class="plan-actions">
+                  <button mat-icon-button color="primary" matTooltip="Ampliar">
+                    <mat-icon>zoom_in</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="planPreview = null" matTooltip="Eliminar">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <mat-divider class="section-divider"></mat-divider>
+            
+            <!-- Aprobación del cliente -->
+            <div class="approval-container">
+              <mat-checkbox formControlName="clientApproved" color="primary" class="client-approval">
+                <span class="approval-text">Marcar como "Aprobado por cliente"</span>
+              </mat-checkbox>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </form>
+</div>

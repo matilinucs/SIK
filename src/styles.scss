@@ -1,1 +1,287 @@
-/* You can add global styles to this file, and also import other style files */
+// Custom Theming for Angular Material
+// For more information: https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+@use 'sass:color';
+
+html {
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎨 PALETA DE COLORES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+$color-primary: #1976d2;          // Color primario de la aplicación
+$color-red-kinetta: #D32F2F;      // Color principal de la marca
+$color-red-dark: rgb(132, 27, 39);  // Variación oscura para títulos
+$color-black: #000000;            // Para textos y elementos destacados
+$color-white: #FFFFFF;            // Fondos principales
+$color-gray-light: #F5F5F5;       // Fondos secundarios
+$color-gray-mid: #E0E0E0;         // Bordes y separadores
+$color-gray-dark: #424242;        // Textos secundarios
+
+// Colores de acción e interacción
+$color-blue: #1976d2;             // Color estándar para enlaces y elementos secundarios
+$color-blue-vibrant: #0056b3;     // Color azul vibrante para botones principales
+
+// Colores de estado y deshabilitado
+$color-error: #f44336;            // Para errores y alertas
+$color-success: #4caf50;          // Para éxito y confirmaciones
+$color-warning: #ff9800;          // Para advertencias
+$color-info: #2196f3;             // Para información
+$color-text-disabled: #9E9E9E;    // Para texto deshabilitado
+$color-background-medium: #EEEEEE; // Para fondos de elementos deshabilitados
+
+// Colores adicionales
+$color-gray-blue: rgb(50, 50, 52);      // Gris azulado
+$color-shadow-base: rgba(0, 0, 0, 0.1); // Base para sombras
+$color-background-light: #FAFAFA;
+$color-divider: $color-gray-mid;       // Para bordes y separadores, alias de color-gray-mid
+
+// Sombras de Material Design (ejemplos)
+$shadow-dp2: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+$shadow-dp4: 0 4px 5px -2px rgba(0,0,0,.2), 0 7px 10px 1px rgba(0,0,0,.14), 0 2px 16px 1px rgba(0,0,0,.12);
+
+// Variables de Border Radius
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+$border-radius-lg: 12px;
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🔤 TIPOGRAFÍA Y ESPACIADO
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+$font-family-base: 'Arial', sans-serif;
+$font-size-base: 16px;
+$font-size-xs: 0.75rem;    // Nuevo tamaño extra pequeño
+$font-size-small: 0.875rem;
+$font-size-md: 1rem;       // Nuevo tamaño medio
+$font-size-large: 1.25rem;
+$font-size-xlarge: 1.5rem;
+$font-size-title: 2rem;
+
+$font-family-monospace: 'Courier New', Courier, monospace; // Definición para fuentes monoespaciadas
+
+// Variables de diseño responsivo
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+
+$spacing-xxs: 0.125rem;    // Nuevo espaciado extra extra pequeño
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🌐 ESTILOS GLOBALES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+body {
+  margin: 0;
+  font-family: $font-family-base;
+  background-color: $color-white;
+  color: $color-black;
+  font-size: $font-size-base;
+}
+
+a {
+  text-decoration: none;
+  color: $color-black;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $color-blue-vibrant; // Cambiado de $color-blue a $color-blue-vibrant
+  }
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📝 ESTILOS PREDETERMINADOS PARA FORMULARIOS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// Contenedores y tarjetas base
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $spacing-md;
+}
+
+.card-container {
+  background-color: $color-white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px $color-shadow-base;
+  margin-bottom: $spacing-xl;
+  overflow: hidden;
+  border: 1px solid $color-gray-mid;
+}
+
+// Tarjetas de formulario
+.form-card {
+  max-width: 1200px;
+  margin: 0 auto $spacing-xl;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px $color-shadow-base !important;
+  
+  .form-card-title {
+    color: $color-black;
+    font-size: $font-size-title;
+    font-weight: 500;
+    margin: 0 0 $spacing-lg;
+    padding-bottom: $spacing-sm;
+    border-bottom: 2px solid $color-black;
+    text-align: center;
+  }
+}
+
+// Títulos y encabezados
+.form-title {
+  color: $color-black;
+  font-size: $font-size-title;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: $spacing-lg;
+  padding-bottom: $spacing-sm;
+  border-bottom: 2px solid $color-gray-mid;
+}
+
+// Secciones de formulario
+.form-section-container {
+  border: 1px solid $color-gray-mid;
+  border-radius: 6px;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  background-color: $color-white;
+  
+  .section-header {
+    margin-bottom: $spacing-lg;
+    
+    .section-title {
+      color: $color-black;
+      font-size: $font-size-large;
+      font-weight: 500;
+      margin: 0;
+      padding-bottom: $spacing-sm;
+      border-bottom: 1px solid $color-gray-mid;
+    }
+  }
+}
+
+// Organización de campos y labels
+.form-field-container {
+  margin-bottom: $spacing-lg;
+  
+  .field-label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: $spacing-sm;
+    color: $color-gray-dark;
+  }
+  
+  .field-hint {
+    margin-top: $spacing-xs;
+    color: rgba($color-black, 0.6);
+    font-size: $font-size-small;
+  }
+  
+  &.required .field-label:after {
+    content: " *";
+    color: $color-error;
+  }
+}
+
+// Filas de formulario
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-lg;
+  
+  &.two-columns {
+    > .form-column {
+      flex: 1 1 calc(50% - #{$spacing-lg * 0.5});
+      min-width: 250px;
+    }
+  }
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+// Botón de acción principal
+.primary-action-button {
+  display: block;
+  width: 80%;
+  margin: $spacing-xl auto $spacing-md;
+  padding: $spacing-md;
+  background-color: $color-blue-vibrant !important;
+  color: $color-white !important;
+  font-size: 1.05rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background-color 0.3s ease;
+  
+  &:hover {
+    background-color: color.adjust($color-blue-vibrant, $lightness: -10%) !important;
+  }
+}
+
+// Estilos para campos de formulario de Material
+.mat-mdc-form-field {
+  &.full-width {
+    width: 100%;
+  }
+  
+  &.half-width {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+// Mejoras globales para componentes Material
+// Nota: estos estilos se pueden aplicar si se quiere modificar la apariencia predeterminada
+// de los componentes de Angular Material en toda la aplicación
+.mat-typography {
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 $spacing-md;
+  }
+  
+  p {
+    margin: 0 0 $spacing-md;
+    line-height: 1.6;
+  }
+}
+
+// Media queries para responsividad
+@media (max-width: $breakpoint-md) {
+  .form-row {
+    flex-direction: column;
+    
+    > .form-column {
+      width: 100%;
+    }
+  }
+  
+  .half-width {
+    max-width: none;
+  }
+  
+  .primary-action-button {
+    width: 100%;
+  }
+}
+
+// create-product.component.scss
+// ...
+.create-product-component { // Or a more specific selector
+  background-color: $color-gray-light; 
+}
+// ...

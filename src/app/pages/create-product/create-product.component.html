@@ -1,0 +1,30 @@
+<div class="create-product-container">
+  <div class="view-toggle-container">
+    <button mat-stroked-button (click)="toggleView()" [matTooltip]="isFullScreenTable ? 'Ver vista dividida' : 'Ver tabla en pantalla completa'">
+      <mat-icon>{{ isFullScreenTable ? 'vertical_split' : 'fullscreen' }}</mat-icon>
+      <span>{{ isFullScreenTable ? 'Vista Dividida' : 'Tabla Completa' }}</span>
+    </button>
+  </div>
+
+  <div class="content-area" [class.full-screen-table-active]="isFullScreenTable">
+    <div class="products-table-wrapper" [class.full-width]="isFullScreenTable">
+      <app-products-table 
+        [products]="products" 
+        (editProduct)="handleProductSelect($event)" 
+        (addProduct)="handleProductAdd()"
+        (deleteProduct)="handleProductDelete($event)" 
+        [isFullScreenMode]="isFullScreenTable">
+      </app-products-table>
+    </div>
+
+    <div class="product-form-wrapper" *ngIf="!isFullScreenTable">
+      <app-product-form 
+        [initialProduct]="selectedProduct" 
+        (saveProduct)="handleProductSave($event)" 
+        (cancelEdit)="handleCancelEdit()">
+      </app-product-form>
+    </div>
+  </div>
+
+  <ng-template #productFormContainer></ng-template>
+</div>

@@ -1,0 +1,377 @@
+@use 'sass:color'; // Importación obligatoria para funciones modernas
+@use '../../../styles.scss' as *;
+
+/**
+ * Estilos para el componente de listado de cubicaciones
+ */
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 1️⃣ ESTRUCTURA GENERAL
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.quotation-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $spacing-md;
+  position: relative;
+}
+
+// Barra de título y botón
+.header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-lg;
+  
+  .page-title {
+    color: $color-black;
+    font-size: $font-size-title;
+    font-weight: 500;
+    margin: 0;
+  }
+  
+  // Botón rectangular verde
+  .add-quotation-button {
+    background-color: #4CAF50 !important;
+    color: white !important;
+    padding: 0 $spacing-md !important;
+    border-radius: 4px !important;
+    height: 45px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    
+    mat-icon {
+      margin-right: $spacing-xs;
+    }
+    
+    &:hover {
+      background-color: color.adjust(#4CAF50, $lightness: -10%) !important;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 2️⃣ ELEMENTOS ESPECÍFICOS DEL PANEL DE FILTROS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.filters-container {
+  padding: $spacing-md $spacing-lg;
+  
+  .filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+    align-items: center;
+    
+    mat-form-field {
+      flex: 1;
+      min-width: 180px;
+      margin-bottom: 0;
+    }
+    
+    // Contenedor especial para el botón de filtros
+    .button-container {
+      display: flex;
+      align-items: center;
+      height: 56px;
+    }
+    
+    // Botón de limpiar filtros - estilo específico
+    .clear-filters-button {
+      height: 36px !important;
+      white-space: nowrap;
+      padding: 0 $spacing-sm !important;
+      min-width: auto;
+      margin: 0;
+      
+      mat-icon {
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+        margin-right: $spacing-xs;
+      }
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 3️⃣ ELEMENTOS ESPECÍFICOS DE LA TABLA
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.form-section {
+  background-color: $color-white;
+  border: 1px solid $color-gray-mid;
+  border-radius: 8px;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-xl;
+  position: relative;
+  
+  // Decoración visual para las secciones
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 4px;
+    background-color: $color-blue-vibrant;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
+}
+
+.table-container {
+  overflow-x: auto;
+  
+  .quotation-table {
+    width: 100%;
+    
+    // Estilos para celdas de la tabla - FONDO BLANCO EN TODAS LAS FILAS
+    .mat-mdc-header-row {
+      background-color: $color-white;
+    }
+    
+    .mat-mdc-cell, 
+    .mat-mdc-header-cell {
+      padding: 14px 16px;
+      color: $color-black;
+      background-color: $color-white;
+    }
+    
+    .mat-mdc-header-cell {
+      font-weight: 600;
+      border-bottom: 2px solid $color-gray-mid;
+    }
+    
+    // Quitar fondos alternados
+    .mat-mdc-row {
+      background-color: $color-white;
+    }
+    
+    // Solo cambiar color al hacer hover
+    .mat-mdc-row:hover {
+      background-color: rgba($color-blue-vibrant, 0.05);
+    }
+    
+    // Estilo específico para la columna de número de cotización
+    .mat-column-quoteNumber {
+      width: 100px;
+      font-weight: 500;
+      color: $color-blue-vibrant;
+    }
+    
+    // Celda de cantidad monetaria
+    .amount-cell {
+      font-weight: 500;
+      text-align: right;
+    }
+    
+    // Celda de acciones
+    .actions-cell {
+      white-space: nowrap;
+      width: 120px;
+    }
+    
+    tr.expandable-row {
+      cursor: pointer;
+      
+      &:hover {
+        background: rgba(0, 0, 0, 0.04);
+      }
+      
+      &.expanded-row {
+        background: #f5f5f5;
+      }
+    }
+
+    tr.detail-row {
+      height: 0;
+      
+      .products-detail {
+        overflow: hidden;
+      }
+    }
+
+    .products-table {
+      width: 100%;
+      margin: 1rem;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      
+      th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+        
+        &:last-child {
+          text-align: right;
+        }
+      }
+      
+      th {
+        background-color: #f5f5f5;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.87);
+      }
+      
+      .summary-row {
+        background-color: #fafafa;
+        font-weight: 500;
+        
+        td {
+          border-top: 2px solid #e0e0e0;
+        }
+      }
+    }
+  }
+  
+  // Mensaje cuando no hay datos
+  .no-data-cell {
+    padding: $spacing-xl;
+    text-align: center;
+    font-style: italic;
+    color: $color-gray-dark;
+    background-color: $color-white;
+  }
+}
+
+// Estilos adicionales para la tabla de cubicaciones
+.quotation-table-container {
+  margin: 1rem;
+  
+  .mat-mdc-table {
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    .mat-mdc-header-row {
+      background-color: #f5f5f5;
+      
+      .mat-mdc-header-cell {
+        color: #1976d2;
+        font-weight: 500;
+        font-size: 14px;
+        padding: 1rem;
+        white-space: nowrap;
+      }
+    }
+
+    .mat-mdc-row {
+      &:hover {
+        background-color: #f8f9fa;
+      }
+
+      .mat-mdc-cell {
+        padding: 1rem;
+        font-size: 14px;
+        
+        &.code-cell {
+          font-weight: 500;
+          color: #1976d2;
+        }
+        
+        &.quantity-cell {
+          text-align: center;
+        }
+        
+        &.area-cell, &.budget-cell {
+          text-align: right;
+          font-family: monospace;
+          
+          .unit {
+            color: #666;
+            margin-left: 4px;
+            font-size: 12px;
+          }
+        }
+
+        &.type-cell {
+          max-width: 200px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+  
+  .mat-mdc-paginator {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 4️⃣ INDICADORES DE ESTADO
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    margin-right: 4px;
+  }
+  
+  // Estados con colores diferentes
+  &.en_proceso {
+    background-color: rgba(255, 152, 0, 0.15);
+    color: #ff9800;
+  }
+  
+  &.aprobada {
+    background-color: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+  }
+  
+  &.rechazada {
+    background-color: rgba(244, 67, 54, 0.15);
+    color: #f44336;
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 5️⃣ RESPONSIVIDAD
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@media (max-width: $breakpoint-md) {
+  .header-bar {
+    flex-direction: column;
+    align-items: stretch;
+    
+    .page-title {
+      margin-bottom: $spacing-md;
+      text-align: center;
+    }
+    
+    .add-quotation-button {
+      width: 100%;
+    }
+  }
+  
+  .filters-container .filters-form {
+    flex-direction: column;
+    
+    mat-form-field {
+      width: 100%;
+    }
+    
+    // Botón de limpiar filtros en móviles
+    .button-container {
+      width: 100%;
+      margin-top: $spacing-sm;
+      height: auto;
+      
+      .clear-filters-button {
+        width: 100%;
+        height: 45px !important;
+      }
+    }
+  }
+}

@@ -1,0 +1,324 @@
+@use '../../../styles.scss' as *;
+@use 'sass:color';
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PRODUCTS TABLE COMPONENT STYLES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Estilos para el componente que muestra la tabla de productos.
+// Incluye la cabecera de la tabla, la tabla en sí, y el pie de página con resúmenes.
+// También maneja la responsividad para diferentes tamaños de pantalla.
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// ────────────────────────────────────────────────────────────────────────────────
+// 1. CONTENEDOR PRINCIPAL (PRODUCTS-TABLE-CONTAINER)
+// ────────────────────────────────────────────────────────────────────────────────
+// Contenedor raíz para todo el componente de la tabla.
+// Utiliza flexbox para organizar verticalmente la cabecera, la tabla y el pie.
+// ────────────────────────────────────────────────────────────────────────────────
+.products-table-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%; // Ocupa toda la altura de su wrapper padre
+  min-width: 0; // Necesario para flexbox en algunos contextos
+  overflow: hidden; // El scroll principal lo maneja .table-container
+  background-color: $color-white; // Fondo base del componente
+  border-radius: $border-radius-md; // Coincide con los wrappers en create-product
+  // box-shadow: $shadow-dp2; // Sombra si es un componente "card" independiente
+
+  // --- Cabecera de la tabla (Título y Acciones) ---
+  .table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $spacing-md;
+    border-bottom: 1px solid $color-divider; // Usar la variable definida
+    background-color: $color-white; // Fondo para la cabecera
+    flex-shrink: 0; // No se encoge
+
+    .header-title {
+      h2 {
+        margin: 0;
+        font-size: $font-size-large; // Corregido de $font-size-lg
+        font-weight: 500;
+        color: $color-black; // Corregido de $color-text-primary
+      }
+    }
+
+    .table-actions {
+      display: flex;
+      gap: $spacing-sm;
+
+      .action-button { // Estilo base para botones de acción
+        min-width: auto; // Ajusta el ancho al contenido
+        padding: 0 $spacing-sm;
+        
+        mat-icon {
+          margin-right: $spacing-xs;
+        }
+
+        // Botón Añadir Producto
+        &.add-button {
+          background-color: $color-primary !important;
+          color: $color-white !important;
+          &:hover {
+            background-color: color.adjust($color-primary, $lightness: -10%) !important;
+          }
+        }
+        
+        // Botón Exportar Excel
+        &.export-excel-button {
+          background-color: $color-success !important;
+          color: $color-white !important;
+          &:hover {
+            background-color: color.adjust($color-success, $lightness: -10%) !important;
+          }
+        }
+        // Considerar si el botón PDF se mantiene o elimina
+        // &.export-pdf-button {
+        //   background-color: $color-error !important;
+        //   color: $color-white !important;
+        //   &:hover {
+        //     background-color: color.adjust($color-error, $lightness: -10%) !important;
+        //   }
+        // }
+      }
+    }
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────────
+  // 2. CONTENEDOR DE LA TABLA (TABLE-CONTAINER)
+  // ────────────────────────────────────────────────────────────────────────────────
+  // Envuelve la mat-table y maneja el scroll vertical y horizontal.
+  // ────────────────────────────────────────────────────────────────────────────────
+  .table-container {
+    flex-grow: 1; // Ocupa el espacio restante
+    overflow: auto; // Permite scroll en ambas direcciones si es necesario
+    position: relative; // Para el posicionamiento sticky de los encabezados de la tabla
+    min-height: 200px; // Altura mínima para que la tabla sea visible
+
+    .products-table {
+      width: 100%;
+      border-collapse: separate; // Usar separate para border-spacing
+      border-spacing: 0;
+
+      // --- Encabezados de la Tabla (mat-header-row) ---
+      .mat-mdc-header-row {
+        background-color: $color-white;
+        height: 48px; // Altura estándar para encabezados
+        position: sticky; // Encabezados fijos al hacer scroll vertical
+        top: 0;
+        z-index: 100; // Asegura que esté sobre el contenido de la tabla
+
+        .mat-mdc-header-cell {
+          color: $color-gray-dark; // Corregido de $color-text-secondary
+          font-weight: 500;
+          font-size: $font-size-small; // Corregido de $font-size-sm
+          padding: 0 $spacing-md;
+          white-space: nowrap; // Evita que el texto del encabezado se rompa
+          border-bottom: 1px solid $color-divider; // Usar la variable definida
+          background-color: $color-white; // Fondo para celdas de encabezado
+
+          // Sombra sutil para indicar que el contenido se desliza por debajo
+          // box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); // Opcional
+
+          // Alineaciones específicas para encabezados
+          &.mat-column-quantity,
+          &.mat-column-totalArea,
+          &.mat-column-budget {
+            text-align: right;
+            // Para alinear el texto del encabezado con el contenido numérico,
+            // podríamos necesitar un padding-right mayor si los números son grandes.
+          }
+          &.mat-column-actions { // Usar mat-column-actions si se define así en displayedColumns
+            text-align: center;
+          }
+        }
+      }
+
+      // --- Filas de Datos (mat-row) ---
+      .mat-mdc-row {
+        height: 52px; // Altura estándar para filas de datos
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background-color: $color-gray-light; // Corregido de $color-background-hover
+        }
+
+        .mat-mdc-cell {
+          color: $color-black; // Corregido de $color-text-primary
+          font-size: $font-size-small; // Corregido de $font-size-sm
+          padding: 0 $spacing-md;
+          border-bottom: 1px solid $color-divider; // Corregido de $color-border-light
+          white-space: nowrap; // Evita que el contenido de la celda se rompa
+
+          // Celda de Código de Producto
+          &.mat-column-productCode {
+            font-family: $font-family-monospace;
+            color: $color-blue; // Corregido de $color-secondary
+            font-weight: 500;
+          }
+
+          // Celdas numéricas (Cantidad, Área, Presupuesto)
+          &.mat-column-quantity,
+          &.mat-column-totalArea,
+          &.mat-column-budget {
+            text-align: right;
+            font-variant-numeric: tabular-nums; // Mejora alineación de números
+          }
+          
+          // Celda de Acciones
+          &.mat-column-actions {
+            text-align: center;
+            padding: 0 $spacing-xs; // Menor padding para botones de acción
+
+            button {
+              margin: 0 $spacing-xxs;
+            }
+          }
+        }
+      }
+      
+      // --- Mensaje de "No hay datos" ---
+      .no-data-cell {
+        padding: $spacing-xl !important; // Mayor padding para el mensaje
+        text-align: center;
+        
+        .no-data-message {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: $spacing-md;
+          color: $color-text-disabled;
+          
+          mat-icon {
+            font-size: 3rem;
+            width: 3rem;
+            height: 3rem;
+          }
+          p {
+            margin: 0;
+            font-size: $font-size-md;
+          }
+        }
+      }
+    }
+  }
+
+  // ────────────────────────────────────────────────────────────────────────────────
+  // 3. PIE DE PÁGINA DE LA TABLA (TABLE-FOOTER)
+  // ────────────────────────────────────────────────────────────────────────────────
+  // Muestra resúmenes como totales de cantidad, área y presupuesto.
+  // ────────────────────────────────────────────────────────────────────────────────
+  .table-footer {
+    padding: $spacing-md $spacing-lg;
+    border-top: 1px solid $color-divider;
+    background-color: $color-white;
+    flex-shrink: 0;
+
+    .summary-info {
+      display: flex;
+      justify-content: flex-end;
+      gap: $spacing-xl;
+      align-items: center;
+
+      .summary-item {
+        display: flex;
+        align-items: baseline;
+        gap: $spacing-xs;
+
+        .label {
+          font-size: $font-size-md;
+          color: $color-gray-dark;
+          font-weight: 500;
+        }
+
+        .value {
+          font-size: $font-size-large;
+          font-weight: 500;
+          color: $color-black;
+        }
+
+        // Estilo especial para el total del presupuesto (más destacado)
+        &.total {
+          .label {
+            color: $color-blue;
+          }
+          .value {
+            color: $color-blue;
+            font-size: $font-size-xlarge;
+            font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 4. RESPONSIVIDAD
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@media screen and (max-width: 768px) {
+  .products-table-container {
+    .table-header {
+      flex-direction: column;
+      align-items: stretch; // Los elementos ocupan todo el ancho
+      gap: $spacing-md;
+
+      .header-title {
+        text-align: center; // Centra el título en móviles
+      }
+      .table-actions {
+        justify-content: center; // Centra los botones de acción
+        flex-wrap: wrap; 
+      }
+    }
+
+    .table-container {
+      // En pantallas pequeñas, es común que la tabla necesite scroll horizontal.
+      // overflow-x: auto; // Ya está en .table-container
+      
+      .products-table {
+        // Para forzar el scroll horizontal si el contenido es muy ancho:
+        // min-width: max-content; // O un valor fijo como 600px si se conocen las columnas
+
+        .mat-mdc-header-cell,
+        .mat-mdc-cell {
+          padding: 0 $spacing-sm; // Reduce el padding en celdas
+          font-size: $font-size-xs; // Reduce el tamaño de fuente
+          // Considerar ocultar columnas menos importantes en móviles si es necesario
+        }
+
+        .mat-mdc-cell.mat-column-actions {
+          button {
+            // Podría ser necesario hacer los botones más pequeños o solo iconos
+            min-width: auto;
+            padding: $spacing-xs;
+            mat-icon { margin-right: 0; }
+            .mat-button-wrapper > span { display: none; } // Ocultar texto, dejar solo icono
+          }
+        }
+      }
+    }
+
+    .table-footer {
+      .summary-info {
+        flex-direction: column; // Apila los items de resumen
+        align-items: flex-end; // Alinea a la derecha
+        gap: $spacing-sm;
+
+        .summary-item {
+          width: 100%;
+          justify-content: space-between; // Etiqueta a la izq, valor a la der
+
+          &.total-budget .value {
+            font-size: $font-size-md; // Reduce un poco el total destacado
+          }
+        }
+      }
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// FIN DE ESTILOS PRODUCTS TABLE COMPONENT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

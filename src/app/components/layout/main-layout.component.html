@@ -1,0 +1,21 @@
+<div class="layout-container">
+  <!-- Menú Lateral -->
+  <aside class="layout-sidebar">
+    <app-side-menu></app-side-menu>
+  </aside>
+
+  <!-- Área de contenido -->
+  <div class="layout-content">
+    <!-- Header -->
+    <header class="layout-header">
+      <app-header></app-header>
+    </header>
+
+    <!-- Área principal donde se renderiza el router-outlet -->
+    <main class="layout-main">
+      <div class="content-wrapper">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+</div>

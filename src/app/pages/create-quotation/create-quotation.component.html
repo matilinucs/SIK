@@ -1,0 +1,100 @@
+<!-- 
+  ================================================================================================
+  COMPONENTE: FORMULARIO DE CUBICACIÓN
+  ================================================================================================
+  Este componente permite a los usuarios crear una nueva cubicación para un cliente.
+  Utiliza Angular Material para una experiencia de usuario mejorada y accesible.
+  ================================================================================================
+-->
+
+<!-- Formulario principal con estilo de tarjeta de Material -->
+<mat-card class="quotation-card card-container">
+  <mat-card-content>    <!-- Título del formulario integrado en la tarjeta -->
+    <h1 class="form-card-title form-title">Formulario de Ingreso de Cubicación</h1>
+    
+    <form class="quotation-form">
+      <!-- Sección 1: Información General -->
+      <div class="form-section">
+        <h2 class="section-title">1. Información General</h2>
+        
+        <!-- Cliente - MOVIDO A LA PRIMERA POSICIÓN -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Cliente</mat-label>
+            <mat-select>
+              <mat-option>
+                <input placeholder="Buscar cliente..." matInput class="search-input">
+              </mat-option>
+              <mat-option value="1">Constructora ABC Ltda.</mat-option>
+              <mat-option value="2">Inmobiliaria Los Álamos S.A.</mat-option>
+              <mat-option value="3">Arquitectos Asociados SpA</mat-option>
+            </mat-select>
+            <mat-hint>Seleccione o busque un cliente</mat-hint>
+          </mat-form-field>
+        </div>
+        
+        <!-- Proyecto Asociado - MOVIDO A LA SEGUNDA POSICIÓN -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Proyecto Asociado</mat-label>
+            <mat-select>
+              <mat-option>
+                <input placeholder="Buscar proyecto..." matInput class="search-input">
+              </mat-option>
+              <mat-option value="1">Remodelación Oficinas Centrales</mat-option>
+              <mat-option value="2">Edificio Residencial Los Robles</mat-option>
+              <mat-option value="3">Centro Comercial Plaza Norte</mat-option>
+            </mat-select>
+            <mat-hint>Seleccione o busque un proyecto</mat-hint>
+          </mat-form-field>
+        </div>
+        
+        <!-- Fecha y Estado -->
+        <div class="form-row two-columns">
+          <div class="form-column">
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha</mat-label>
+              <input matInput [matDatepicker]="picker" value="2025-05-16">
+              <mat-datepicker-toggle matSuffix [for]="picker">
+                <mat-icon matDatepickerToggleIcon>calendar_today</mat-icon>
+              </mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <mat-hint>Fecha de cubicación</mat-hint>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-column">
+            <mat-form-field appearance="outline">
+              <mat-label>Estado</mat-label>
+              <mat-select value="en_proceso">
+                <mat-option value="en_proceso">En proceso</mat-option>
+                <mat-option value="aprobada">Aprobada</mat-option>
+                <mat-option value="rechazada">Rechazada</mat-option>
+              </mat-select>
+              <mat-hint>Estado actual de la cubicación</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sección 2: Costos y márgenes -->
+      <div class="form-section">
+        <h2 class="section-title">2. Costos y márgenes</h2>
+        
+        <!-- Margen Esperado -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width numeric-field">
+            <mat-label>Margen Esperado</mat-label>
+            <input matInput type="number" value="25" min="0" max="100">
+            <span matSuffix>%</span>
+            <mat-hint>Porcentaje de margen deseado</mat-hint>
+          </mat-form-field>
+        </div>
+      </div>
+        <!-- Botón de guardar - centrado y ocupando 80% del ancho -->
+      <button mat-raised-button class="save-button" type="submit">
+        Guardar Cubicación
+      </button>
+    </form>
+  </mat-card-content>
+</mat-card>

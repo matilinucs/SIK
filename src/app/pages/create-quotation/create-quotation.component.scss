@@ -1,0 +1,211 @@
+@use '../../../styles.scss' as *;
+@use 'sass:color';
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 📄 ESTILOS ESPECÍFICOS PARA FORMULARIO DE COTIZACIÓN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 1️⃣ TARJETA PRINCIPAL
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.quotation-card {
+  padding: $spacing-md;
+  margin: 0 auto $spacing-xl;
+  max-width: 1000px;
+  
+  .mat-mdc-card-content {
+    padding: $spacing-lg !important;
+    background-color: $color-white;
+  }
+  
+  .form-card-title {
+    margin-bottom: $spacing-xl;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background-color: $color-black;
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 2️⃣ SECCIONES DEL FORMULARIO
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.form-section {
+  background-color: $color-white;
+  border: 1px solid $color-gray-mid;
+  border-radius: 8px;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-xl;
+  position: relative;
+  
+  // Decoración visual para las secciones
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 4px;
+    background-color: $color-blue-vibrant;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
+  
+  // Título de la sección
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin-top: 0;
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-sm;
+    border-bottom: 1px solid $color-gray-mid;
+    color: $color-black;
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 3️⃣ CAMPOS DEL FORMULARIO
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// Reemplazar los estilos actuales de two-columns con estos:
+.form-row {
+  margin-bottom: $spacing-lg;
+  
+  // Campos generales del formulario
+  mat-form-field {
+    width: 100%;
+    margin-bottom: $spacing-sm;
+  }
+  
+  // Layout en columnas para la fila de fecha y estado
+  &.two-columns {
+    display: flex;
+    flex-wrap: nowrap; // Impide que se envuelvan
+    gap: 12px; // Espacio entre columnas (reducido para que estén más unidas)
+    
+    .form-column {
+      flex: 1; // Cada columna toma el mismo espacio
+      
+      mat-form-field {
+        width: 100%;
+        margin-bottom: 0; // Elimina el margen inferior
+      }
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 4️⃣ MEJORAS PARA MATERIAL DESIGN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+::ng-deep {
+  // Alineación y espaciado mejorados
+  .mat-mdc-form-field {
+    display: block;
+    margin-bottom: $spacing-sm;
+    
+    // Aumentar espacio para los campos
+    .mat-mdc-text-field-wrapper {
+      background-color: $color-white;
+      padding-top: 0.25rem !important;
+      padding-bottom: 0.25rem !important;
+    }
+    
+    // Mejorar visibilidad del label - TAMAÑO AUMENTADO
+    .mat-mdc-floating-label {
+      font-size: 1.1rem !important; // Aumentado de 1rem
+      font-weight: 500;
+    }
+    
+    // Cambiar color de foco a azul vibrante
+    &.mat-focused {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: $color-blue-vibrant !important;
+      }
+      
+      .mat-mdc-floating-label {
+        color: $color-blue-vibrant !important;
+      }
+    }
+    
+    // Inputs más grandes para mejor accesibilidad
+    .mat-mdc-form-field-infix {
+      min-height: 60px !important; // Aumentado de 56px
+    }
+    
+    // Texto más grande y legible - TAMAÑO AUMENTADO
+    .mat-mdc-select-value,
+    .mat-mdc-input-element {
+      font-size: 1.1rem !important; // Aumentado de 1rem
+    }
+    
+    // Pistas más visibles - TAMAÑO AUMENTADO
+    .mat-mdc-form-field-hint {
+      font-size: 0.9rem; // Aumentado de 0.85rem
+      opacity: 0.8;
+      margin-top: 0.25rem;
+    }
+    
+    // Mejora específica para campos numéricos
+    input[type="number"] {
+      font-size: 1.2rem !important;
+      font-weight: 500;
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 5️⃣ BOTÓN PRINCIPAL
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.save-button {
+  display: block;
+  width: 80%;
+  margin: $spacing-xl auto $spacing-md;
+  background-color: $color-blue-vibrant !important;
+  color: $color-white !important; 
+  font-size: 1.05rem;
+  padding: $spacing-md $spacing-lg;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  min-height: 50px;
+  
+  &:hover {
+    background-color: color.adjust($color-blue-vibrant, $lightness: -8%) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 6️⃣ RESPONSIVIDAD
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@media (max-width: $breakpoint-md) {
+  .quotation-card {
+    margin: 0 $spacing-sm $spacing-lg;
+    padding: $spacing-sm;
+  }
+  
+  .form-section {
+    padding: $spacing-md;
+  }
+  
+  .form-row.two-columns {
+    flex-direction: column;
+    
+    mat-form-field {
+      width: 100%;
+    }
+  }
+  
+  .save-button {
+    width: 100%;
+  }
+}

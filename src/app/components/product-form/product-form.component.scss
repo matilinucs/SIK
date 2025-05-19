@@ -1,0 +1,399 @@
+@use '../../../styles.scss' as *;
+
+.product-form-container {
+  padding: 1rem;
+  height: 100%;
+  overflow-y: auto;
+}
+
+// Cabecera con título y botones de acción
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid $color-gray-light;
+  
+  .page-title {
+    font-size: 1.25rem;
+    margin: 0;
+    color: rgba(0, 0, 0, 0.87);
+    font-weight: 500;
+  }
+  
+  .save-button {
+    background-color: #1976d2;
+    color: white;
+    
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+// Estructura del formulario
+.product-form {
+  background-color: white;
+  border-radius: 8px;
+  max-width: 100%;
+  
+  // Estilos para las pestañas
+  ::ng-deep .mat-mdc-tab-header {
+    background-color: #f5f5f5;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  }
+
+  // Contenido de las pestañas
+  .tab-content {
+    padding: 1.5rem;
+  }
+}
+
+// Campos del formulario
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.form-section {
+  margin-bottom: 2rem;
+}
+
+// Campo de código de producto
+.code-field {
+  flex: 2;
+  min-width: 200px;
+}
+
+// Campo de cantidad
+.quantity-field {
+  flex: 1;
+  min-width: 150px;
+
+  .quantity-input-group {
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 4px;
+    padding: 0.25rem;
+    
+    input {
+      width: 60px;
+      text-align: center;
+      border: none;
+      font-size: 1rem;
+      
+      &:focus {
+        outline: none;
+      }
+      
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+      }
+    }
+  }
+}
+
+// Dimensiones
+.dimensions-container {
+  width: 100%;
+  
+  .dimensions-grid {
+    margin-top: 0.5rem;
+  }
+  
+  .dimension-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr 1fr;
+    }
+    
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .dimension-field {
+    width: 100%;
+  }
+  
+  .unit-field {
+    width: 100%;
+  }
+}
+
+// Descripción
+.description-field {
+  width: 100%;
+  
+  textarea {
+    min-height: 100px;
+  }
+}
+
+// Acordeón de especificaciones
+.specs-accordion {
+  .mat-expansion-panel {
+    margin-bottom: 1rem;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  .mat-expansion-panel-header-title {
+    display: flex;
+    align-items: center;
+    
+    mat-icon {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+// Sección de costos
+.total-container {
+  background-color: #f5f5f5;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+  
+  .total-label {
+    h3 {
+      margin: 0;
+      color: #1976d2;
+    }
+    
+    .calculation-formula {
+      font-size: 0.9rem;
+      color: rgba(0, 0, 0, 0.6);
+      margin: 0.25rem 0 0;
+    }
+  }
+  
+  .total-amount {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+    
+    .currency-symbol {
+      margin-right: 0.25rem;
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+}
+
+// Sección de archivos
+.image-upload-container,
+.plan-upload-container {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+  
+  .upload-area {
+    flex: 1;
+    min-width: 200px;
+    
+    .upload-hints {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: rgba(0, 0, 0, 0.6);
+      
+      p {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        
+        mat-icon {
+          font-size: 1rem;
+          margin-right: 0.25rem;
+        }
+      }
+    }
+  }
+  
+  .image-preview,
+  .plan-preview {
+    flex: 1;
+    min-width: 200px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 4px;
+    padding: 0.5rem;
+    position: relative;
+    
+    img {
+      max-width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+    }
+    
+    button {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+  }
+}
+
+// Características adicionales
+.additional-features {
+  .features-header {
+    margin-bottom: 1rem;
+  }
+  
+  .feature-item {
+    margin-bottom: 1rem;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  .no-features-message {
+    color: rgba(0, 0, 0, 0.6);
+    font-style: italic;
+    margin: 1rem 0;
+  }
+}
+
+// Estilos mejorados para la sección general
+.general-data-section {
+  .form-row {
+    margin-bottom: 1.5rem;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .product-type-field {
+    width: 100%;
+  }
+
+  .styled-label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 0.9rem;
+
+    .label-icon {
+      margin-right: 0.5rem;
+      display: flex;
+      align-items: center;
+
+      mat-icon {
+        font-size: 1.2rem;
+        width: 1.2rem;
+        height: 1.2rem;
+      }
+    }
+  }
+
+  .label-icon {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 0.5rem;
+    
+    mat-icon {
+      font-size: 1.2rem;
+      width: 1.2rem;
+      height: 1.2rem;
+      opacity: 0.7;
+    }
+  }
+
+  // Mejoras en el campo de cantidad
+  .quantity-field {
+    .quantity-input-group {
+      background-color: #f5f5f5;
+      border-radius: 4px;
+      padding: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      
+      input {
+        width: 80px;
+        text-align: center;
+        padding: 0.5rem;
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        border-radius: 4px;
+        background: white;
+        font-size: 1rem;
+        
+        &:focus {
+          outline: none;
+          border-color: #1976d2;
+        }
+      }
+      
+      button {
+        background-color: white;
+        &:hover {
+          background-color: #e0e0e0;
+        }
+      }
+    }
+  }
+
+  // Mejoras en las dimensiones
+  .dimensions-container {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    
+    .dimensions-grid {
+      margin-top: 1rem;
+      
+      .dimension-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        
+        @media (max-width: 768px) {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+        }
+        
+        @media (max-width: 480px) {
+          grid-template-columns: 1fr;
+        }
+      }
+    }
+  }
+
+  // Mejoras en el campo de descripción
+  .description-field {
+    textarea {
+      min-height: 120px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      
+      &::placeholder {
+        color: rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+}

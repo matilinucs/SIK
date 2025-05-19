@@ -1,0 +1,56 @@
+<aside class="sidebar">
+  <div class="logo">
+    <img src="logo-kinetta.png" alt="Logo de Kinetta">
+  </div>
+  <nav class="nav-links">
+    <!-- Categoría: Clientes -->
+    <div class="nav-category">
+      <h3 class="category-title" [class.active]="isActiveCategory('/clientes')">
+        <i class="fas fa-users"></i>
+        <span>Clientes</span>
+      </h3>
+      <div class="category-items">
+        <a routerLink="/clientes/nuevo" routerLinkActive="active">
+          <i class="fas fa-user-plus"></i> <span>Ingresar clientes</span>
+        </a>
+        <a routerLink="/clientes/lista" routerLinkActive="active">
+          <i class="fas fa-list"></i> <span>Lista de clientes</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Categoría: Proyectos -->
+    <div class="nav-category">
+      <h3 class="category-title" [class.active]="isActiveCategory('/proyectos')">
+        <i class="fas fa-project-diagram"></i>
+        <span>Proyectos</span>
+      </h3>
+      <div class="category-items">
+        <a routerLink="/proyectos/nuevo" routerLinkActive="active">
+          <i class="fas fa-plus-circle"></i> <span>Ingresar proyecto</span>
+        </a>
+        <a routerLink="/proyectos/lista" routerLinkActive="active">
+          <i class="fas fa-clipboard-list"></i> <span>Lista de proyectos</span>
+        </a>
+      </div>
+    </div>    <!-- Categoría: Cubicaciones -->
+    <div class="nav-category">
+      <h3 class="category-title" [class.active]="isActiveCategory('/cubicaciones')">
+        <i class="fas fa-file-invoice-dollar"></i>
+        <span>Cubicaciones</span>
+      </h3>
+      <div class="category-items">
+        <a routerLink="/cubicaciones/nueva" routerLinkActive="active">
+          <i class="fas fa-file-medical"></i> <span>Ingresar cubicación</span>
+        </a>
+        <a routerLink="/cubicaciones/lista" routerLinkActive="active">
+          <i class="fas fa-list-alt"></i> <span>Lista de cubicaciones</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+  
+  <div class="footer-links">
+    <a>Copyright © 2025 Kinetta</a>
+  </div>
+</aside>
