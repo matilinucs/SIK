@@ -1,24 +1,22 @@
 <div class="products-table-container" (click)="onTableClick($event)">  <!-- Encabezado -->  <div class="table-header">
     <h2>Productos en Cubicación - Proyecto Santa Marta</h2>
-    <div class="table-actions">
-      <button mat-raised-button color="primary" [matMenuTriggerFor]="exportMenu" class="action-button export-button" matTooltip="Exportar">
-        <mat-icon>file_download</mat-icon> Exportar
-      </button>
-      <mat-menu #exportMenu="matMenu">
-        <button mat-menu-item (click)="exportToExcel()">
-          <mat-icon>description</mat-icon>
-          <span>Exportar Excel</span>
-        </button>
-      </mat-menu>      <button mat-raised-button color="primary" class="action-button add-button" (click)="addProduct.emit()" matTooltip="Agregar producto">
-        <mat-icon>add</mat-icon> Agregar Producto
-      </button>
-    </div>
   </div>
-  
-  <!-- Sección de Filtros -->
-  <div class="filters-container">
-    <button mat-raised-button color="primary" [matMenuTriggerFor]="filterMenu" class="action-button filter-button" matTooltip="Abrir filtros">
+    <!-- Opciones de la tabla -->
+  <div class="table-options-container">    <button mat-stroked-button color="primary" [matMenuTriggerFor]="filterMenu" class="action-button filter-button" matTooltip="Abrir filtros">
       <mat-icon>filter_list</mat-icon> Filtros
+    </button>
+    <button mat-raised-button color="primary" [matMenuTriggerFor]="exportMenu" class="action-button export-button" matTooltip="Exportar">
+      <mat-icon>file_download</mat-icon> Exportar
+    </button>
+    <mat-menu #exportMenu="matMenu">
+      <button mat-menu-item (click)="exportToExcel()">
+        <mat-icon>description</mat-icon>
+        <span>Exportar Excel</span>
+      </button>
+    </mat-menu>
+    <div class="spacer"></div>
+    <button mat-raised-button color="primary" class="action-button add-button" (click)="addProduct.emit()" matTooltip="Agregar producto">
+      <mat-icon>add</mat-icon> Agregar Producto
     </button>
 
     <mat-menu #filterMenu="matMenu" class="custom-filter-menu">
@@ -69,11 +67,11 @@
             <h4 class="filter-group-subtitle">Rango de Presupuesto(USD)</h4>
             <div class="filter-group">
               <mat-form-field appearance="outline" class="filter-field">
-                <mat-label>Mínimo $</mat-label>
+                <mat-label>Mínimo</mat-label>
                 <input matInput type="number" formControlName="minBudget" placeholder="0" min="0">
               </mat-form-field>
               <mat-form-field appearance="outline" class="filter-field">
-                <mat-label>Máximo $</mat-label>
+                <mat-label>Máximo</mat-label>
                 <input matInput type="number" formControlName="maxBudget" placeholder="999999" min="0">
               </mat-form-field>
             </div>
@@ -83,11 +81,11 @@
             <h4 class="filter-group-subtitle">Rango de Superficie(m²)</h4>
             <div class="filter-group">
               <mat-form-field appearance="outline" class="filter-field">
-                <mat-label> Mínimo (m²)</mat-label>
+                <mat-label> Mínimo</mat-label>
                 <input matInput type="number" formControlName="minArea" placeholder="0" min="0">
               </mat-form-field>
               <mat-form-field appearance="outline" class="filter-field">
-                <mat-label>Máximo (m²)</mat-label>
+                <mat-label>Máximo</mat-label>
                 <input matInput type="number" formControlName="maxArea" placeholder="999" min="0">
               </mat-form-field>
             </div>

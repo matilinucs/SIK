@@ -89,77 +89,77 @@
       }
     }
   }
-
   // ────────────────────────────────────────────────────────────────────────────────
-  // FILTROS DE LA TABLA (ADAPTADO DE LIST-QUOTATION)
+  // OPCIONES DE LA TABLA (FILTROS, EXPORTAR, AGREGAR)
   // ────────────────────────────────────────────────────────────────────────────────
-  .filters-container {
+  .table-options-container {
+    display: flex;
+    gap: $spacing-sm;
     padding: $spacing-md;
     margin-bottom: $spacing-md;
-    background-color: $color-background-light; // Un fondo sutil para la sección de filtros
+    background-color: $color-background-light; // Un fondo sutil para la sección de opciones
     border-radius: $border-radius-md;
     border: 1px solid $color-divider;
+    
+    .spacer {
+      flex: 1;  // Elemento flexible que ocupa todo el espacio disponible
+    }
+    
+    // Estilos para los botones de acción
+    .action-button {
+      min-width: auto; // Ajusta el ancho al contenido
+      padding: 0 $spacing-sm;
+      
+      mat-icon {
+        margin-right: $spacing-xs;
+      }      // Botón Filtros
+      &.filter-button {
+        background-color: $color-white !important;
+        color: $color-blue-vibrant !important;
+        border: 1px solid $color-blue-vibrant !important;
+        
+        mat-icon {
+          color: $color-blue-vibrant !important;
+        }
+        
+        &:hover {
+          background-color: rgba($color-blue-vibrant, 0.1) !important;
+        }
+      }
+      
+      // Botón Añadir Producto
+      &.add-button {
+        background-color: $color-primary !important;
+        color: $color-white !important;
+        &:hover {
+          background-color: color.adjust($color-primary, $lightness: -10%) !important;
+        }
+      }
+      
+      // Botón Exportar Excel
+      &.export-button {
+        background-color: $color-white !important;
+        color: $color-success !important;
+        border: 1px solid $color-success !important;
+        
+        mat-icon {
+          color: $color-success !important;
+        }
 
-    .filters-form {
-      display: flex;
+        &:hover {
+          background-color: rgba($color-success, 0.1) !important;
+        }
+      }
+    }
+
+    // Responsive
+    @media screen and (max-width: 768px) {
       flex-wrap: wrap;
-      gap: $spacing-md; // Espacio entre los campos de filtro
-      align-items: flex-start; // Alinea los elementos al inicio si tienen alturas diferentes
-
-      .filter-field {
-        flex: 1 1 200px; // Permite que los campos crezcan y se encojan, base de 200px
-        min-width: 180px; // Ancho mínimo para cada campo
-      }
-
-      .filter-group {
-        display: flex;
-        gap: $spacing-sm;
-        flex: 1 1 400px; // Ocupa más espacio para dos campos
-        min-width: 360px;
-
-        .filter-field {
-          flex: 1 1 auto; // Los campos dentro del grupo se reparten el espacio
-        }
-      }
-
-      .filter-group-with-subtitle {
-        display: flex;
-        flex-direction: column;
-        gap: ($spacing-xs * 0.5); // Espacio muy pequeño entre subtítulo y grupo
-
-        .filter-group-subtitle {
-          font-size: 0.65rem; // Tamaño de fuente pequeño para el subtítulo
-          font-weight: 500;   // Ligeramente más grueso que el texto normal
-          color: $color-gray-dark; // Color de texto secundario
-          margin: 0 0 ($spacing-xs * 0.5) 0; // Margen inferior pequeño, sin margen superior
-          padding-left: $spacing-xs; // Pequeña sangría para alinear con campos si es necesario
-          line-height: 1.2;
-        }
-
-        // Ajustes específicos para el prefijo de dólar en el menú de filtros
-        .filter-field {
-          ::ng-deep .mat-mdc-form-field-prefix {
-            padding-right: 4px !important; // Añade un pequeño espacio a la derecha del signo $
-          }
-          ::ng-deep .mat-mdc-form-field-suffix {
-            padding-left: 4px !important; // Añade un pequeño espacio a la izquierda del signo $
-          }
-        }
-      }
-
-      .button-container {
-        display: flex;
-        align-items: center; // Centra el botón verticalmente con los campos
-        flex-basis: 100%; // Ocupa todo el ancho en una nueva línea si es necesario
-        justify-content: flex-end; // Alinea el botón a la derecha
-        margin-top: $spacing-sm; // Espacio arriba del botón
-
-        .clear-filters-button {
-          // Estilos específicos para el botón de limpiar si son necesarios
-          mat-icon {
-            margin-right: $spacing-xs;
-          }
-        }
+      justify-content: center;
+      
+      .action-button {
+        flex: 1 1 auto;
+        justify-content: center;
       }
     }
   }
@@ -461,9 +461,21 @@
       .header-title {
         text-align: center; // Centra el título en móviles
       }
-      .table-actions {
-        justify-content: center; // Centra los botones de acción
-        flex-wrap: wrap; 
+    }
+    
+    .table-options-container {
+      flex-direction: row; // Mantener los botones en la misma fila
+      justify-content: space-between; // Distribuir el espacio entre los botones
+      flex-wrap: nowrap; // Evitar que los botones se envuelvan
+      
+      .action-button {
+        flex: 1; // Cada botón ocupa el mismo espacio
+        font-size: $font-size-xs; // Texto más pequeño para botones
+        
+        mat-icon {
+          margin-right: $spacing-xs * 0.5; // Menos espacio entre ícono y texto
+          font-size: 18px; // Ícono más pequeño
+        }
       }
     }
 

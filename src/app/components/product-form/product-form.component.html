@@ -1,6 +1,6 @@
 <div class="product-form-container">
   <div class="header-container">
-    <h1 class="page-title">{{ initialProduct ? 'Editar Producto' : 'Agregar Producto' }}</h1>
+    <h2 class="page-title">{{ initialProduct ? 'Editar Producto' : 'Agregar Producto' }}</h2>
     <div class="actions-container">      <!-- Botón Guardar ahora llama a onSubmit() y es de tipo submit -->
       <button mat-raised-button color="primary" type="submit" form="productFormId" class="save-button">
         <mat-icon>save</mat-icon> {{ initialProduct ? 'Guardar Cambios' : 'Guardar Producto' }}
