@@ -18,14 +18,13 @@
 .products-table-container {
   display: flex;
   flex-direction: column;
-  height: 100%; // Ocupa toda la altura de su wrapper padre
-  min-width: 0; // Necesario para flexbox en algunos contextos
-  overflow: hidden; // El scroll principal lo maneja .table-container
-  background-color: $color-white; // Fondo base del componente
-  border-radius: $border-radius-md; // Coincide con los wrappers en create-product
-  // box-shadow: $shadow-dp2; // Sombra si es un componente "card" independiente
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+  background-color: $color-white;
+  border-radius: $border-radius-md;
 
-  // --- Cabecera de la tabla (Título y Acciones) ---
+  // --- Cabecera de la tabla ---
   .table-header {
     display: flex;
     justify-content: space-between;
@@ -94,6 +93,24 @@
     flex: 1;
     min-height: 0;
     position: relative;
+    background-color: $color-white;
+    border: 1px solid $color-gray-mid;
+    border-radius: 8px;
+    padding: $spacing-lg;
+    margin-bottom: $spacing-md;
+    
+    // Decoración visual con línea lateral
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 4px;
+      background-color: $color-blue-vibrant;
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
     
     .table-scroll {
       height: 100%;
@@ -101,64 +118,46 @@
       
       .products-table {
         width: 100%;
-        border-collapse: separate; // Usar separate para border-spacing
-        border-spacing: 0;
+        background-color: $color-white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
 
         // --- Encabezados de la Tabla (mat-header-row) ---
         .mat-mdc-header-row {
-          background-color: $color-white;
-          height: 48px; // Altura estándar para encabezados
-          position: sticky; // Encabezados fijos al hacer scroll vertical
-          top: 0;
-          z-index: 100; // Asegura que esté sobre el contenido de la tabla
-
+          background-color: #f5f5f5;
+          height: 48px;
+          
           .mat-mdc-header-cell {
-            color: $color-gray-dark; // Corregido de $color-text-secondary
+            color: $color-blue-vibrant;
             font-weight: 500;
-            font-size: $font-size-small; // Corregido de $font-size-sm
-            padding: 0 $spacing-md;
-            white-space: nowrap; // Evita que el texto del encabezado se rompa
-            border-bottom: 1px solid $color-divider; // Usar la variable definida
-            background-color: $color-white; // Fondo para celdas de encabezado
-
-            // Sombra sutil para indicar que el contenido se desliza por debajo
-            // box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); // Opcional
-
-            // Alineaciones específicas para encabezados
-            &.mat-column-quantity,
-            &.mat-column-totalArea,
-            &.mat-column-budget {
-              text-align: right;
-              // Para alinear el texto del encabezado con el contenido numérico,
-              // podríamos necesitar un padding-right mayor si los números son grandes.
-            }
-            &.mat-column-actions { // Usar mat-column-actions si se define así en displayedColumns
-              text-align: center;
-            }
+            font-size: 14px;
+            padding: 14px 16px;
+            white-space: nowrap;
+            border-bottom: 2px solid $color-gray-mid;
           }
         }
 
         // --- Filas de Datos (mat-row) ---
         .mat-mdc-row {
-          height: 52px; // Altura estándar para filas de datos
-          transition: background-color 0.2s ease;
+          background-color: $color-white;
+          height: 52px;
 
           &:hover {
-            background-color: $color-gray-light; // Corregido de $color-background-hover
+            background-color: rgba($color-blue-vibrant, 0.05);
           }
 
           .mat-mdc-cell {
-            color: $color-black; // Corregido de $color-text-primary
-            font-size: $font-size-small; // Corregido de $font-size-sm
-            padding: 0 $spacing-md;
-            border-bottom: 1px solid $color-divider; // Corregido de $color-border-light
-            white-space: nowrap; // Evita que el contenido de la celda se rompa
+            padding: 14px 16px;
+            font-size: 14px;
+            color: $color-black;
+            border-bottom: 1px solid $color-divider;
 
             // Celda de Código de Producto
             &.mat-column-productCode {
-              font-family: $font-family-monospace;
-              color: $color-blue; // Corregido de $color-secondary
               font-weight: 500;
+              color: $color-blue-vibrant;
+              width: 100px;
             }
 
             // Celdas numéricas (Cantidad, Área, Presupuesto)
@@ -166,13 +165,28 @@
             &.mat-column-totalArea,
             &.mat-column-budget {
               text-align: right;
-              font-variant-numeric: tabular-nums; // Mejora alineación de números
+              font-family: monospace;
+
+              .unit {
+                color: #666;
+                margin-left: 4px;
+                font-size: 12px;
+              }
             }
-            
+
+            // Celda de Tipo
+            &.mat-column-type {
+              max-width: 200px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
             // Celda de Acciones
             &.mat-column-actions {
+              white-space: nowrap;
+              width: 120px;
               text-align: center;
-              padding: 0 $spacing-xs; // Menor padding para botones de acción
 
               button {
                 margin: 0 $spacing-xxs;
@@ -183,7 +197,7 @@
         
         // --- Mensaje de "No hay datos" ---
         .no-data-cell {
-          padding: $spacing-xl !important; // Mayor padding para el mensaje
+          padding: $spacing-xl;
           text-align: center;
           
           .no-data-message {
@@ -191,7 +205,8 @@
             flex-direction: column;
             align-items: center;
             gap: $spacing-md;
-            color: $color-text-disabled;
+            color: $color-gray-dark;
+            font-style: italic;
             
             mat-icon {
               font-size: 3rem;
@@ -219,7 +234,6 @@
     border-top: 2px solid $color-divider;
     box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
     padding: $spacing-lg;
-    margin-top: auto;
     z-index: 10;
 
     .summary-info {
@@ -243,29 +257,18 @@
           font-size: $font-size-large;
           font-weight: 500;
           color: $color-black;
+          font-family: monospace;
         }
 
-        // Estilo especial para el total del presupuesto (más destacado)
         &.total {
           padding-left: $spacing-lg;
-          position: relative;
+          border-left: 2px solid $color-divider;
           
-          &::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            height: 80%;
-            width: 2px;
-            background-color: $color-divider;
-          }
-
           .label {
-            color: $color-blue;
+            color: $color-blue-vibrant;
           }
           .value {
-            color: $color-blue;
+            color: $color-blue-vibrant;
             font-size: $font-size-xlarge;
             font-weight: 600;
           }
@@ -274,6 +277,7 @@
     }
   }
 
+  // Estilos responsive
   @media screen and (max-width: 768px) {
     .table-content {
       .table-scroll {
