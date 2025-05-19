@@ -151,9 +151,40 @@
         .mat-mdc-row {
           height: 32px; // Reducido de 36px
           min-height: 32px;
+          cursor: pointer; // Add cursor pointer for clickable rows
           
           &:hover {
             background-color: rgba($color-blue-vibrant, 0.05);
+          }
+
+          // Style for pinned rows
+          &.pinned-row {
+            background-color: $color-pastel-yellow; // Assuming $color-pastel-yellow is defined (e.g. #fff7d6)
+            // font-weight: normal; // Explicitly set if needed, or inherit
+
+            &:hover {
+              background-color: color.scale($color-pastel-yellow, $lightness: -5%); // Slightly darker on hover
+            }
+          }
+
+          // Style for selected rows
+          &.selected-row {
+            background-color: rgba($color-primary, 0.1); // Example selection color
+            font-weight: 500; // Example: make text bold
+
+            &:hover {
+              background-color: rgba($color-primary, 0.15); // Darker on hover
+            }
+          }
+
+          // Style for pinned AND selected rows
+          &.pinned-row.selected-row {
+            background-color: color.mix($color-pastel-yellow, rgba($color-primary, 0.2), 70%); // Mix of pinned and selected
+            font-weight: 500; // Ensure selected font-weight applies here too
+            
+            &:hover {
+              background-color: color.mix($color-pastel-yellow, rgba($color-primary, 0.3), 60%); 
+            }
           }
 
           @media screen and (max-width: 768px) {
@@ -166,6 +197,7 @@
         .mat-mdc-header-row {
           height: 36px; // Reducido de 40px
           min-height: 36px;
+          // No cursor pointer for header
           
           @media screen and (max-width: 768px) {
             height: 32px;
@@ -174,24 +206,52 @@
         }
 
         // Ajustes de columnas específicas
+        // Checkbox column styling
+        .mat-column-select {
+          width: 40px; // Compact width for checkbox
+          padding-right: 0 !important; // Remove right padding to keep checkbox left
+        }
+        .selection-checkbox-header-cell,
+        .selection-checkbox-cell {
+          padding-left: $spacing-sm !important; // Align checkbox with other content padding
+          padding-right: 0 !important;
+          text-align: center;
+          .mat-mdc-checkbox {
+            transform: scale(0.85); // Make checkbox slightly smaller
+            margin: 0;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+
+        // Ajustes de columnas específicas
         .mat-column-productCode {
-          width: 80px; // Reducido
+          width: 60px; // Más delgado
         }
 
         .mat-column-type {
-          width: 160px; // Reducido
+          width: 110px; // Más delgado
         }
 
         .mat-column-quantity,
         .mat-column-totalArea,
         .mat-column-budget {
-          width: 100px; // Ancho fijo para columnas numéricas
+          width: 70px; // Más delgado para columnas numéricas
           text-align: right;
         }
 
         .mat-column-actions {
-          width: 90px; // Reducido
+          width: 130px; // Más ancho para más iconos, pero menos padding interno
           text-align: center;
+          button {
+            margin: 0 2px;
+            padding: 0 2px;
+            min-width: 28px;
+            width: 28px;
+            height: 28px;
+          }
         }
       }
     }

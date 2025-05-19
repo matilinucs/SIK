@@ -1,4 +1,4 @@
-<div class="products-table-container">  <!-- Encabezado -->  <div class="table-header">
+<div class="products-table-container" (click)="onTableClick($event)">  <!-- Encabezado -->  <div class="table-header">
     <h2>Productos en Cubicación - Proyecto Santa Marta</h2>
     <div class="table-actions">
       <button mat-raised-button color="primary" [matMenuTriggerFor]="exportMenu" class="action-button export-button" matTooltip="Exportar">
@@ -21,6 +21,25 @@
     <div class="table-scroll">
       <!-- Tabla -->
       <table mat-table [dataSource]="productsDataSource" class="products-table">
+        <!-- Columna de Selección -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef class="selection-checkbox-header-cell">
+            <mat-checkbox (change)="masterToggle()"
+                          [checked]="isAllSelected()"
+                          [indeterminate]="selectedProductIds.size > 0 && !isAllSelected()"
+                          (click)="$event.stopPropagation()"
+                          matTooltip="Seleccionar/Deseleccionar todo">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let product" class="selection-checkbox-cell">
+            <mat-checkbox (change)="onRowCheckboxChange($event, product)"
+                          [checked]="isRowSelected(product)"
+                          (click)="$event.stopPropagation()"
+                          aria-label="Seleccionar producto {{product.productCode}}">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
         <!-- Código de Producto -->
         <ng-container matColumnDef="productCode">
           <th mat-header-cell *matHeaderCellDef>Código</th>
@@ -59,15 +78,44 @@
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="actions-cell">Acciones</th>
           <td mat-cell *matCellDef="let product" class="actions-cell">
-            <button mat-icon-button color="primary" (click)="onEdit(product)" matTooltip="Editar">
+            <!-- Botón fijar (alfiler) -->
+            <button mat-icon-button color="accent" (click)="onPin(product, $event)" matTooltip="Fijar producto">
+              <mat-icon>push_pin</mat-icon>
+            </button>
+            <!-- Botón editar -->
+            <button mat-icon-button color="primary" (click)="onEdit(product, $event)" matTooltip="Editar">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="onDelete(product)" matTooltip="Eliminar">
+            <!-- Botón eliminar -->
+            <button mat-icon-button color="warn" (click)="onDelete(product, $event)" matTooltip="Eliminar">
               <mat-icon>delete</mat-icon>
             </button>
+            <!-- Menú de acciones (3 puntitos) -->
+            <button mat-icon-button [matMenuTriggerFor]="moreMenu" (click)="$event.stopPropagation()" matTooltip="Más acciones">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #moreMenu="matMenu">
+              <button mat-menu-item (click)="onDuplicate(product, $event)">
+                <mat-icon>content_copy</mat-icon>
+                <span>Duplicar</span>
+              </button>
+              <button mat-menu-item (click)="onRepeat(product, $event)">
+                <mat-icon>repeat</mat-icon>
+                <span>Repetir fila</span>
+              </button>
+              <button mat-menu-item (click)="onCopy(product, $event)">
+                <mat-icon>file_copy</mat-icon>
+                <span>Copiar</span>
+              </button>
+            </mat-menu>
           </td>
-        </ng-container>      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+          [ngClass]="{'pinned-row': pinnedProductIds.has(row.id), 'selected-row': isRowSelected(row)}" 
+          (click)="onRowClick(row)"> <!-- Added onRowClick and selected-row class -->
+      </tr>
 
         <!-- Mensaje cuando no hay productos -->
         <tr class="mat-row" *matNoDataRow>
