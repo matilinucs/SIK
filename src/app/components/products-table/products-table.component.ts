@@ -63,7 +63,7 @@ export class ProductsTableComponent {
 
     // Suscribirse a los cambios en el formulario
     this.filterForm.valueChanges.subscribe(() => {
-      this.applyFilters();
+      this.applyFilters(); // Asegúrate de que applyFilters se llama aquí
     });
   }
   
@@ -421,7 +421,7 @@ export class ProductsTableComponent {
       minArea: null,
       maxArea: null
     });
-    this.applyFilters();
+    // applyFilters() se llamará automáticamente debido a la suscripción valueChanges
   }
 
   /**

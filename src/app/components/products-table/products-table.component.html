@@ -17,89 +17,87 @@
   
   <!-- Sección de Filtros -->
   <div class="filters-container">
-    <form [formGroup]="filterForm" class="filters-form">
-      <!-- Búsqueda general -->
-      <mat-form-field appearance="outline" class="filter-field">
-        <mat-label>Buscar producto</mat-label>
-        <input matInput formControlName="search" 
-               placeholder="Buscar por código, tipo, material...">
-        <mat-icon matSuffix>search</mat-icon>
-      </mat-form-field>
+    <button mat-raised-button color="primary" [matMenuTriggerFor]="filterMenu" class="action-button filter-button" matTooltip="Abrir filtros">
+      <mat-icon>filter_list</mat-icon> Filtros
+    </button>
 
-      <!-- Filtro por tipo de ventana -->
-      <mat-form-field appearance="outline" class="filter-field">
-        <mat-label>Tipo de Ventana</mat-label>
-        <mat-select formControlName="type">
-          <mat-option [value]="null">Todos</mat-option>
-          <mat-option *ngFor="let type of productTypes" [value]="type">
-            {{type}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+    <mat-menu #filterMenu="matMenu" class="custom-filter-menu">
+      <div (click)="$event.stopPropagation()" class="filter-menu-content">
+        <form [formGroup]="filterForm" class="filters-form-dropdown">
+          
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Buscar producto</mat-label>
+            <input matInput formControlName="search" placeholder="Código, tipo, material...">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+    
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Tipo de Ventana</mat-label>
+            <mat-select formControlName="type">
+              <mat-option [value]="null">Todos</mat-option>
+              <mat-option *ngFor="let type of productTypes" [value]="type">
+                {{type}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+    
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Material</mat-label>
+            <mat-select formControlName="materialType">
+              <mat-option [value]="null">Todos</mat-option>
+              <mat-option *ngFor="let material of productMaterials" [value]="material">
+                {{material}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
 
-      <!-- Filtro por tipo de material -->
-      <mat-form-field appearance="outline" class="filter-field">
-        <mat-label>Material</mat-label>
-        <mat-select formControlName="materialType">
-          <mat-option [value]="null">Todos</mat-option>
-          <mat-option *ngFor="let material of productMaterials" [value]="material">
-            {{material}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+          <div class="filter-group">
+            <mat-form-field appearance="outline" class="filter-field">
+              <mat-label>Cantidad Mín.</mat-label>
+              <input matInput type="number" formControlName="minQuantity" placeholder="0" min="0">
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="filter-field">
+              <mat-label>Cantidad Máx.</mat-label>
+              <input matInput type="number" formControlName="maxQuantity" placeholder="999" min="0">
+            </mat-form-field>
+          </div>
 
-      <!-- Filtros de rango de cantidad -->
-      <div class="filter-group">
-        <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Cantidad Mín.</mat-label>
-          <input matInput type="number" formControlName="minQuantity" 
-                 placeholder="0" min="0">
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Cantidad Máx.</mat-label>
-          <input matInput type="number" formControlName="maxQuantity" 
-                 placeholder="999" min="0">
-        </mat-form-field>
+          <div class="filter-group">
+            <mat-form-field appearance="outline" class="filter-field">
+              <mat-label>Presupuesto Mín.</mat-label>
+              <input matInput type="number" formControlName="minBudget" placeholder="0" min="0">
+              <span matPrefix>$&nbsp;</span>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="filter-field">
+              <mat-label>Presupuesto Máx.</mat-label>
+              <input matInput type="number" formControlName="maxBudget" placeholder="999999" min="0">
+              <span matPrefix>$&nbsp;</span>
+            </mat-form-field>
+          </div>
+
+          <div class="filter-group">
+            <mat-form-field appearance="outline" class="filter-field">
+              <mat-label>Superficie Mín. (m²)</mat-label>
+              <input matInput type="number" formControlName="minArea" placeholder="0" min="0">
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="filter-field">
+              <mat-label>Superficie Máx. (m²)</mat-label>
+              <input matInput type="number" formControlName="maxArea" placeholder="999" min="0">
+            </mat-form-field>
+          </div>
+          
+          <div class="filter-actions-dropdown">
+            <button mat-stroked-button color="warn" (click)="clearFilters()" class="clear-filters-button-dropdown">
+              <mat-icon>clear_all</mat-icon>
+              Limpiar Filtros
+            </button>
+            <button mat-flat-button color="primary" (click)="filterMenu.closed.emit()" class="apply-filters-button-dropdown">
+              Aplicar
+            </button>
+          </div>
+        </form>
       </div>
-
-      <!-- Filtros de rango de presupuesto -->
-      <div class="filter-group">
-        <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Presupuesto Mín.</mat-label>
-          <input matInput type="number" formControlName="minBudget" 
-                 placeholder="0" min="0">
-          <span matPrefix>$&nbsp;</span>
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Presupuesto Máx.</mat-label>
-          <input matInput type="number" formControlName="maxBudget" 
-                 placeholder="999999" min="0">
-          <span matPrefix>$&nbsp;</span>
-        </mat-form-field>
-      </div>
-
-      <!-- Filtros de rango de superficie -->
-      <div class="filter-group">
-        <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Superficie Mín. (m²)</mat-label>
-          <input matInput type="number" formControlName="minArea" 
-                 placeholder="0" min="0">
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Superficie Máx. (m²)</mat-label>
-          <input matInput type="number" formControlName="maxArea" 
-                 placeholder="999" min="0">
-        </mat-form-field>
-      </div>
-
-      <!-- Botón para limpiar filtros -->
-      <div class="button-container">
-        <button mat-stroked-button color="warn" (click)="clearFilters()" class="clear-filters-button">
-          <mat-icon>clear_all</mat-icon>
-          Limpiar Filtros
-        </button>
-      </div>
-    </form>
+    </mat-menu>
   </div>
 
   <!-- Contenedor principal con scroll -->

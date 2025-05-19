@@ -502,3 +502,58 @@
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // FIN DE ESTILOS PRODUCTS TABLE COMPONENT
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// ────────────────────────────────────────────────────────────────────────────────
+// ESTILOS PARA EL MENÚ DESPLEGABLE DE FILTROS (MAT-MENU)
+// ────────────────────────────────────────────────────────────────────────────────
+.custom-filter-menu {
+  .mat-mdc-menu-content {
+    padding: 0 !important; // Eliminar padding por defecto del contenido del menú
+  }
+}
+
+.filter-menu-content {
+  padding: $spacing-md;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+
+  .filters-form-dropdown {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+
+    .filter-field {
+      width: 100%;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: $spacing-sm;
+      .filter-field {
+        flex: 1;
+      }
+    }
+
+    .filter-actions-dropdown {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: $spacing-sm;
+
+      .clear-filters-button-dropdown {
+        mat-icon {
+          margin-right: $spacing-xs;
+        }
+      }
+    }
+  }
+}
+
+// ELIMINAR ESTILOS ANTERIORES DE .swal2-popup-filters y sus hijos
+// YA QUE NO SE UTILIZARÁ SWEETALERT PARA LOS FILTROS
+/*
+.swal2-popup-filters { ... }
+// ... todos los estilos relacionados con swal2-popup-filters hasta su cierre ...
+*/
