@@ -137,6 +137,22 @@
 //   // Estilos adicionales si el formulario necesita un comportamiento diferente
 // }
 
+.header-container {
+  .page-title {
+    font-size: $font-size-large;  // Mismo tamaño
+    font-weight: 500;              // Mismo peso
+    color: $color-black;           // Mismo color
+  }
+}
+
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // FIN DE ESTILOS CREATE PRODUCT COMPONENT
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+.products-table-wrapper {
+  flex: 1.2; // La tabla ocupa un 20% más de ancho que el formulario
+}
+
+.product-form-wrapper {
+  flex: 0.8; // El formulario ocupa menos ancho que la tabla
+}

@@ -65,11 +65,17 @@
         }
         
         // Botón Exportar Excel
-        &.export-excel-button {
-          background-color: $color-success !important;
-          color: $color-white !important;
+        &.export-button {
+          background-color: $color-white !important;
+          color: $color-success !important;
+          border: 1px solid $color-success !important;
+          
+          mat-icon {
+            color: $color-success !important;
+          }
+
           &:hover {
-            background-color: color.adjust($color-success, $lightness: -10%) !important;
+            background-color: rgba($color-success, 0.1) !important;
           }
         }
         // Considerar si el botón PDF se mantiene o elimina
@@ -91,13 +97,17 @@
   // ────────────────────────────────────────────────────────────────────────────────
   .table-content {
     flex: 1;
-    min-height: 0;
+    overflow: scroll; // Mostrar scrollbars vertical y horizontal normales
+    display: flex;
+    flex-direction: column;
     position: relative;
     background-color: $color-white;
     border: 1px solid $color-gray-mid;
     border-radius: 8px;
-    padding: $spacing-lg;
+    padding: $spacing-xs;
     margin-bottom: $spacing-md;
+    width: 100%;
+    max-width: 100%;
     
     // Decoración visual con línea lateral
     &::before {
@@ -113,7 +123,7 @@
     }
     
     .table-scroll {
-      height: 100%;
+      flex: 1;
       overflow: auto;
       
       .products-table {
@@ -122,102 +132,66 @@
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         overflow: hidden;
+        min-width: 100%; // Asegura que la tabla ocupe todo el ancho
+        table-layout: fixed; // Mejora el rendimiento y control del ancho
 
-        // --- Encabezados de la Tabla (mat-header-row) ---
-        .mat-mdc-header-row {
-          background-color: #f5f5f5;
-          height: 48px;
-          
-          .mat-mdc-header-cell {
-            color: $color-blue-vibrant;
-            font-weight: 500;
-            font-size: 14px;
-            padding: 14px 16px;
-            white-space: nowrap;
-            border-bottom: 2px solid $color-gray-mid;
-          }
+        // Estilos compartidos para celdas de encabezado y datos
+        .mat-mdc-header-cell,
+        .mat-mdc-cell {
+          padding: 4px 8px; // Reducido aún más
+          font-size: 12px; // Reducido
+          border-bottom: 1px solid $color-divider;
+          line-height: 1.1; // Más compacto
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
-        // --- Filas de Datos (mat-row) ---
+        // Filas de la tabla más compactas
         .mat-mdc-row {
-          background-color: $color-white;
-          height: 52px;
-
+          height: 32px; // Reducido de 36px
+          min-height: 32px;
+          
           &:hover {
             background-color: rgba($color-blue-vibrant, 0.05);
           }
 
-          .mat-mdc-cell {
-            padding: 14px 16px;
-            font-size: 14px;
-            color: $color-black;
-            border-bottom: 1px solid $color-divider;
-
-            // Celda de Código de Producto
-            &.mat-column-productCode {
-              font-weight: 500;
-              color: $color-blue-vibrant;
-              width: 100px;
-            }
-
-            // Celdas numéricas (Cantidad, Área, Presupuesto)
-            &.mat-column-quantity,
-            &.mat-column-totalArea,
-            &.mat-column-budget {
-              text-align: right;
-              font-family: monospace;
-
-              .unit {
-                color: #666;
-                margin-left: 4px;
-                font-size: 12px;
-              }
-            }
-
-            // Celda de Tipo
-            &.mat-column-type {
-              max-width: 200px;
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-            }
-
-            // Celda de Acciones
-            &.mat-column-actions {
-              white-space: nowrap;
-              width: 120px;
-              text-align: center;
-
-              button {
-                margin: 0 $spacing-xxs;
-              }
-            }
+          @media screen and (max-width: 768px) {
+            height: 28px; // Aún más compacto en móviles
+            min-height: 28px;
           }
         }
-        
-        // --- Mensaje de "No hay datos" ---
-        .no-data-cell {
-          padding: $spacing-xl;
-          text-align: center;
+
+        // Header más compacto
+        .mat-mdc-header-row {
+          height: 36px; // Reducido de 40px
+          min-height: 36px;
           
-          .no-data-message {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: $spacing-md;
-            color: $color-gray-dark;
-            font-style: italic;
-            
-            mat-icon {
-              font-size: 3rem;
-              width: 3rem;
-              height: 3rem;
-            }
-            p {
-              margin: 0;
-              font-size: $font-size-md;
-            }
+          @media screen and (max-width: 768px) {
+            height: 32px;
+            min-height: 32px;
           }
+        }
+
+        // Ajustes de columnas específicas
+        .mat-column-productCode {
+          width: 80px; // Reducido
+        }
+
+        .mat-column-type {
+          width: 160px; // Reducido
+        }
+
+        .mat-column-quantity,
+        .mat-column-totalArea,
+        .mat-column-budget {
+          width: 100px; // Ancho fijo para columnas numéricas
+          text-align: right;
+        }
+
+        .mat-column-actions {
+          width: 90px; // Reducido
+          text-align: center;
         }
       }
     }
@@ -229,17 +203,20 @@
   // Muestra resúmenes como totales de cantidad, área y presupuesto.
   // ────────────────────────────────────────────────────────────────────────────────
   .table-footer {
-    flex-shrink: 0;
+    position: sticky;
+    bottom: $spacing-xl; // Aún más arriba para vista dividida
+    left: 0;
+    right: 0;
     background-color: $color-white;
-    border-top: 2px solid $color-divider;
-    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
-    padding: $spacing-lg;
+    border-top: 1px solid $color-divider;
+    box-shadow: 0 -2px 4px -1px rgba(0, 0, 0, 0.1);
+    padding: $spacing-sm $spacing-md;
     z-index: 10;
 
     .summary-info {
       display: flex;
       justify-content: flex-end;
-      gap: $spacing-xl;
+      gap: $spacing-lg;
       align-items: center;
 
       .summary-item {
@@ -248,29 +225,53 @@
         gap: $spacing-xs;
 
         .label {
-          font-size: $font-size-md;
+          font-size: 0.9rem; // Reducido
           color: $color-gray-dark;
           font-weight: 500;
         }
 
         .value {
-          font-size: $font-size-large;
+          font-size: 1rem; // Reducido
           font-weight: 500;
           color: $color-black;
           font-family: monospace;
         }
 
         &.total {
-          padding-left: $spacing-lg;
-          border-left: 2px solid $color-divider;
+          padding-left: $spacing-md;
+          border-left: 1px solid $color-divider;
           
           .label {
             color: $color-blue-vibrant;
           }
           .value {
             color: $color-blue-vibrant;
-            font-size: $font-size-xlarge;
+            font-size: 1.1rem; // Reducido
             font-weight: 600;
+          }
+        }
+      }
+    }
+
+    // Responsive
+    @media screen and (max-width: 768px) {
+      padding: $spacing-xs;
+
+      .summary-info {
+        flex-wrap: wrap;
+        gap: $spacing-sm;
+        justify-content: space-between;
+
+        .summary-item {
+          font-size: 0.9rem;
+          
+          &.total {
+            width: 100%;
+            margin-top: $spacing-xs;
+            padding-top: $spacing-xs;
+            padding-left: 0;
+            border-left: none;
+            border-top: 1px solid $color-divider;
           }
         }
       }
@@ -374,6 +375,13 @@
           }
         }
       }
+    }
+  }
+
+  // Ajuste adicional en pantallas pequeñas
+  @media screen and (max-width: 768px) {
+    .table-footer {
+      bottom: $spacing-lg; // Ajustado para móvil
     }
   }
 }

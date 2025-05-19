@@ -1,14 +1,9 @@
 <div class="product-form-container">
   <div class="header-container">
     <h1 class="page-title">{{ initialProduct ? 'Editar Producto' : 'Agregar Producto' }}</h1>
-    <div class="actions-container">
-      <!-- Botón Guardar ahora llama a onSubmit() y es de tipo submit -->
+    <div class="actions-container">      <!-- Botón Guardar ahora llama a onSubmit() y es de tipo submit -->
       <button mat-raised-button color="primary" type="submit" form="productFormId" class="save-button">
         <mat-icon>save</mat-icon> {{ initialProduct ? 'Guardar Cambios' : 'Guardar Producto' }}
-      </button>
-      <!-- Botón Cancelar (opcional, si quieres uno en el encabezado) -->
-      <button mat-stroked-button type="button" (click)="onCancel()" class="cancel-button">
-        <mat-icon>cancel</mat-icon> Cancelar
       </button>
     </div>
   </div>
@@ -39,7 +34,7 @@
               </mat-form-field>
             </div>
 
-            <!-- Código y Cantidad -->
+            <!-- Código del Producto -->
             <div class="form-row">
               <mat-form-field appearance="outline" class="code-field">
                 <mat-label>
@@ -54,7 +49,10 @@
                   Formato inválido. Debe ser WIN-YYYY-XXX
                 </mat-error>
               </mat-form-field>
+            </div>
 
+            <!-- Cantidad -->
+            <div class="form-row">
               <div class="quantity-field">
                 <mat-label class="styled-label">
                   <span class="label-icon"><mat-icon>format_list_numbered</mat-icon></span>
@@ -77,14 +75,15 @@
               <div formGroupName="dimensions" class="dimensions-container">
                 <mat-label class="styled-label">
                   <span class="label-icon"><mat-icon>straighten</mat-icon></span>
-                  <span class="label-text">Dimensiones</span>
+                  <span class="label-text">Dimensiones (metros)</span>
                 </mat-label>
                 
                 <div class="dimensions-grid">
                   <div class="dimension-row">
                     <mat-form-field appearance="outline">
                       <mat-label>Ancho</mat-label>
-                      <input matInput type="number" formControlName="width" min="0.001">
+                      <input matInput type="number" formControlName="width" min="0.001" step="0.01" placeholder="0.00">
+                      <span matSuffix>m</span>
                       <mat-error *ngIf="productForm.get('generalData.dimensions.width')?.hasError('required')">
                         El ancho es obligatorio
                       </mat-error>
@@ -92,7 +91,8 @@
 
                     <mat-form-field appearance="outline">
                       <mat-label>Alto</mat-label>
-                      <input matInput type="number" formControlName="height" min="0.001">
+                      <input matInput type="number" formControlName="height" min="0.001" step="0.01" placeholder="0.00">
+                      <span matSuffix>m</span>
                       <mat-error *ngIf="productForm.get('generalData.dimensions.height')?.hasError('required')">
                         El alto es obligatorio
                       </mat-error>
@@ -100,22 +100,15 @@
 
                     <mat-form-field appearance="outline">
                       <mat-label>Profundidad</mat-label>
-                      <input matInput type="number" formControlName="length" min="0.001">
+                      <input matInput type="number" formControlName="length" min="0.001" step="0.01" placeholder="0.00">
+                      <span matSuffix>m</span>
                       <mat-error *ngIf="productForm.get('generalData.dimensions.length')?.hasError('required')">
                         La profundidad es obligatoria
                       </mat-error>
                     </mat-form-field>
-
-                    <mat-form-field appearance="outline">
-                      <mat-label>Unidad</mat-label>
-                      <mat-select formControlName="unit">
-                        <mat-option *ngFor="let unit of measurementUnits" [value]="unit.value">
-                          {{unit.label}}
-                        </mat-option>
-                      </mat-select>
-                    </mat-form-field>
                   </div>
                 </div>
+                <mat-hint>Use punto (.) como separador decimal</mat-hint>
               </div>
             </div>
 
@@ -423,47 +416,7 @@
             </div>
 
             <mat-divider class="section-divider"></mat-divider>
-            
-            <!-- Subida de plano técnico -->
-            <h3 class="section-title">
-              <mat-icon>architecture</mat-icon>
-              Plano Técnico
-            </h3>
-            <div class="form-row plan-upload-container">
-              <div class="upload-area">
-                <input #planInput type="file" hidden (change)="onPlanSelected($event)" accept="application/pdf,image/jpeg,.dwg">
-                <button type="button" mat-raised-button color="primary" (click)="planInput.click()">
-                  <mat-icon>upload_file</mat-icon> Subir Plano Técnico
-                </button>
-                <div class="upload-hints">
-                  <p><mat-icon>info</mat-icon> Formatos: PDF/DWG/JPEG (máx. 10MB)</p>
-                </div>
-              </div>
-              
-              <div class="plan-preview" *ngIf="planPreview">
-                <div class="preview-container" [ngClass]="{'pdf-preview': planPreview.includes('application/pdf')}">
-                  <img *ngIf="!planPreview.includes('application/pdf')" [src]="planPreview" alt="Vista previa del plano">
-                  <div *ngIf="planPreview.includes('application/pdf')" class="pdf-icon">
-                    <mat-icon>picture_as_pdf</mat-icon>
-                    <span>Archivo PDF</span>
-                  </div>
-                  <div *ngIf="planPreview.includes('dwg')" class="dwg-icon">
-                    <mat-icon>architecture</mat-icon>
-                    <span>Archivo DWG</span>
-                  </div>
-                </div>
-                <div class="plan-actions">
-                  <button mat-icon-button color="primary" matTooltip="Ampliar">
-                    <mat-icon>zoom_in</mat-icon>
-                  </button>
-                  <button mat-icon-button color="warn" (click)="planPreview = null" matTooltip="Eliminar">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-            <mat-divider class="section-divider"></mat-divider>
+  
             
             <!-- Aprobación del cliente -->
             <div class="approval-container">

@@ -51,7 +51,30 @@
 
   // Contenido de las pestañas
   .tab-content {
-    padding: 1.5rem;
+    padding: 0; // Removemos el padding aquí para que lo maneje form-section
+  }
+}
+
+// Estilos mejorados para todas las secciones del formulario
+.form-section {
+  background-color: $color-white;
+  border: 1px solid $color-gray-mid;
+  border-radius: 8px;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-xl;
+  position: relative;
+  
+  // Línea decorativa azul
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 4px;
+    background-color: $color-blue-vibrant;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
   }
 }
 
@@ -84,24 +107,34 @@
   .quantity-input-group {
     display: flex;
     align-items: center;
+    gap: $spacing-xs;
+    padding: 0.5rem;
     border: 1px solid rgba(0, 0, 0, 0.12);
     border-radius: 4px;
-    padding: 0.25rem;
-    
+    background-color: $color-white;
+
     input {
-      width: 60px;
+      width: 80px;
       text-align: center;
       border: none;
       font-size: 1rem;
-      
-      &:focus {
-        outline: none;
-      }
-      
+      padding: 0.5rem;
+      margin: 0 $spacing-xs;
+      -moz-appearance: textfield;
+
       &::-webkit-outer-spin-button,
       &::-webkit-inner-spin-button {
         -webkit-appearance: none;
+        margin: 0;
       }
+
+      &:focus {
+        outline: none;
+      }
+    }
+
+    button {
+      color: $color-blue-vibrant;
     }
   }
 }
@@ -109,31 +142,56 @@
 // Dimensiones
 .dimensions-container {
   width: 100%;
+  margin-bottom: $spacing-lg;
+
+  .styled-label {
+    display: flex;
+    align-items: center;
+    gap: $spacing-xs;
+    margin-bottom: $spacing-md;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 1rem;
+
+    .label-icon {
+      display: flex;
+      align-items: center;
+      
+      mat-icon {
+        color: $color-blue-vibrant;
+        margin-right: $spacing-xs;
+      }
+    }
+  }
   
   .dimensions-grid {
     margin-top: 0.5rem;
-  }
-  
-  .dimension-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    
-    @media (max-width: 768px) {
-      grid-template-columns: 1fr 1fr;
+
+    .dimension-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: $spacing-md;
+      align-items: start;
+
+      mat-form-field {
+        width: 100%;
+
+        input {
+          text-align: right;
+        }
+
+        [matSuffix] {
+          margin-left: $spacing-xs;
+          color: rgba(0, 0, 0, 0.6);
+        }
+      }
     }
-    
-    @media (max-width: 480px) {
-      grid-template-columns: 1fr;
-    }
   }
   
-  .dimension-field {
-    width: 100%;
-  }
-  
-  .unit-field {
-    width: 100%;
+  mat-hint {
+    display: block;
+    margin-top: $spacing-xs;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 0.85rem;
   }
 }
 
@@ -369,16 +427,21 @@
       
       .dimension-row {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1rem;
-        
-        @media (max-width: 768px) {
-          grid-template-columns: repeat(2, 1fr);
-          gap: 1rem;
-        }
-        
-        @media (max-width: 480px) {
-          grid-template-columns: 1fr;
+        grid-template-columns: repeat(3, 1fr);
+        gap: $spacing-md;
+        align-items: start;
+
+        mat-form-field {
+          width: 100%;
+
+          input {
+            text-align: right;
+          }
+
+          [matSuffix] {
+            margin-left: $spacing-xs;
+            color: rgba(0, 0, 0, 0.6);
+          }
         }
       }
     }
@@ -395,5 +458,44 @@
         color: rgba(0, 0, 0, 0.4);
       }
     }
+  }
+}
+
+.accordion-content {
+  padding: $spacing-lg;
+  background-color: $color-white;
+  border-radius: 8px;
+  margin-bottom: $spacing-lg;
+  position: relative;
+  border: 1px solid $color-gray-mid;
+  
+  // Línea decorativa azul
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 4px;
+    background-color: $color-blue-vibrant;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
+
+  // Título de la sección
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 500;
+    margin-top: 0;
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-sm;
+    border-bottom: 1px solid $color-gray-mid;
+    color: $color-black;
+    padding-left: $spacing-md; // Espacio para la línea azul
+  }
+
+  // Contenido interno
+  .form-row {
+    margin-left: $spacing-md; // Espacio para la línea azul
   }
 }
