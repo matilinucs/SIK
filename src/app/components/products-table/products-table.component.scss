@@ -243,11 +243,11 @@
 
           // Style for selected rows
           &.selected-row {
-            background-color: rgba($color-primary, 0.1); // Example selection color
-            font-weight: 500; // Example: make text bold
+            background-color: rgba($color-primary, 0.1); 
+            font-weight: 500;
 
             &:hover {
-              background-color: rgba($color-primary, 0.15); // Darker on hover
+              background-color: rgba($color-primary, 0.15);
             }
           }
 
@@ -610,3 +610,44 @@
 .swal2-popup-filters { ... }
 // ... todos los estilos relacionados con swal2-popup-filters hasta su cierre ...
 */
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// NOTIFICACIÓN DE COPIA AL PORTAPAPELES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Estilos para la notificación que aparece al copiar productos al portapapeles
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.copy-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  padding: $spacing-md;
+  background-color: $color-black;
+  color: $color-white;
+  border-radius: $border-radius-md;
+  box-shadow: 0 3px 4px -2px rgba(0,0,0,.2), 0 5px 8px 0 rgba(0,0,0,.14), 0 1px 12px 0 rgba(0,0,0,.12);
+  animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+  
+  .notification-content {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    
+    mat-icon {
+      color: $color-success;
+    }
+      span {
+      font-size: $font-size-md;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(20px); }
+}

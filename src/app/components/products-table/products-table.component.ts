@@ -128,6 +128,21 @@ export class ProductsTableComponent {
   selectedProductIds: Set<string> = new Set(); // Added for selection
 
   /**
+   * Controla la visibilidad del mensaje de notificación cuando se copian filas.
+   */
+  showCopyNotification: boolean = false;
+
+  /**
+   * Mensaje de notificación para mostrar al copiar filas.
+   */
+  copyNotificationMessage: string = '';
+
+  /**
+   * Temporizador para ocultar automáticamente la notificación.
+   */
+  private notificationTimeout: any;
+
+  /**
    * Fuente de datos para MatTable. Se inicializa con un array vacío.
    */
   productsDataSource = new MatTableDataSource<Product3>([]);
@@ -513,5 +528,134 @@ export class ProductsTableComponent {
       return 0;
     });
     this.productsDataSource.data = sortedData;
+  }
+  /**
+   * Manejador de eventos de teclado para capturar Ctrl+C y Ctrl+V
+   * Cuando se detecta Ctrl+C, copia las filas seleccionadas al portapapeles
+   * Cuando se detecta Ctrl+V, intenta pegar datos del portapapeles
+   */
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent): void {
+    if (event.ctrlKey && event.key === 'c') {
+      event.preventDefault();
+      this.copySelectedRows();
+    } else if (event.ctrlKey && event.key === 'v') {
+      event.preventDefault();
+      this.pasteFromClipboard();
+    }
+  }
+
+  /**
+   * Copia las filas de productos seleccionadas al portapapeles
+   * Las formatea en un formato de tabla con separadores de tabulación
+   * Muestra una notificación al usuario cuando se completa la operación
+   */
+  copySelectedRows(): void {
+    if (this.selectedProductIds.size === 0) {
+      return; // No hacer nada si no hay filas seleccionadas
+    }
+
+    // Filtrar los productos seleccionados
+    const selectedProducts = this._products.filter(product => this.selectedProductIds.has(product.id));
+
+    // Crear encabezados de columna
+    const headers = [
+      'Código', 
+      'Tipo', 
+      'Cantidad', 
+      'Área Total', 
+      'Presupuesto', 
+      'Descripción',
+      'Material',
+      'Perfil',
+      'Color',
+      'Ancho',
+      'Alto',
+      'Profundidad'
+    ].join('\t');
+
+    // Mapear los productos a un formato de texto tabulado
+    const rows = selectedProducts.map(product => {
+      return [
+        product.productCode,
+        product.type,
+        product.quantity,
+        product.totalArea,
+        product.budget,
+        product.description,
+        product.material?.type || '',
+        product.material?.profile || '',
+        product.material?.color || '',
+        product.dimensions?.width || '',
+        product.dimensions?.height || '',
+        product.dimensions?.length || ''
+      ].join('\t');
+    });
+
+    // Unir los encabezados y filas con saltos de línea
+    const textToCopy = [headers, ...rows].join('\n');
+
+    // Copiar al portapapeles
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      // Mostrar notificación
+      this.showCopyNotification = true;
+      this.copyNotificationMessage = `${this.selectedProductIds.size} producto(s) copiado(s) al portapapeles`;
+      
+      // Ocultar la notificación después de 3 segundos
+      if (this.notificationTimeout) {
+        clearTimeout(this.notificationTimeout);
+      }
+      this.notificationTimeout = setTimeout(() => {
+        this.showCopyNotification = false;
+      }, 3000);
+    }).catch(err => {
+      console.error('Error al copiar al portapapeles:', err);
+    });
+  }
+
+  /**
+   * Intenta pegar datos desde el portapapeles
+   * Muestra una notificación al usuario cuando se completa la operación
+   */
+  pasteFromClipboard(): void {
+    navigator.clipboard.readText().then(clipboardText => {
+      if (!clipboardText) {
+        return; // No hay contenido en el portapapeles
+      }
+      
+      // Mostrar notificación de que se ha pegado el contenido
+      this.showCopyNotification = true;
+      this.copyNotificationMessage = 'Contenido pegado del portapapeles';
+      
+      // Aquí puedes implementar la lógica para procesar los datos pegados
+      console.log('Contenido pegado:', clipboardText);
+      
+      // Por ejemplo, podrías intentar convertir el texto en filas de producto
+      // dependiendo del formato esperado
+      // const rows = clipboardText.split('\n');
+      // processClipboardData(rows);
+      
+      // Ocultar la notificación después de 3 segundos
+      if (this.notificationTimeout) {
+        clearTimeout(this.notificationTimeout);
+      }
+      this.notificationTimeout = setTimeout(() => {
+        this.showCopyNotification = false;
+      }, 3000);
+    }).catch(err => {
+      console.error('Error al acceder al portapapeles:', err);
+      
+      // Mostrar notificación de error
+      this.showCopyNotification = true;
+      this.copyNotificationMessage = 'Error al acceder al portapapeles';
+      
+      // Ocultar la notificación de error después de 3 segundos
+      if (this.notificationTimeout) {
+        clearTimeout(this.notificationTimeout);
+      }
+      this.notificationTimeout = setTimeout(() => {
+        this.showCopyNotification = false;
+      }, 3000);
+    });
   }
 }

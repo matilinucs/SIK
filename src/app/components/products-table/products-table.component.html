@@ -236,4 +236,12 @@
       </div>
     </div>
   </div>
+
+  <!-- Notificación de copia al portapapeles -->
+  <div class="copy-notification" *ngIf="showCopyNotification">
+    <div class="notification-content">
+      <mat-icon>content_copy</mat-icon>
+      <span>{{ copyNotificationMessage }}</span>
+    </div>
+  </div>
 </div>
