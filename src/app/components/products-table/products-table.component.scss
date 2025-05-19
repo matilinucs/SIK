@@ -90,114 +90,118 @@
   // ────────────────────────────────────────────────────────────────────────────────
   // Envuelve la mat-table y maneja el scroll vertical y horizontal.
   // ────────────────────────────────────────────────────────────────────────────────
-  .table-container {
-    flex-grow: 1; // Ocupa el espacio restante
-    overflow: auto; // Permite scroll en ambas direcciones si es necesario
-    position: relative; // Para el posicionamiento sticky de los encabezados de la tabla
-    min-height: 200px; // Altura mínima para que la tabla sea visible
+  .table-content {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    
+    .table-scroll {
+      height: 100%;
+      overflow: auto;
+      
+      .products-table {
+        width: 100%;
+        border-collapse: separate; // Usar separate para border-spacing
+        border-spacing: 0;
 
-    .products-table {
-      width: 100%;
-      border-collapse: separate; // Usar separate para border-spacing
-      border-spacing: 0;
+        // --- Encabezados de la Tabla (mat-header-row) ---
+        .mat-mdc-header-row {
+          background-color: $color-white;
+          height: 48px; // Altura estándar para encabezados
+          position: sticky; // Encabezados fijos al hacer scroll vertical
+          top: 0;
+          z-index: 100; // Asegura que esté sobre el contenido de la tabla
 
-      // --- Encabezados de la Tabla (mat-header-row) ---
-      .mat-mdc-header-row {
-        background-color: $color-white;
-        height: 48px; // Altura estándar para encabezados
-        position: sticky; // Encabezados fijos al hacer scroll vertical
-        top: 0;
-        z-index: 100; // Asegura que esté sobre el contenido de la tabla
-
-        .mat-mdc-header-cell {
-          color: $color-gray-dark; // Corregido de $color-text-secondary
-          font-weight: 500;
-          font-size: $font-size-small; // Corregido de $font-size-sm
-          padding: 0 $spacing-md;
-          white-space: nowrap; // Evita que el texto del encabezado se rompa
-          border-bottom: 1px solid $color-divider; // Usar la variable definida
-          background-color: $color-white; // Fondo para celdas de encabezado
-
-          // Sombra sutil para indicar que el contenido se desliza por debajo
-          // box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); // Opcional
-
-          // Alineaciones específicas para encabezados
-          &.mat-column-quantity,
-          &.mat-column-totalArea,
-          &.mat-column-budget {
-            text-align: right;
-            // Para alinear el texto del encabezado con el contenido numérico,
-            // podríamos necesitar un padding-right mayor si los números son grandes.
-          }
-          &.mat-column-actions { // Usar mat-column-actions si se define así en displayedColumns
-            text-align: center;
-          }
-        }
-      }
-
-      // --- Filas de Datos (mat-row) ---
-      .mat-mdc-row {
-        height: 52px; // Altura estándar para filas de datos
-        transition: background-color 0.2s ease;
-
-        &:hover {
-          background-color: $color-gray-light; // Corregido de $color-background-hover
-        }
-
-        .mat-mdc-cell {
-          color: $color-black; // Corregido de $color-text-primary
-          font-size: $font-size-small; // Corregido de $font-size-sm
-          padding: 0 $spacing-md;
-          border-bottom: 1px solid $color-divider; // Corregido de $color-border-light
-          white-space: nowrap; // Evita que el contenido de la celda se rompa
-
-          // Celda de Código de Producto
-          &.mat-column-productCode {
-            font-family: $font-family-monospace;
-            color: $color-blue; // Corregido de $color-secondary
+          .mat-mdc-header-cell {
+            color: $color-gray-dark; // Corregido de $color-text-secondary
             font-weight: 500;
-          }
+            font-size: $font-size-small; // Corregido de $font-size-sm
+            padding: 0 $spacing-md;
+            white-space: nowrap; // Evita que el texto del encabezado se rompa
+            border-bottom: 1px solid $color-divider; // Usar la variable definida
+            background-color: $color-white; // Fondo para celdas de encabezado
 
-          // Celdas numéricas (Cantidad, Área, Presupuesto)
-          &.mat-column-quantity,
-          &.mat-column-totalArea,
-          &.mat-column-budget {
-            text-align: right;
-            font-variant-numeric: tabular-nums; // Mejora alineación de números
-          }
-          
-          // Celda de Acciones
-          &.mat-column-actions {
-            text-align: center;
-            padding: 0 $spacing-xs; // Menor padding para botones de acción
+            // Sombra sutil para indicar que el contenido se desliza por debajo
+            // box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1); // Opcional
 
-            button {
-              margin: 0 $spacing-xxs;
+            // Alineaciones específicas para encabezados
+            &.mat-column-quantity,
+            &.mat-column-totalArea,
+            &.mat-column-budget {
+              text-align: right;
+              // Para alinear el texto del encabezado con el contenido numérico,
+              // podríamos necesitar un padding-right mayor si los números son grandes.
+            }
+            &.mat-column-actions { // Usar mat-column-actions si se define así en displayedColumns
+              text-align: center;
             }
           }
         }
-      }
-      
-      // --- Mensaje de "No hay datos" ---
-      .no-data-cell {
-        padding: $spacing-xl !important; // Mayor padding para el mensaje
-        text-align: center;
-        
-        .no-data-message {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: $spacing-md;
-          color: $color-text-disabled;
-          
-          mat-icon {
-            font-size: 3rem;
-            width: 3rem;
-            height: 3rem;
+
+        // --- Filas de Datos (mat-row) ---
+        .mat-mdc-row {
+          height: 52px; // Altura estándar para filas de datos
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background-color: $color-gray-light; // Corregido de $color-background-hover
           }
-          p {
-            margin: 0;
-            font-size: $font-size-md;
+
+          .mat-mdc-cell {
+            color: $color-black; // Corregido de $color-text-primary
+            font-size: $font-size-small; // Corregido de $font-size-sm
+            padding: 0 $spacing-md;
+            border-bottom: 1px solid $color-divider; // Corregido de $color-border-light
+            white-space: nowrap; // Evita que el contenido de la celda se rompa
+
+            // Celda de Código de Producto
+            &.mat-column-productCode {
+              font-family: $font-family-monospace;
+              color: $color-blue; // Corregido de $color-secondary
+              font-weight: 500;
+            }
+
+            // Celdas numéricas (Cantidad, Área, Presupuesto)
+            &.mat-column-quantity,
+            &.mat-column-totalArea,
+            &.mat-column-budget {
+              text-align: right;
+              font-variant-numeric: tabular-nums; // Mejora alineación de números
+            }
+            
+            // Celda de Acciones
+            &.mat-column-actions {
+              text-align: center;
+              padding: 0 $spacing-xs; // Menor padding para botones de acción
+
+              button {
+                margin: 0 $spacing-xxs;
+              }
+            }
+          }
+        }
+        
+        // --- Mensaje de "No hay datos" ---
+        .no-data-cell {
+          padding: $spacing-xl !important; // Mayor padding para el mensaje
+          text-align: center;
+          
+          .no-data-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: $spacing-md;
+            color: $color-text-disabled;
+            
+            mat-icon {
+              font-size: 3rem;
+              width: 3rem;
+              height: 3rem;
+            }
+            p {
+              margin: 0;
+              font-size: $font-size-md;
+            }
           }
         }
       }
@@ -210,10 +214,13 @@
   // Muestra resúmenes como totales de cantidad, área y presupuesto.
   // ────────────────────────────────────────────────────────────────────────────────
   .table-footer {
-    padding: $spacing-md $spacing-lg;
-    border-top: 1px solid $color-divider;
-    background-color: $color-white;
     flex-shrink: 0;
+    background-color: $color-white;
+    border-top: 2px solid $color-divider;
+    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: $spacing-lg;
+    margin-top: auto;
+    z-index: 10;
 
     .summary-info {
       display: flex;
@@ -240,6 +247,20 @@
 
         // Estilo especial para el total del presupuesto (más destacado)
         &.total {
+          padding-left: $spacing-lg;
+          position: relative;
+          
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 80%;
+            width: 2px;
+            background-color: $color-divider;
+          }
+
           .label {
             color: $color-blue;
           }
@@ -247,6 +268,40 @@
             color: $color-blue;
             font-size: $font-size-xlarge;
             font-weight: 600;
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .table-content {
+      .table-scroll {
+        overflow-x: auto;
+      }
+    }
+
+    .table-footer {
+      padding: $spacing-md;
+
+      .summary-info {
+        flex-direction: column;
+        align-items: stretch;
+        gap: $spacing-md;
+
+        .summary-item {
+          justify-content: space-between;
+          padding: $spacing-xs 0;
+
+          &.total {
+            padding-left: 0;
+            padding-top: $spacing-md;
+            margin-top: $spacing-md;
+            border-top: 2px solid $color-divider;
+
+            &::before {
+              display: none;
+            }
           }
         }
       }
@@ -273,7 +328,7 @@
       }
     }
 
-    .table-container {
+    .table-content {
       // En pantallas pequeñas, es común que la tabla necesite scroll horizontal.
       // overflow-x: auto; // Ya está en .table-container
       
