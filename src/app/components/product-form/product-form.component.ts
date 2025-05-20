@@ -128,8 +128,7 @@ export class ProductFormComponent implements OnInit {
   }
 
   private createForm(): void {
-    this.productForm = this.fb.nonNullable.group({
-      id: [null as string | null],
+    this.productForm = this.fb.nonNullable.group({      id: [null as string | null],
       generalData: this.fb.group({
         productType: ['ventana'], // Valor inicial, sin validadores
         productCode: [''], // Sin validadores
@@ -145,7 +144,8 @@ export class ProductFormComponent implements OnInit {
           housingType: [''], // Sin validadores
           customName: [''] // Sin validadores
         }),
-        productImage: [''] // Sin validadores
+        productImage: [''], // Sin validadores
+        description: [''] // Movido aquí dentro de generalData
       }),
       
       technicalSpecs: this.fb.group({
@@ -429,21 +429,28 @@ export class ProductFormComponent implements OnInit {
   }/**
    * Prepara el formulario para el modo de unificación
    * Resetea valores y elimina validadores para facilitar la modificación compartida
-   */
-  prepareForUnification(): void {
+   */  prepareForUnification(): void {
     console.log("Preparando formulario para unificación");
     
-    // Resetear el formulario para iniciar limpio
-    this.resetForm();
+    // No resetear todo el formulario, solo limpiar valores
+    this.productForm.reset({
+      generalData: { 
+        productType: '', 
+        quantity: null,
+        dimensions: { unit: 'mm' }
+      },
+      costs: { 
+        currency: 'USD',
+        tax: 0.16 
+      }
+    });
     
-    // Eliminar todos los validadores para permitir ediciones parciales
+    // Eliminar validadores y habilitar el formulario
     this.removeValidators(this.productForm);
-    
-    // Limpiar registro de campos modificados
-    this.modifiedFields = {};
-    
-    // Asegurarse de que el formulario esté habilitado
     this.productForm.enable();
+    
+    // Asegurarse que isUnifyMode está establecido
+    this.isUnifyMode = true;
     
     // Corregir posición de menús desplegables
     this.fixDropdownsInModal();
@@ -518,8 +525,7 @@ export class ProductFormComponent implements OnInit {
   }
     /**
    * Configura recursivamente suscripciones para controles y grupos
-   */
-  private trackControlChanges(formGroup: FormGroup, path: string): void {
+   */  private trackControlChanges(formGroup: FormGroup, path: string): void {
     Object.keys(formGroup.controls).forEach(controlName => {
       const control = formGroup.get(controlName);
       const currentPath = path ? `${path}.${controlName}` : controlName;
@@ -529,11 +535,12 @@ export class ProductFormComponent implements OnInit {
       } else if (control) {
         // Limpiar cualquier suscripción anterior
         control.valueChanges.subscribe(value => {
-          console.log(`Campo modificado: ${currentPath} => ${value}`);
-          // Marcar el campo como modificado incluso si valor es vacío o cero
-          // Esto permite establecer valores explícitamente a cadena vacía o cero
-          if (value !== null && value !== undefined) {
+          if (this.isUnifyMode) {
+            console.log(`Campo modificado en unificación: ${currentPath} => ${value}`);
+            // En modo unificación, registramos cualquier cambio explícito
             this.modifiedFields[currentPath] = true;
+          } else {
+            console.log(`Campo modificado normal: ${currentPath} => ${value}`);
           }
         });
       }
@@ -578,29 +585,28 @@ export class ProductFormComponent implements OnInit {
   /**
    * Sobrescribe onSubmit para manejar tanto guardar normal como unificación
    */  onSubmit(): void {
-    // Log para el botón interno del formulario (cuando showSubmitButton es true y se hace click o se activa el submit)
-    // Este log se moverá al método que llama a onSubmit directamente si es un botón de tipo submit.
-    // Por ahora, lo dejamos aquí para capturar el evento de submit del formulario.
-    if (this.showSubmitButton) {
-      console.log('[ProductFormComponent] Formulario enviado (posiblemente por botón interno): ', this.getButtonText());
-    }
     console.log("[ProductFormComponent] onSubmit triggered");
     console.log("[ProductFormComponent] Form raw value:", this.productForm.getRawValue());
     console.log("[ProductFormComponent] Is Unify Mode:", this.isUnifyMode);
-
-    if (this.isUnifyMode) {
-      if (Object.keys(this.modifiedFields).length === 0) {
+    
+    // Comprobar explícitamente el modo unificación
+    const isUnifyMode = this.isUnifyMode === true;    if (isUnifyMode) {
+      console.log("[ProductFormComponent] Procesando cambios en modo unificación");
+      
+      // Obtener campos modificados sin filtrar campos vacíos
+      const modifiedFieldsValues = this.getModifiedFieldsValues();
+      const hasModifications = Object.keys(modifiedFieldsValues).length > 0;
+      
+      if (!hasModifications) {
         this.snackBar.open('No se han realizado cambios para aplicar', 'Cerrar', { duration: 3000 });
         return;
       }
-      const modifiedFieldsValues = this.getModifiedFieldsValues();
-      if (Object.keys(modifiedFieldsValues).length === 0 && Object.keys(this.modifiedFields).length > 0) {
-         console.warn("[ProductFormComponent] Unify mode: modifiedFields has keys, but getModifiedFieldsValues returned empty. This might indicate an issue with retrieving values from the form for modified paths.");
-         this.snackBar.open('No se pudieron obtener los valores modificados. Revisa la consola.', 'Cerrar', { duration: 3000 });
-         return;
-      }
+
       console.log("[ProductFormComponent] Emitting unified changes:", modifiedFieldsValues);
       this.saveUnifiedChanges.emit(modifiedFieldsValues);
+      
+      // Limpiar campos modificados después de emitir cambios
+      this.modifiedFields = {};
     } else {
       const formValue = this.productForm.getRawValue();
       
@@ -779,6 +785,21 @@ export class ProductFormComponent implements OnInit {
       return 'Editar Producto';
     } else {
       return 'Guardar Producto';
+    }
+  }
+
+  logUnifyButtonClick() {
+    if (this.isUnifyMode) {
+      console.log('[UNIFY] Botón "Unificar productos" clickeado en ProductFormComponent', {
+        selectedProductsCount: this.selectedProductsCount,
+        formValues: this.productForm.value
+      });
+    }
+  }
+
+  logUnifyCancelClick() {
+    if (this.isUnifyMode) {
+      console.log('[UNIFY] Botón "Salir de unificación (X)" clickeado en ProductFormComponent');
     }
   }
 }

@@ -10,13 +10,14 @@
         type="submit" 
         form="productFormId" 
         class="save-button" 
-        [ngClass]="{'unify-mode': isUnifyMode, 'edit-mode': initialProduct && !isUnifyMode}">
+        [ngClass]="{'unify-mode': isUnifyMode, 'edit-mode': initialProduct && !isUnifyMode}"
+        (click)="logUnifyButtonClick()">
         <mat-icon>{{ getButtonIcon() }}</mat-icon> 
         {{ getButtonText() }}
       </button>
     </div>
     <!-- Botón X para salir del modo unificación -->
-    <button *ngIf="isUnifyMode" mat-icon-button class="close-unify-btn" (click)="onCancel()" matTooltip="Salir de unificación">
+    <button *ngIf="isUnifyMode" mat-icon-button class="close-unify-btn" (click)="logUnifyCancelClick(); onCancel()" matTooltip="Salir de unificación">
       <mat-icon>close</mat-icon>
     </button>
   </div>
@@ -120,9 +121,7 @@
                 </div>
               </div>
               <mat-hint>Use punto (.) como separador decimal</mat-hint>
-            </div>
-
-            <!-- Descripción -->
+            </div>            <!-- Descripción -->
             <div class="form-row">
               <mat-form-field appearance="outline" class="description-field">
                 <mat-label>

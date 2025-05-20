@@ -922,6 +922,10 @@ export class ProductsTableComponent {
    * Maneja el clic en el botón de unificar productos
    * Emite el evento unifyProducts con los productos seleccionados
    */  onUnifyButtonClick(): void {
+    console.log('[UNIFY] Botón "Unificar en formulario" clickeado en ProductsTableComponent', {
+      selectedProductIds: Array.from(this.selectedProductIds),
+      selectedProducts: this._products.filter(product => this.selectedProductIds.has(product.id))
+    });
     if (this.selectedProductIds.size < 2) {
       this.showNotification('No se seleccionaron elementos suficientes');
       return;
