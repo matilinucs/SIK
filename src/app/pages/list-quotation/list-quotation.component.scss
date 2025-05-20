@@ -29,12 +29,12 @@
     margin: 0;
   }
   
-  // Botón rectangular verde
+  // Botón rectangular verde // MODIFICADO: Ahora azul y ovalado
   .add-quotation-button {
-    background-color: #4CAF50 !important;
-    color: white !important;
+    // background-color: #4CAF50 !important; // Eliminado para usar color="primary" del HTML
+    // color: white !important; // Eliminado, mat-raised-button lo maneja
     padding: 0 $spacing-md !important;
-    border-radius: 4px !important;
+    border-radius: 22px !important; // Aumentado para forma ovalada
     height: 45px;
     font-weight: 500;
     text-transform: uppercase;
@@ -44,9 +44,22 @@
       margin-right: $spacing-xs;
     }
     
+    // El color de fondo en hover será manejado por Angular Material basado en color="primary"
+    // Si se necesita un hover personalizado específico, se puede añadir aquí.
+    // Por ejemplo, para oscurecer el color primario:
+    // &:hover {
+    //   background-color: color.adjust($color-primary, $lightness: -10%) !important;
+    //   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    // }
+    // Por ahora, dejaremos que Material maneje el hover para consistencia.
+    // Si el hover por defecto no es suficiente, podemos añadir lo anterior.
+    // Para asegurar que el color primario se aplique si color="primary" no es suficiente:
+    background-color: $color-primary !important; 
+    color: $color-white !important;
+
     &:hover {
-      background-color: color.adjust(#4CAF50, $lightness: -10%) !important;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      background-color: color.adjust($color-primary, $lightness: -5%) !important;
+      box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
     }
   }
 }
@@ -231,7 +244,55 @@
     text-align: center;
     font-style: italic;
     color: $color-gray-dark;
-    background-color: $color-white;
+    background-color: $color-white; // Asegurar fondo blanco
+  }
+}
+
+// Estilos para los botones de acción en la tabla de cubicaciones (similares a product-table)
+.actions-cell {
+  .action-button {
+    width: 28px; // Tamaño reducido como en products-table
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: $spacing-xs;
+    border-radius: 4px; // Bordes cuadrados como en products-table
+
+    mat-icon {
+      font-size: 16px; // Tamaño del ícono reducido
+      line-height: 16px;
+      height: 16px;
+      width: 16px;
+      color: $color-white; // Color de ícono blanco por defecto
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  // Colores específicos inspirados en products-table
+  .action-add-products {
+    background-color: $color-primary !important; // Azul primario
+    mat-icon {
+      color: $color-white !important; // Ícono blanco
+    }
+    &:hover {
+      background-color: color.adjust($color-primary, $lightness: -10%) !important; // Azul más oscuro en hover
+    }
+  }
+  .action-edit {
+    background-color: rgba(67, 160, 71, 0.65) !important; // Verde para editar
+    &:hover {
+      background-color: rgba(67, 160, 71, 0.85) !important;
+    }
+  }
+  .action-delete {
+    background-color: rgba(229, 57, 53, 0.65) !important; // Rojo para eliminar
+    &:hover {
+      background-color: rgba(229, 57, 53, 0.85) !important;
+    }
   }
 }
 
@@ -373,5 +434,830 @@
         height: 45px !important;
       }
     }
+  }
+}
+
+::ng-deep {
+  // Estilos personalizados para el SweetAlert
+  .swal-container-with-dropdowns {
+    z-index: 10000; // Asegurar que está por encima de otros modales
+  }
+
+  .swal-popup-with-dropdowns {
+    padding: 20px;
+    max-width: 800px;
+    overflow: visible !important; // Importante para que los dropdowns aparezcan fuera del contenedor
+  }
+
+  .swal-html-container-with-dropdowns {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    overflow: visible !important; // Importante para que los dropdowns aparezcan fuera del contenedor
+  }
+
+  .swal-confirm-button {
+    background-color: #0056b3 !important; // Color azul primario
+    &:hover {
+      background-color: darken(#0056b3, 10%) !important;
+    }
+  }
+
+  .swal-cancel-button {
+    background-color: #6c757d !important; // Gris para cancelar
+    &:hover {
+      background-color: darken(#6c757d, 10%) !important;
+    }
+  }
+
+  // Estilos para el contenedor del formulario dentro del SweetAlert
+  .quotation-form-wrapper-for-swal {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; // Espacio entre el grupo de pestañas y la línea divisora
+    text-align: left; // Alineación de texto a la izquierda para etiquetas y contenido
+    font-family: 'Roboto', sans-serif; // Asegurar la misma fuente que el resto de la app
+  }
+
+  // Estilos para el grupo de pestañas (contenedor de cabeceras y cuerpos)
+  .swal-tab-group {
+    border: 1px solid #e0e0e0; // Borde similar al de la tarjeta original
+    border-radius: 8px;
+    overflow: hidden; // Para que los bordes redondeados afecten a los hijos
+    background-color: #f9f9f9; // Fondo ligeramente gris para el área de pestañas
+  }
+
+  // Estilos para las cabeceras de las pestañas
+  .swal-tab-headers {
+    display: flex;
+    background-color: #f0f0f0; // Fondo para la barra de cabeceras
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .swal-tab-header {
+    padding: 12px 20px;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    font-size: 1em;
+    font-weight: 500;
+    color: #555;
+    transition: background-color 0.3s, color 0.3s;
+    border-right: 1px solid #e0e0e0; // Separador entre pestañas
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &.active {
+      background-color: #ffffff; // Fondo blanco para la pestaña activa
+      color: #0056b3; // Color primario para el texto de la pestaña activa
+      border-bottom: 2px solid #0056b3; // Indicador visual de pestaña activa
+      margin-bottom: -1px; // Para que el borde inferior se alinee con el borde del contenedor del cuerpo
+    }
+
+    &:hover:not(.active) {
+      background-color: #e9e9e9;
+      color: #333;
+    }
+  }
+
+  // Estilos para el cuerpo de las pestañas (contenedor de los paneles)
+  .swal-tab-body {
+    padding: 20px;
+    background-color: #ffffff; // Fondo blanco para el contenido de la pestaña
+  }
+
+  // Estilos para cada panel de pestaña
+  .swal-tab-pane {
+    display: none; // Ocultar por defecto
+
+    &.active {
+      display: block; // Mostrar solo el panel activo
+    }
+  }
+
+  // Contenido dentro de cada pestaña
+  .tab-content-swal {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  // Filas de campos en el formulario
+  .form-row-swal {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start; // Alinear items al inicio para etiquetas arriba
+  }
+
+  // Campos individuales del formulario
+  .form-field-swal {
+    flex: 1; // Permitir que los campos crezcan y ocupen espacio disponible
+    display: flex;
+    flex-direction: column;
+    gap: 5px; // Espacio entre la etiqueta y el input
+
+    label {
+      font-size: 0.9em;
+      color: #333;
+      font-weight: 500;
+    }
+  }
+
+  // Estilos para inputs y selects de SweetAlert para que coincidan con Material
+  .swal2-input,
+  .swal2-select,
+  .swal2-textarea {
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    padding: 10px 12px !important;
+    font-size: 1em !important;
+    box-shadow: none !important;
+    width: 100% !important; // Asegurar que ocupen todo el ancho del form-field-swal
+    transition: border-color 0.3s;
+
+    &:focus {
+      border-color: #0056b3 !important; // Color primario al enfocar
+      box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25) !important; // Sombra de foco sutil
+    }
+  }
+
+  .swal2-select {
+    padding-right: 30px !important; // Espacio para el ícono de flecha del select
+    background-position-x: calc(100% - 10px) !important; // Ajustar posición del ícono de flecha
+  }
+
+  // Contenedor para input con ícono
+  .input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .material-icons {
+      position: absolute;
+      color: #757575; // Color gris para los íconos
+      font-size: 1.25rem; // Tamaño estándar para íconos de Material
+    }
+
+    .prefix-icon {
+      left: 10px;
+    }
+
+    .suffix-icon {
+      right: 10px;
+      cursor: pointer; // Para íconos como el de calendario
+    }
+
+    // Ajustar padding de inputs que tienen íconos
+    .swal2-input.has-prefix-icon {
+      padding-left: 40px !important; // Espacio para el ícono prefijo
+    }
+    .swal2-input.has-suffix-icon {
+      padding-right: 40px !important; // Espacio para el ícono sufijo
+    }
+    .swal2-select.has-prefix-icon {
+       padding-left: 40px !important;
+    }
+  }
+
+  // Línea divisora horizontal azul
+  .swal-form-divider {
+    border: none;
+    height: 2px;
+    background-color: #0056b3; // Color azul vibrant
+    margin-top: 10px; // Espacio antes de la línea
+    margin-bottom: 0; // Pegado a los botones si es el último elemento
+    width: 100%;
+  }
+}
+
+
+/**
+ * Estilos para el componente de listado de cubicaciones
+ */
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 1️⃣ ESTRUCTURA GENERAL
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.quotation-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $spacing-md;
+  position: relative;
+}
+
+// Barra de título y botón
+.header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-lg;
+  
+  .page-title {
+    color: $color-black;
+    font-size: $font-size-title;
+    font-weight: 500;
+    margin: 0;
+  }
+  
+  // Botón rectangular verde // MODIFICADO: Ahora azul y ovalado
+  .add-quotation-button {
+    // background-color: #4CAF50 !important; // Eliminado para usar color="primary" del HTML
+    // color: white !important; // Eliminado, mat-raised-button lo maneja
+    padding: 0 $spacing-md !important;
+    border-radius: 22px !important; // Aumentado para forma ovalada
+    height: 45px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    
+    mat-icon {
+      margin-right: $spacing-xs;
+    }
+    
+    // El color de fondo en hover será manejado por Angular Material basado en color="primary"
+    // Si se necesita un hover personalizado específico, se puede añadir aquí.
+    // Por ejemplo, para oscurecer el color primario:
+    // &:hover {
+    //   background-color: color.adjust($color-primary, $lightness: -10%) !important;
+    //   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    // }
+    // Por ahora, dejaremos que Material maneje el hover para consistencia.
+    // Si el hover por defecto no es suficiente, podemos añadir lo anterior.
+    // Para asegurar que el color primario se aplique si color="primary" no es suficiente:
+    background-color: $color-primary !important; 
+    color: $color-white !important;
+
+    &:hover {
+      background-color: color.adjust($color-primary, $lightness: -5%) !important;
+      box-shadow: 0 2px 4px -1px rgba(0,0,0,.2), 0 4px 5px 0 rgba(0,0,0,.14), 0 1px 10px 0 rgba(0,0,0,.12);
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 2️⃣ ELEMENTOS ESPECÍFICOS DEL PANEL DE FILTROS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.filters-container {
+  padding: $spacing-md $spacing-lg;
+  
+  .filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $spacing-md;
+    align-items: center;
+    
+    mat-form-field {
+      flex: 1;
+      min-width: 180px;
+      margin-bottom: 0;
+    }
+    
+    // Contenedor especial para el botón de filtros
+    .button-container {
+      display: flex;
+      align-items: center;
+      height: 56px;
+    }
+    
+    // Botón de limpiar filtros - estilo específico
+    .clear-filters-button {
+      height: 36px !important;
+      white-space: nowrap;
+      padding: 0 $spacing-sm !important;
+      min-width: auto;
+      margin: 0;
+      
+      mat-icon {
+        font-size: 18px;
+        height: 18px;
+        width: 18px;
+        margin-right: $spacing-xs;
+      }
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 3️⃣ ELEMENTOS ESPECÍFICOS DE LA TABLA
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.form-section {
+  background-color: $color-white;
+  border: 1px solid $color-gray-mid;
+  border-radius: 8px;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-xl;
+  position: relative;
+  
+  // Decoración visual para las secciones
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 4px;
+    background-color: $color-blue-vibrant;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+  }
+}
+
+.table-container {
+  overflow-x: auto;
+  
+  .quotation-table {
+    width: 100%;
+    
+    // Estilos para celdas de la tabla - FONDO BLANCO EN TODAS LAS FILAS
+    .mat-mdc-header-row {
+      background-color: $color-white;
+    }
+    
+    .mat-mdc-cell, 
+    .mat-mdc-header-cell {
+      padding: 14px 16px;
+      color: $color-black;
+      background-color: $color-white;
+    }
+    
+    .mat-mdc-header-cell {
+      font-weight: 600;
+      border-bottom: 2px solid $color-gray-mid;
+    }
+    
+    // Quitar fondos alternados
+    .mat-mdc-row {
+      background-color: $color-white;
+    }
+    
+    // Solo cambiar color al hacer hover
+    .mat-mdc-row:hover {
+      background-color: rgba($color-blue-vibrant, 0.05);
+    }
+    
+    // Estilo específico para la columna de número de cotización
+    .mat-column-quoteNumber {
+      width: 100px;
+      font-weight: 500;
+      color: $color-blue-vibrant;
+    }
+    
+    // Celda de cantidad monetaria
+    .amount-cell {
+      font-weight: 500;
+      text-align: right;
+    }
+    
+    // Celda de acciones
+    .actions-cell {
+      white-space: nowrap;
+      width: 120px;
+    }
+    
+    tr.expandable-row {
+      cursor: pointer;
+      
+      &:hover {
+        background: rgba(0, 0, 0, 0.04);
+      }
+      
+      &.expanded-row {
+        background: #f5f5f5;
+      }
+    }
+
+    tr.detail-row {
+      height: 0;
+      
+      .products-detail {
+        overflow: hidden;
+      }
+    }
+
+    .products-table {
+      width: 100%;
+      margin: 1rem;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      
+      th, td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+        
+        &:last-child {
+          text-align: right;
+        }
+      }
+      
+      th {
+        background-color: #f5f5f5;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.87);
+      }
+      
+      .summary-row {
+        background-color: #fafafa;
+        font-weight: 500;
+        
+        td {
+          border-top: 2px solid #e0e0e0;
+        }
+      }
+    }
+  }
+  
+  // Mensaje cuando no hay datos
+  .no-data-cell {
+    padding: $spacing-xl;
+    text-align: center;
+    font-style: italic;
+    color: $color-gray-dark;
+    background-color: $color-white; // Asegurar fondo blanco
+  }
+}
+
+// Estilos para los botones de acción en la tabla de cubicaciones (similares a product-table)
+.actions-cell {
+  .action-button {
+    width: 28px; // Tamaño reducido como en products-table
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: $spacing-xs;
+    border-radius: 4px; // Bordes cuadrados como en products-table
+
+    mat-icon {
+      font-size: 16px; // Tamaño del ícono reducido
+      line-height: 16px;
+      height: 16px;
+      width: 16px;
+      color: $color-white; // Color de ícono blanco por defecto
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  // Colores específicos inspirados en products-table
+  .action-add-products {
+    background-color: $color-primary !important; // Azul primario
+    mat-icon {
+      color: $color-white !important; // Ícono blanco
+    }
+    &:hover {
+      background-color: color.adjust($color-primary, $lightness: -10%) !important; // Azul más oscuro en hover
+    }
+  }
+  .action-edit {
+    background-color: rgba(67, 160, 71, 0.65) !important; // Verde para editar
+    &:hover {
+      background-color: rgba(67, 160, 71, 0.85) !important;
+    }
+  }
+  .action-delete {
+    background-color: rgba(229, 57, 53, 0.65) !important; // Rojo para eliminar
+    &:hover {
+      background-color: rgba(229, 57, 53, 0.85) !important;
+    }
+  }
+}
+
+// Estilos adicionales para la tabla de cubicaciones
+.quotation-table-container {
+  margin: 1rem;
+  
+  .mat-mdc-table {
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+
+    .mat-mdc-header-row {
+      background-color: #f5f5f5;
+      
+      .mat-mdc-header-cell {
+        color: #1976d2;
+        font-weight: 500;
+        font-size: 14px;
+        padding: 1rem;
+        white-space: nowrap;
+      }
+    }
+
+    .mat-mdc-row {
+      &:hover {
+        background-color: #f8f9fa;
+      }
+
+      .mat-mdc-cell {
+        padding: 1rem;
+        font-size: 14px;
+        
+        &.code-cell {
+          font-weight: 500;
+          color: #1976d2;
+        }
+        
+        &.quantity-cell {
+          text-align: center;
+        }
+        
+        &.area-cell, &.budget-cell {
+          text-align: right;
+          font-family: monospace;
+          
+          .unit {
+            color: #666;
+            margin-left: 4px;
+            font-size: 12px;
+          }
+        }
+
+        &.type-cell {
+          max-width: 200px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+  
+  .mat-mdc-paginator {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 4️⃣ INDICADORES DE ESTADO
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    margin-right: 4px;
+  }
+  
+  // Estados con colores diferentes
+  &.en_proceso {
+    background-color: rgba(255, 152, 0, 0.15);
+    color: #ff9800;
+  }
+  
+  &.aprobada {
+    background-color: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+  }
+  
+  &.rechazada {
+    background-color: rgba(244, 67, 54, 0.15);
+    color: #f44336;
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 5️⃣ RESPONSIVIDAD
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@media (max-width: $breakpoint-md) {
+  .header-bar {
+    flex-direction: column;
+    align-items: stretch;
+    
+    .page-title {
+      margin-bottom: $spacing-md;
+      text-align: center;
+    }
+    
+    .add-quotation-button {
+      width: 100%;
+    }
+  }
+  
+  .filters-container .filters-form {
+    flex-direction: column;
+    
+    mat-form-field {
+      width: 100%;
+    }
+    
+    // Botón de limpiar filtros en móviles
+    .button-container {
+      width: 100%;
+      margin-top: $spacing-sm;
+      height: auto;
+      
+      .clear-filters-button {
+        width: 100%;
+        height: 45px !important;
+      }
+    }
+  }
+}
+
+::ng-deep {
+  // Estilos personalizados para el SweetAlert
+  .swal-container-with-dropdowns {
+    z-index: 10000; // Asegurar que está por encima de otros modales
+  }
+
+  .swal-popup-with-dropdowns {
+    padding: 20px;
+    max-width: 800px;
+    overflow: visible !important; // Importante para que los dropdowns aparezcan fuera del contenedor
+  }
+
+  .swal-html-container-with-dropdowns {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    overflow: visible !important; // Importante para que los dropdowns aparezcan fuera del contenedor
+  }
+
+  .swal-confirm-button {
+    background-color: #0056b3 !important; // Color azul primario
+    &:hover {
+      background-color: darken(#0056b3, 10%) !important;
+    }
+  }
+
+  .swal-cancel-button {
+    background-color: #6c757d !important; // Gris para cancelar
+    &:hover {
+      background-color: darken(#6c757d, 10%) !important;
+    }
+  }
+
+  // Estilos para el contenedor del formulario dentro del SweetAlert
+  .quotation-form-wrapper-for-swal {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; // Espacio entre el grupo de pestañas y la línea divisora
+    text-align: left; // Alineación de texto a la izquierda para etiquetas y contenido
+    font-family: 'Roboto', sans-serif; // Asegurar la misma fuente que el resto de la app
+  }
+
+  // Estilos para el grupo de pestañas (contenedor de cabeceras y cuerpos)
+  .swal-tab-group {
+    border: 1px solid #e0e0e0; // Borde similar al de la tarjeta original
+    border-radius: 8px;
+    overflow: hidden; // Para que los bordes redondeados afecten a los hijos
+    background-color: #f9f9f9; // Fondo ligeramente gris para el área de pestañas
+  }
+
+  // Estilos para las cabeceras de las pestañas
+  .swal-tab-headers {
+    display: flex;
+    background-color: #f0f0f0; // Fondo para la barra de cabeceras
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .swal-tab-header {
+    padding: 12px 20px;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    font-size: 1em;
+    font-weight: 500;
+    color: #555;
+    transition: background-color 0.3s, color 0.3s;
+    border-right: 1px solid #e0e0e0; // Separador entre pestañas
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &.active {
+      background-color: #ffffff; // Fondo blanco para la pestaña activa
+      color: #0056b3; // Color primario para el texto de la pestaña activa
+      border-bottom: 2px solid #0056b3; // Indicador visual de pestaña activa
+      margin-bottom: -1px; // Para que el borde inferior se alinee con el borde del contenedor del cuerpo
+    }
+
+    &:hover:not(.active) {
+      background-color: #e9e9e9;
+      color: #333;
+    }
+  }
+
+  // Estilos para el cuerpo de las pestañas (contenedor de los paneles)
+  .swal-tab-body {
+    padding: 20px;
+    background-color: #ffffff; // Fondo blanco para el contenido de la pestaña
+  }
+
+  // Estilos para cada panel de pestaña
+  .swal-tab-pane {
+    display: none; // Ocultar por defecto
+
+    &.active {
+      display: block; // Mostrar solo el panel activo
+    }
+  }
+
+  // Contenido dentro de cada pestaña
+  .tab-content-swal {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  // Filas de campos en el formulario
+  .form-row-swal {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start; // Alinear items al inicio para etiquetas arriba
+  }
+
+  // Campos individuales del formulario
+  .form-field-swal {
+    flex: 1; // Permitir que los campos crezcan y ocupen espacio disponible
+    display: flex;
+    flex-direction: column;
+    gap: 5px; // Espacio entre la etiqueta y el input
+
+    label {
+      font-size: 0.9em;
+      color: #333;
+      font-weight: 500;
+    }
+  }
+
+  // Estilos para inputs y selects de SweetAlert para que coincidan con Material
+  .swal2-input,
+  .swal2-select,
+  .swal2-textarea {
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    padding: 10px 12px !important;
+    font-size: 1em !important;
+    box-shadow: none !important;
+    width: 100% !important; // Asegurar que ocupen todo el ancho del form-field-swal
+    transition: border-color 0.3s;
+
+    &:focus {
+      border-color: #0056b3 !important; // Color primario al enfocar
+      box-shadow: 0 0 0 0.2rem rgba(0, 86, 179, 0.25) !important; // Sombra de foco sutil
+    }
+  }
+
+  .swal2-select {
+    padding-right: 30px !important; // Espacio para el ícono de flecha del select
+    background-position-x: calc(100% - 10px) !important; // Ajustar posición del ícono de flecha
+  }
+
+  // Contenedor para input con ícono
+  .input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .material-icons {
+      position: absolute;
+      color: #757575; // Color gris para los íconos
+      font-size: 1.25rem; // Tamaño estándar para íconos de Material
+    }
+
+    .prefix-icon {
+      left: 10px;
+    }
+
+    .suffix-icon {
+      right: 10px;
+      cursor: pointer; // Para íconos como el de calendario
+    }
+
+    // Ajustar padding de inputs que tienen íconos
+    .swal2-input.has-prefix-icon {
+      padding-left: 40px !important; // Espacio para el ícono prefijo
+    }
+    .swal2-input.has-suffix-icon {
+      padding-right: 40px !important; // Espacio para el ícono sufijo
+    }
+    .swal2-select.has-prefix-icon {
+       padding-left: 40px !important;
+    }
+  }
+
+  // Línea divisora horizontal azul
+  .swal-form-divider {
+    border: none;
+    height: 2px;
+    background-color: #0056b3; // Color azul vibrant
+    margin-top: 10px; // Espacio antes de la línea
+    margin-bottom: 0; // Pegado a los botones si es el último elemento
+    width: 100%;
   }
 }

@@ -1,0 +1,105 @@
+<!-- 
+  ================================================================================================
+  COMPONENTE: FORMULARIO DE CUBICACIÓN EN DIÁLOGO
+  ================================================================================================
+  Este componente muestra un formulario de ingreso de cubicaciones con pestañas
+  para mejor organización de los campos.
+  Se usa como contenido para un MatDialog.
+  ================================================================================================
+-->
+
+<div class="quotation-form-dialog-container">
+  <h2 mat-dialog-title class="form-title">Formulario - Agregar Cubicación</h2>
+
+  <form [formGroup]="quotationForm" (ngSubmit)="onSubmit()">
+    <div mat-dialog-content>
+      <!-- Pestañas para organizar la información -->
+      <mat-tab-group animationDuration="200ms">
+        <!-- Pestaña: Información General -->
+        <mat-tab label="Información General">
+          <div class="tab-content" formGroupName="generalInfo">          <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Cliente</mat-label>
+                <mat-select formControlName="clientId">
+                  <mat-option *ngFor="let client of clients" [value]="client.id">{{ client.name }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix>account_circle</mat-icon>
+                <mat-error *ngIf="hasError('generalInfo', 'clientId')">
+                  {{ getErrorMessage('generalInfo', 'clientId') }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Proyecto</mat-label>
+                <mat-select formControlName="projectId">
+                  <mat-option *ngFor="let project of projects" [value]="project.id">{{ project.name }}</mat-option>
+                </mat-select>
+                <mat-icon matPrefix>work</mat-icon>
+                <mat-error *ngIf="hasError('generalInfo', 'projectId')">
+                  {{ getErrorMessage('generalInfo', 'projectId') }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+            
+            <div class="form-row two-columns">
+              <mat-form-field appearance="outline">
+                <mat-label>Fecha de Inicio</mat-label>
+                <input matInput [matDatepicker]="startPicker" formControlName="startDate">
+                <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                <mat-datepicker #startPicker></mat-datepicker>
+                <mat-error *ngIf="hasError('generalInfo', 'startDate')">
+                  {{ getErrorMessage('generalInfo', 'startDate') }}
+                </mat-error>
+              </mat-form-field>
+              
+              <mat-form-field appearance="outline">
+                <mat-label>Fecha de Fin</mat-label>
+                <input matInput [matDatepicker]="endPicker" formControlName="endDate">
+                <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                <mat-datepicker #endPicker></mat-datepicker>
+                <mat-error *ngIf="hasError('generalInfo', 'endDate')">
+                  {{ getErrorMessage('generalInfo', 'endDate') }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Estado</mat-label>
+                <input matInput value="En Proceso" readonly>
+                <mat-icon matPrefix>assignment</mat-icon>
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-tab>
+        
+        <!-- Pestaña: Costos y Márgenes -->
+        <mat-tab label="Costos y Márgenes">
+          <div class="tab-content" formGroupName="costs">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Margen (%)</mat-label>
+                <input matInput type="number" formControlName="marginPercent" placeholder="Margen esperado">
+                <mat-icon matPrefix>percent</mat-icon>
+                <mat-error *ngIf="hasError('costs', 'marginPercent')">
+                  {{ getErrorMessage('costs', 'marginPercent') }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>  </div>
+    
+    <div mat-dialog-actions align="center">
+      <button mat-raised-button class="cancel-button" type="button" (click)="onCancel()">
+        Cancelar
+      </button>
+      <button mat-raised-button class="save-button" type="submit">
+        <mat-icon>save</mat-icon>
+        Guardar Cubicación
+      </button>
+    </div>
+  </form>
+</div>

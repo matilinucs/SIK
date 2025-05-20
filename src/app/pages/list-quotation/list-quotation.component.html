@@ -9,9 +9,9 @@
 <div class="quotation-list-container">
   <!-- Barra de encabezado con título y botón de acción -->
   <div class="header-bar">    <h1 class="page-title">Cubicaciones</h1>
-    <button mat-raised-button class="add-quotation-button" (click)="createNewQuotation()">
+    <button mat-raised-button color="primary" class="add-quotation-button" (click)="createNewQuotation()">
       <mat-icon>add</mat-icon>
-      <span>Nueva Cubicación</span>
+      <span>Agregar Cubicación +</span>
     </button>
   </div>
   
@@ -118,30 +118,42 @@
       <!-- Columna: Total (USD) -->
       <ng-container matColumnDef="totalAmount">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Total (USD) </th>
-        <td mat-cell *matCellDef="let row" class="amount-cell"> {{row.totalAmount | currency:'USD':'symbol':'1.2-2'}} </td>
+        <td mat-cell *matCellDef="let row" class="total-amount-cell"> {{row.totalAmount | currency:'USD':'symbol':'1.2-2'}} </td>
       </ng-container>
       
       <!-- Columna: Acciones -->
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef> Acciones </th>
+        <th mat-header-cell *matHeaderCellDef class="actions-header-cell"> Acciones </th>
         <td mat-cell *matCellDef="let row" class="actions-cell">
-          <button mat-icon-button color="primary" matTooltip="Ver detalle" (click)="viewQuotation(row.id)">
-            <mat-icon>visibility</mat-icon>
+          <button mat-mini-fab aria-label="Agregar Productos a Cubicación"
+                  class="action-button action-add-products"
+                  (click)="addProductToQuotation(row)" 
+                  matTooltip="Agregar Productos">
+            <mat-icon>add_shopping_cart</mat-icon>
           </button>
-          <button mat-icon-button color="accent" matTooltip="Agregar productos" (click)="addProductToQuotation(row.id)">
-            <mat-icon>add_circle</mat-icon>
+          <button mat-mini-fab color="accent" aria-label="Editar Cubicación"
+                  class="action-button action-edit"
+                  (click)="editQuotation(row)" 
+                  matTooltip="Editar Cubicación">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-mini-fab color="warn" aria-label="Eliminar Cubicación"
+                  class="action-button action-delete"
+                  (click)="deleteQuotation(row)" 
+                  matTooltip="Eliminar Cubicación">
+            <mat-icon>delete</mat-icon>
           </button>
         </td>
       </ng-container>
-      
-      <!-- Definición de filas y columnas -->
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+      <!-- Definición de las filas -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      
-      <!-- Mensaje cuando no hay resultados -->
+
+      <!-- Mensaje cuando no hay datos -->
       <tr class="mat-row" *matNoDataRow>
-        <td class="mat-cell no-data-cell" [attr.colspan]="displayedColumns.length">
-          No se encontraron cubicaciones con los filtros aplicados.
+        <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+          No hay cubicaciones que coincidan con los filtros.
         </td>
       </tr>
     </table>

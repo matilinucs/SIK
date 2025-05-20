@@ -4,7 +4,7 @@
  * @author Sistema SIK
  * @lastModified 2025-05-16
  */
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, Injector } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -20,7 +20,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { debounceTime } from 'rxjs/operators';
+import { QuotationFormComponent, QuotationFormData } from '../../components/quotation-form/quotation-form.component';
+import { AlertDialogComponent } from '../../components/alert-dialog/alert-dialog.component';
 
 /**
  * Estructura de datos para un producto en la cubicación
@@ -90,7 +93,8 @@ interface FilterOptions {
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDialogModule
   ],
   templateUrl: './list-quotation.component.html',
   styleUrl: './list-quotation.component.scss'
@@ -145,12 +149,17 @@ export class ListQuotationComponent implements OnInit, AfterViewInit {
       end: new FormControl<Date | null>(null)
     })
   });
-  
-  /**
+    /**
    * Constructor del componente
    * @param router Servicio de enrutamiento para navegación
+   * @param dialog Servicio de diálogo de Material
+   * @param injector Inyector para servicios
    */
-  constructor(private router: Router) { }
+  constructor(
+    private router: Router,
+    private dialog: MatDialog,
+    private injector: Injector
+  ) { }
   
   /**
    * Ciclo de vida: inicialización del componente
@@ -322,20 +331,7 @@ export class ListQuotationComponent implements OnInit, AfterViewInit {
     this.dataSource.data = quotations;
   }
   
-  /**
-   * Extrae opciones únicas para los filtros desplegables
-   */
-  extractFilterOptions(): void {
-    // Obtener proyectos únicos
-    this.filterOptions.projects = Array.from(
-      new Set(this.dataSource.data.map(item => item.projectName))
-    );
-    
-    // Obtener clientes únicos
-    this.filterOptions.clients = Array.from(
-      new Set(this.dataSource.data.map(item => item.clientName))
-    );
-  }
+ 
   
   /**
    * Configura listeners reactivos para los controles de filtro
@@ -443,18 +439,51 @@ export class ListQuotationComponent implements OnInit, AfterViewInit {
    * Formatea el ID de la cubicación al formato CUB-XXX
    * @param id ID numérico de la cubicación
    * @returns Código de cubicación formateado (ej: CUB-001)
-   */
-  formatQuoteNumber(id: number): string {
+   */  formatQuoteNumber(id: number): string {
     return `CUB-${id.toString().padStart(3, '0')}`;
   }
-    /**
+    
+  /**
+   * Obtiene el nombre del cliente a partir de su ID
+   * En una implementación real, esto se obtendría de una base de datos
+   * @param clientId ID del cliente
+   * @returns Nombre del cliente
+   */
+  private getClientNameById(clientId: string): string {
+    // Simulación: en una app real, esto obtendría el nombre desde un servicio
+    const clientMap: Record<string, string> = {
+      'c1': 'Empresa Constructora S.A.',
+      'c2': 'Inmobiliaria Los Pinos',
+      'c3': 'Constructora Norte',
+      'c4': 'Desarrollo Urbano S.A.'
+    };
+    
+    return clientMap[clientId] || 'Cliente Desconocido';
+  }
+  
+  /**
+   * Obtiene el nombre del proyecto a partir de su ID
+   * En una implementación real, esto se obtendría de una base de datos
+   * @param projectId ID del proyecto
+   * @returns Nombre del proyecto
+   */
+  private getProjectNameById(projectId: string): string {
+    // Simulación: en una app real, esto obtendría el nombre desde un servicio
+    const projectMap: Record<string, string> = {
+      'p1': 'Edificio Céntrico',
+      'p2': 'Conjunto Residencial Las Flores',
+      'p3': 'Centro Comercial Plaza Norte',
+      'p4': 'Torres El Mirador'
+    };
+    
+    return projectMap[projectId] || 'Proyecto Desconocido';
+  }
+  
+  /**
    * Navega a la vista detallada de una cubicación
    * @param id ID de la cubicación a visualizar
    */
-  viewQuotation(id: number): void {
-    console.log(`Ver cubicación ${id}`);
-    // Implementación futura: this.router.navigate(['/cubicaciones/detalle', id]);
-  }
+
     /**
    * Navega a la página para agregar productos a una cubicación
    * @param id ID de la cubicación a modificar
@@ -463,11 +492,178 @@ export class ListQuotationComponent implements OnInit, AfterViewInit {
     console.log(`Agregar productos a cubicación ${id}`);
     // Implementación futura: this.router.navigate(['/cubicaciones/agregar-productos', id]);
   }
-  
   /**
-   * Navega a la página para crear una nueva cubicación
+   * Abre el formulario para crear una nueva cubicación.
+   * Utiliza el QuotationFormComponent en un diálogo.
    */
   createNewQuotation(): void {
-    this.router.navigate(['/cubicaciones/crear']);
+    const dialogRef = this.dialog.open(QuotationFormComponent, {
+      width: '700px', // Ancho del diálogo
+      disableClose: true, // Evitar cierre al hacer clic fuera
+      data: null // No se pasan datos porque es una nueva cubicación
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.processNewQuotation(result);
+      }
+    });
+  }
+
+  /**
+   * Procesa los datos de una nueva cubicación creada.
+   * @param formData Datos del formulario de la nueva cubicación.
+   */
+  processNewQuotation(formData: QuotationFormData): void {
+    const newQuotation: Quotation = {
+      id: this.dataSource.data.length + 1, 
+      projectName: this.getProjectNameById(formData.projectId),
+      clientName: this.getClientNameById(formData.clientId),
+      creationDate: formData.startDate, 
+      status: 'en_proceso', 
+      productsCount: 0, 
+      totalAmount: 0, 
+      products: []
+    };
+
+    this.dataSource.data = [...this.dataSource.data, newQuotation];
+    this.extractFilterOptions(); 
+
+    this.dialog.open(AlertDialogComponent, {
+      data: {
+        title: 'Cubicación Agregada',
+        message: `La cubicación CUB-${this.formatQuoteNumber(newQuotation.id)} ha sido creada exitosamente.`,
+        icon: 'check_circle',
+        iconColor: 'green'
+      }
+    });
+  }
+
+  /**
+   * Muestra los detalles de una cubicación.
+   * @param quotation La cubicación a visualizar.
+   */
+  viewQuotation(quotation: Quotation): void {
+    console.log('Ver cubicación:', quotation);    
+    this.dialog.open(AlertDialogComponent, {
+      data: {
+        title: `Detalles de Cubicación CUB-${this.formatQuoteNumber(quotation.id)}`,
+        message: `Proyecto: ${quotation.projectName}\\nCliente: ${quotation.clientName}\\nEstado: ${quotation.status}\\nProductos: ${quotation.productsCount}\\nTotal: ${quotation.totalAmount}`,
+        icon: 'visibility',
+        iconColor: 'blue'
+      }
+    });
+  }
+
+  /**
+   * Abre el formulario para editar una cubicación existente.
+   * @param quotation La cubicación a editar.
+   */
+  editQuotation(quotation: Quotation): void {
+    // Para mapear de nombre a ID, necesitaríamos la lógica inversa o almacenar IDs en la tabla.
+    // Por ahora, asumimos que QuotationFormData puede manejar nombres o que tienes un mapeo.
+    // Si los IDs de cliente/proyecto son diferentes a los nombres, esto necesitará ajuste.
+    const quotationDataForForm: QuotationFormData = {
+      clientId: quotation.clientName, // Esto debería ser el ID del cliente si es diferente al nombre
+      projectId: quotation.projectName, // Esto debería ser el ID del proyecto si es diferente al nombre
+      startDate: quotation.creationDate,
+      endDate: new Date(), // Debería ser la fecha de fin real si existe en `quotation`
+      status: quotation.status,
+      // Asumimos un margen por defecto o necesitarías obtenerlo de `quotation` si está disponible
+      marginPercent: quotation.products[0]?.budget ? 20 : 20 // Ejemplo, ajustar según lógica real
+    };
+
+    const dialogRef = this.dialog.open(QuotationFormComponent, {
+      width: '700px',
+      disableClose: true,
+      data: quotationDataForForm
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.processEditedQuotation(quotation, result);
+      }
+    });
+  }
+
+  /**
+   * Procesa los datos de una cubicación editada.
+   * @param originalQuotation La cubicación original antes de la edición.
+   * @param formData Los nuevos datos del formulario.
+   */
+  processEditedQuotation(originalQuotation: Quotation, formData: QuotationFormData): void {
+    const index = this.dataSource.data.findIndex(q => q.id === originalQuotation.id);
+    if (index > -1) {
+      const updatedQuotation: Quotation = {
+        ...this.dataSource.data[index],
+        projectName: this.getProjectNameById(formData.projectId), // Mapear ID a nombre si es necesario
+        clientName: this.getClientNameById(formData.clientId),   // Mapear ID a nombre si es necesario
+        creationDate: formData.startDate,
+        status: formData.status as 'en_proceso' | 'aprobada' | 'rechazada',
+        // productsCount y totalAmount deberían recalcularse si los productos o costos cambian.
+      };
+      
+      const currentData = this.dataSource.data;
+      currentData[index] = updatedQuotation;
+      this.dataSource.data = [...currentData];
+      this.extractFilterOptions(); // Actualizar filtros por si cambian nombres de proyecto/cliente
+
+      this.dialog.open(AlertDialogComponent, {
+        data: {
+          title: 'Cubicación Actualizada',
+          message: `La cubicación CUB-${this.formatQuoteNumber(updatedQuotation.id)} ha sido actualizada.`,
+          icon: 'check_circle',
+          iconColor: 'green'
+        }
+      });
+    }
+  }
+
+  /**
+   * Elimina una cubicación después de confirmación.
+   * @param quotation La cubicación a eliminar.
+   */
+  deleteQuotation(quotation: Quotation): void {
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        title: 'Confirmar Eliminación',
+        message: `¿Estás seguro de que deseas eliminar la cubicación CUB-${this.formatQuoteNumber(quotation.id)} (${quotation.projectName})? Esta acción no se puede deshacer.`,
+        icon: 'warning',
+        iconColor: 'red',
+        showCancelButton: true
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.dataSource.data = this.dataSource.data.filter(q => q.id !== quotation.id);
+        this.dialog.open(AlertDialogComponent, {
+          data: {
+            title: 'Cubicación Eliminada',
+            message: `La cubicación CUB-${this.formatQuoteNumber(quotation.id)} ha sido eliminada.`,
+            icon: 'delete_forever',
+            iconColor: 'red'
+          }
+        });
+        this.extractFilterOptions(); 
+      }
+    });
+  }
+
+  /**
+   * Extrae las opciones únicas de proyecto y cliente de las cubicaciones cargadas
+   * para usarlas en los filtros desplegables.
+   */
+  extractFilterOptions(): void {
+    const projects = new Set<string>();
+    const clients = new Set<string>();
+    this.dataSource.data.forEach(q => {
+      projects.add(q.projectName);
+      clients.add(q.clientName);
+    });
+    this.filterOptions = {
+      projects: Array.from(projects).sort(),
+      clients: Array.from(clients).sort()
+    };
   }
 }

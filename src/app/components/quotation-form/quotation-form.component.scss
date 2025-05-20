@@ -1,0 +1,189 @@
+/**
+ * Estilos para el componente de formulario de cotización, imitando el estilo del formulario de producto
+ */
+
+// Contenedor principal del diálogo
+.quotation-form-dialog-container {
+  position: relative;
+  // padding-left: 24px; // Eliminado para que la barra no esté aquí
+
+  // Se elimina la línea azul vertical de aquí
+  // &::before { ... }
+}
+
+// Estilo para el título del formulario
+.form-title {
+  margin: 0 0 20px 0; // Ajuste de margen inferior
+  font-size: 22px;
+  font-weight: 500;
+  color: #000000; // Color de texto negro
+  padding-bottom: 10px;
+  text-align: center; // Título centrado
+  width: 100%; // Asegurar que ocupe todo el ancho para centrar correctamente
+}
+
+// Estilos de las pestañas del formulario
+.mat-mdc-tab-group {
+  margin-top: 0; // Reducir margen superior si no hay divisor azul arriba
+
+  // Color de texto negro para las etiquetas de las pestañas
+  ::ng-deep .mdc-tab__text-label {
+    color: #000000 !important; // Forzar color negro
+  }
+
+  // Color gris para los tabs inactivos (opcional, si se quiere mantener)
+  ::ng-deep .mat-mdc-tab:not(.mat-mdc-tab-active) {
+    background-color: #f5f5f5;
+    opacity: 0.8;
+    
+    .mdc-tab__text-label {
+      color: #333333 !important; // Un gris oscuro para pestañas inactivas si se prefiere sobre negro
+    }
+  }
+  
+  ::ng-deep .mat-mdc-tab-header {
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+}
+
+// Contenido de las pestañas
+.tab-content {
+  padding: 20px 0;
+  min-height: 300px; // Asegurar una altura mínima consistente
+}
+
+// Filas del formulario
+.form-row {
+  margin-bottom: 16px;
+  
+  &.two-columns {
+    display: flex;
+    gap: 16px;
+    
+    > * {
+      flex: 1;
+    }
+  }
+}
+
+// Estilos para campos de ancho completo
+.full-width {
+  width: 100%;
+}
+
+// Estilos para campos de ancho medio
+.half-width {
+  width: 50%;
+}
+
+// Ajustes para los íconos dentro de los campos
+mat-icon {
+  margin-right: 8px;
+  
+  &[matPrefix] {
+    color: rgba(0, 0, 0, 0.54);
+  }
+  
+  &[matSuffix] {
+    cursor: pointer;
+  }
+}
+
+// Ajuste para botones en diálogo
+[mat-dialog-actions] {
+  padding: 20px 0 12px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px; // Espacio antes de los botones
+  
+  button {
+    min-width: 150px;
+    padding: 8px 16px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    
+    mat-icon {
+      margin-right: 6px;
+      font-size: 18px;
+      vertical-align: middle;
+    }
+  }
+}
+
+// Botones personalizados
+.save-button {
+  background-color: #0056b3 !important;
+  color: white !important;
+}
+
+.cancel-button {
+  background-color: #6c757d !important;
+  color: white !important;
+  border: 1px solid #5c636a !important;
+}
+
+// Espacio para el contenido del diálogo
+[mat-dialog-content] {
+  min-width: 500px;
+  max-width: 800px;
+  padding-top: 10px;
+  overflow-x: hidden; // Evitar scroll horizontal innecesario
+  
+  position: relative; // Necesario para el posicionamiento absoluto de ::before
+  padding-left: 24px; // Espacio para la línea vertical
+
+  // Línea azul vertical a la izquierda del contenido
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 4px;
+    background-color: #0056b3; // Azul principal
+  }
+}
+
+// Estilos específicos para imitar el formulario de producto
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: #bdbdbd;
+}
+
+::ng-deep .mat-form-field.mat-focused .mat-form-field-outline {
+  color: #0056b3;
+}
+
+// Estilos para los campos readonly
+::ng-deep .mat-form-field-disabled .mat-form-field-outline {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+// Estilo para los labels de los campos
+.mat-label {
+  font-weight: 500;
+}
+
+// Ajuste de márgenes para el componente de diálogo
+::ng-deep .mat-dialog-container .mat-dialog-content {
+  padding: 24px;
+  // border-radius: 8px; // El contenedor principal del diálogo ya tiene esto
+  overflow: hidden; // Generalmente bueno para el contenido del diálogo
+}
+
+// Estilo para el campo de estado bloqueado
+mat-form-field input[readonly] {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+// Mejorar la apariencia de los encabezados de pestañas
+::ng-deep .mat-mdc-tab {
+  min-width: 160px;
+  font-weight: 500;
+}
+
+// Estilos para el contenido de las pestañas de Angular Material
+::ng-deep .mat-mdc-tab-body-content {
+  overflow: hidden !important; // Evita barras de scroll internas en el contenido de las pestañas
+}
