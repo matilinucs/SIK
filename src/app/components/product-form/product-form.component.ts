@@ -21,6 +21,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { Product3 } from '../../models/product.model';
 // Importar SweetAlert2
 import Swal from 'sweetalert2';
+import { calculateTotalArea, handleImageSelection } from '../../utils/shared-functions';
 
 @Component({
   selector: 'app-product-form',
@@ -293,20 +294,11 @@ export class ProductFormComponent implements OnInit {
     }
   }
 
+  // Reemplazar el método onImageSelected con la función compartida
   onImageSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (file && this.isValidImageFile(file)) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.imagePreview = reader.result as string;
-        this.productForm.get('generalData.productImage')?.setValue(file);
-      };
-      reader.readAsDataURL(file);
-    } else {
-      this.snackBar.open('Por favor seleccione una imagen válida (JPG/PNG, máx. 5MB)', 'Cerrar', {
-        duration: 5000
-      });
-    }
+    handleImageSelection(event, (preview) => {
+      this.imagePreview = preview;
+    });
   }
 
   onPlanSelected(event: Event): void {
@@ -654,26 +646,6 @@ export class ProductFormComponent implements OnInit {
   onCancel(): void {
     this.cancelEdit.emit();
     // this.resetForm(); // El componente padre decidirá si resetear o no
-  }
-  
-  // Función auxiliar para calcular el área (ejemplo, ajústala a tu lógica)
-  private calculateTotalArea(dimensions: any): number {
-    if (dimensions && dimensions.width && dimensions.height) {
-      // Considerar la unidad para la conversión si es necesario antes de calcular
-      const widthInMeters = this.convertToMeters(dimensions.width, dimensions.unit);
-      const heightInMeters = this.convertToMeters(dimensions.height, dimensions.unit);
-      return widthInMeters * heightInMeters;
-    }
-    return 0;
-  }
-
-  private convertToMeters(value: number, unit: string): number {
-    switch (unit) {
-      case 'mm': return value / 1000;
-      case 'cm': return value / 100;
-      case 'm': return value;
-      default: return value; // O manejar error
-    }
   }
   
   // Asegúrate de que el método showErrorNotification exista o impleméntalo

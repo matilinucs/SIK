@@ -1,0 +1,67 @@
+// Archivo de estilos compartidos
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎨 ESTILOS PARA FILTROS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎨 ESTILOS PARA TABLAS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.table-container {
+  border: 1px solid $color-gray-mid;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: $color-white;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: $color-gray-light;
+  border-bottom: 1px solid $color-gray-mid;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎨 ESTILOS PARA FORMULARIOS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.form-section {
+  background-color: $color-white;
+  border: 1px solid $color-gray-mid;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎨 ESTILOS PARA SWEETALERT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.swal2-container {
+  z-index: 2000;
+}
+
+.swal2-popup {
+  border-radius: 8px;
+}
+
+.swal2-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.swal2-content {
+  font-size: 1rem;
+}
