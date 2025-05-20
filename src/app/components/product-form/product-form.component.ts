@@ -101,6 +101,16 @@ export class ProductFormComponent implements OnInit {
   climateOptions = ['Humedad', 'Frío extremo', 'Calor extremo', 'Zona costera', 'Estándar'];
   regulationOptions = ['ISO 9001', 'Norma Europea', 'ASTM', 'Local'];
   
+  productTypes = [
+    'Ventana Corrediza',
+    'Ventana Batiente',
+    'Ventana Oscilobatiente',
+    'Puerta Corrediza',
+    'Puerta Abatible',
+    'Paño Fijo',
+    'Otro'
+  ];
+
   constructor(
     private fb: FormBuilder,
     private snackBar: MatSnackBar ) {}
@@ -597,8 +607,21 @@ export class ProductFormComponent implements OnInit {
         });
         return;
       }
-      
+      // Validar que al menos un campo relevante tenga valor distinto a vacío o cero
       const formValue = this.productForm.getRawValue();
+      const isEmpty =
+        !formValue.generalData.productType &&
+        !formValue.generalData.productCode &&
+        (!formValue.generalData.quantity || formValue.generalData.quantity === 0) &&
+        (!formValue.generalData.dimensions.width || formValue.generalData.dimensions.width === 0) &&
+        (!formValue.generalData.dimensions.height || formValue.generalData.dimensions.height === 0) &&
+        (!formValue.description || formValue.description.trim() === '') &&
+        (!formValue.technicalSpecs.material.type || formValue.technicalSpecs.material.type === '') &&
+        (!formValue.costs.unitPrice || formValue.costs.unitPrice === 0);
+      if (isEmpty) {
+        this.snackBar.open('No se puede guardar un producto vacío. Complete al menos un campo relevante.', 'Cerrar', { duration: 3000 });
+        return;
+      }
       
       // Calcular área aquí antes de construir el objeto producto, si no se actualiza en 'costs.totalArea'
       let calculatedArea = 0;

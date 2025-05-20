@@ -95,6 +95,36 @@
     mat-icon {
       margin-right: 0.5rem;
     }
+
+    // Estilo especial para modo unificación
+    &.unify-mode {
+      background-color: white;
+      color: #1976d2;
+      border: 2px solid #1976d2;
+      box-shadow: none;
+      font-weight: 500;
+      padding: 0.5rem 1.5rem;
+      transition: all 0.3s ease;
+      
+      mat-icon {
+        color: #1976d2;
+      }
+
+      &:hover {
+        background-color: #e3f2fd;
+        color: #1565c0;
+        border-color: #1565c0;
+        
+        mat-icon {
+          color: #1565c0;
+        }
+      }
+
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+      }
+    }
   }
 }
 
@@ -182,6 +212,7 @@
       font-size: 1rem;
       padding: 0.5rem;
       margin: 0 $spacing-xs;
+      appearance: textfield;
       -moz-appearance: textfield;
 
       &::-webkit-outer-spin-button,
@@ -593,4 +624,8 @@
       display: none; // No necesitamos el fondo oscuro en SweetAlert
     }
   }
+}
+
+.mat-form-field, .form-row, .dimensions-container, .features-header, .feature-item {
+  position: relative;
 }

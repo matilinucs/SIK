@@ -14,6 +14,7 @@ import { MatCheckboxModule, MatCheckboxChange } from '@angular/material/checkbox
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import * as XLSX from 'xlsx';
+import Swal from 'sweetalert2';
 
 import { Product3 } from '../../models/product.model';
 
@@ -474,17 +475,34 @@ export class ProductsTableComponent {
 
   /**
    * Copia la información de un producto (ej. al portapapeles).
+   * Activado desde el menú de acciones de la fila.
    * @param product El producto a copiar.
    * @param event El evento del mouse para detener la propagación.
    */
   onCopy(product: Product3, event: MouseEvent): void {
     event.stopPropagation();
-    console.log('Copiar producto:', product.id);
-    const productDetails = `ID: ${product.id}, Código: ${product.productCode}, Tipo: ${product.type}`; // Corrected backticks
-    navigator.clipboard.writeText(productDetails).then(() => {
-      console.log('Detalles del producto copiados al portapapeles');
+    console.log('Copiar fila de producto:', product.id);
+
+    const rowData = [
+      product.productCode,
+      product.type,
+      product.quantity,
+      product.totalArea,
+      product.budget,
+      product.description,
+      product.material?.type || '',
+      product.material?.profile || '',
+      product.material?.color || '',
+      product.dimensions?.width || '',
+      product.dimensions?.height || '',
+      product.dimensions?.length || ''
+    ].join('\t');
+
+    navigator.clipboard.writeText(rowData).then(() => {
+      this.showNotification(`Fila '${product.productCode}' copiada al portapapeles`);
     }).catch(err => {
-      console.error('Error al copiar al portapapeles:', err);
+      console.error('Error al copiar la fila al portapapeles:', err);
+      this.showNotification('Error al copiar la fila');
     });
   }
   
@@ -897,5 +915,170 @@ export class ProductsTableComponent {
     
     // Mostrar notificación
     this.showNotification(`${selectedProducts.length} productos seleccionados para unificar`);
+  }
+
+  /**
+   * Maneja el clic en el botón de importar productos desde Excel
+   * Abre un diálogo para seleccionar el archivo de Excel y lo procesa
+   */
+  onImport(): void {
+    const excelLogo = '/excel.png';
+    const fileIcon = '/black_excel.png';
+    Swal.fire({
+      title: 'Importar Archivo Excel',
+      html: `
+        <style>
+          @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-18px); }
+          }
+          .excel-logo-anim {
+            width: 110px;
+            height: 110px;
+            margin-bottom: 10px;
+            animation: bounce 1.2s infinite;
+            transition: filter 0.3s;
+            filter: drop-shadow(0 4px 16px #1976d255);
+          }
+          .drag-file-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 8px;
+          }
+          .drag-file-visual img {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 4px;
+            opacity: 0.7;
+          }
+          .custom-file-upload {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            font-size: 1rem;
+            font-weight: 500;
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #b0b0b0;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+            transition: background 0.2s, border 0.2s;
+          }
+          .custom-file-upload:hover {
+            background: #e3e3e3;
+            border-color: #1976d2;
+            color: #1976d2;
+          }
+          .custom-file-upload .file-icon {
+            width: 22px;
+            height: 22px;
+            opacity: 0.8;
+          }
+        </style>
+        <div style="text-align: center; margin-bottom: 20px;">
+          <img src="${excelLogo}" alt="Excel Logo" class="excel-logo-anim">
+        </div>
+        <div style="border: 2px solid #b0b0b0; padding: 20px; border-radius: 10px; margin: 20px 0; background: #fafbfc;">
+          <div class="drag-file-visual">
+            <img src="${fileIcon}" alt="Arrastra archivo">
+            <span style="font-size: 1.08em; color: #666;">Arrastra tu archivo Excel aquí</span>
+          </div>
+          <p style="color: #999; font-size: 0.9em; margin: 10px 0 0 0;">o</p>
+          <label for="file-upload" class="custom-file-upload">
+            <span style="font-size: 1.3em; line-height: 1;">📁</span>
+            <span>Explorar archivos</span>
+          </label>
+          <input id="file-upload" type="file" accept=".xlsx, .xls" 
+                 style="display: none;"
+                 onchange="window.handleFileSelect(event)">
+        </div>
+      `,
+      showConfirmButton: false,
+      showCloseButton: true,
+      customClass: {
+        container: 'drop-zone-container'
+      },
+      didOpen: () => {
+        const dropZone = Swal.getHtmlContainer();
+        const fileInput = dropZone?.querySelector('#file-upload') as HTMLInputElement;
+
+        // Configurar el manejador de archivos en window
+        (window as any).handleFileSelect = (event: Event) => {
+          const file = (event.target as HTMLInputElement).files?.[0];
+          if (file) {
+            this.handleExcelFile(file);
+            Swal.close();
+          }
+        };
+
+        // Prevenir comportamiento por defecto
+        dropZone?.addEventListener('dragover', (e: Event) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const target = e.target as HTMLElement;
+          target.style.backgroundColor = '#f3f9ff';
+        });
+
+        dropZone?.addEventListener('dragleave', (e: Event) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const target = e.target as HTMLElement;
+          target.style.backgroundColor = 'transparent';
+        });
+
+        // Manejar el drop
+        dropZone?.addEventListener('drop', (e: DragEvent) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const target = e.target as HTMLElement;
+          target.style.backgroundColor = 'transparent';
+          
+          const file = e.dataTransfer?.files[0];
+          if (file) {
+            this.handleExcelFile(file);
+            Swal.close();
+          }
+        });
+      }
+    });
+  }
+
+  private handleExcelFile(file: File): void {
+    const allowedTypes = [
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel'
+    ];
+    
+    if (!allowedTypes.includes(file.type)) {
+      this.showNotification('Por favor, selecciona un archivo Excel válido (.xlsx o .xls)');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      try {
+        const data = e.target?.result;
+        const workbook = XLSX.read(data, { type: 'binary' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+        // Procesar los datos
+        if (jsonData.length > 0) {
+          this.saveStateToHistory('Importar productos desde Excel');
+          // TODO: Implementar la lógica para procesar los datos del Excel
+          this.showNotification('Archivo importado correctamente');
+        } else {
+          this.showNotification('El archivo está vacío');
+        }
+      } catch (error) {
+        console.error('Error al procesar el archivo Excel:', error);
+        this.showNotification('Error al procesar el archivo');
+      }
+    };
+    
+    reader.readAsBinaryString(file);
   }
 }

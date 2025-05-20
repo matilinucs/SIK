@@ -5,6 +5,9 @@
   </div>
     <!-- Opciones de la tabla -->  <div class="table-options-container">    <button mat-stroked-button color="primary" [matMenuTriggerFor]="filterMenu" class="action-button filter-button" matTooltip="Abrir filtros">
       <mat-icon>filter_list</mat-icon> <span>Filtros</span>
+    </button>
+    <button mat-stroked-button color="primary" class="action-button import-button" (click)="onImport()" matTooltip="Importar">
+      <mat-icon>file_upload</mat-icon> <span>Importar</span>
     </button>    <button mat-raised-button color="primary" [matMenuTriggerFor]="exportMenu" class="action-button export-button" matTooltip="Exportar">
       <mat-icon>file_download</mat-icon> <span>Exportar</span>
     </button>

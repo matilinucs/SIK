@@ -1,11 +1,11 @@
-  <div class="product-form-container" [class.unify-mode]="isUnifyMode">
+<div class="product-form-container" [class.unify-mode]="isUnifyMode">
   <div class="header-container">
     <h2 class="page-title">
       <span *ngIf="isUnifyMode">Unificar {{ selectedProductsCount }} Productos</span>
       <span *ngIf="!isUnifyMode">{{ initialProduct ? 'Editar Producto' : 'Agregar Producto' }}</span>
     </h2>
     <div class="actions-container">      <!-- Botón Guardar ahora llama a onSubmit() y es de tipo submit -->
-      <button mat-raised-button color="primary" type="submit" form="productFormId" class="save-button">
+      <button mat-raised-button color="primary" type="submit" form="productFormId" class="save-button" [ngClass]="{'unify-mode': isUnifyMode}">
         <mat-icon>{{ isUnifyMode ? 'merge_type' : 'save' }}</mat-icon> 
         {{ isUnifyMode ? 'Unificar Productos' : (initialProduct ? 'Guardar Cambios' : 'Guardar Producto') }}
       </button>
@@ -34,9 +34,7 @@
                   <span class="label-text">Tipo de Producto</span>
                 </mat-label>
                 <mat-select formControlName="productType">
-                  <mat-option value="ventana">Ventana</mat-option>
-                  <mat-option value="piso">Piso Vitrificado</mat-option>
-                  <mat-option value="escalon">Escalones</mat-option>
+                  <mat-option *ngFor="let type of productTypes" [value]="type">{{type}}</mat-option>
                 </mat-select>
                 <mat-error *ngIf="productForm.get('generalData.productType')?.hasError('required')">
                   El tipo de producto es obligatorio
@@ -62,64 +60,57 @@
             </div>
 
             <!-- Cantidad -->
-            <div class="form-row">
-              <div class="quantity-field">
-                <mat-label class="styled-label">
-                  <span class="label-icon"><mat-icon>format_list_numbered</mat-icon></span>
-                  <span class="label-text">Cantidad</span>
-                </mat-label>
-                <div class="quantity-input-group">
-                  <button type="button" mat-icon-button color="primary" (click)="decrementQuantity()">
-                    <mat-icon>remove</mat-icon>
-                  </button>
-                  <input type="number" matInput formControlName="quantity" min="1">
-                  <button type="button" mat-icon-button color="primary" (click)="incrementQuantity()">
-                    <mat-icon>add</mat-icon>
-                  </button>
-                </div>
+            <div class="form-row quantity-field" style="position:relative;">
+              <mat-label class="styled-label">
+                <span class="label-icon"><mat-icon>format_list_numbered</mat-icon></span>
+                <span class="label-text">Cantidad</span>
+              </mat-label>
+              <div class="quantity-input-group">
+                <button type="button" mat-icon-button color="primary" (click)="decrementQuantity()">
+                  <mat-icon>remove</mat-icon>
+                </button>
+                <input type="number" matInput formControlName="quantity" min="1">
+                <button type="button" mat-icon-button color="primary" (click)="incrementQuantity()">
+                  <mat-icon>add</mat-icon>
+                </button>
               </div>
             </div>
 
             <!-- Dimensiones -->
-            <div class="form-row">
-              <div formGroupName="dimensions" class="dimensions-container">
-                <mat-label class="styled-label">
-                  <span class="label-icon"><mat-icon>straighten</mat-icon></span>
-                  <span class="label-text">Dimensiones (metros)</span>
-                </mat-label>
-                
-                <div class="dimensions-grid">
-                  <div class="dimension-row">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Ancho</mat-label>
-                      <input matInput type="number" formControlName="width" min="0.001" step="0.01" placeholder="0.00">
-                      <span matSuffix>m</span>
-                      <mat-error *ngIf="productForm.get('generalData.dimensions.width')?.hasError('required')">
-                        El ancho es obligatorio
-                      </mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline">
-                      <mat-label>Alto</mat-label>
-                      <input matInput type="number" formControlName="height" min="0.001" step="0.01" placeholder="0.00">
-                      <span matSuffix>m</span>
-                      <mat-error *ngIf="productForm.get('generalData.dimensions.height')?.hasError('required')">
-                        El alto es obligatorio
-                      </mat-error>
-                    </mat-form-field>
-
-                    <mat-form-field appearance="outline">
-                      <mat-label>Profundidad</mat-label>
-                      <input matInput type="number" formControlName="length" min="0.001" step="0.01" placeholder="0.00">
-                      <span matSuffix>m</span>
-                      <mat-error *ngIf="productForm.get('generalData.dimensions.length')?.hasError('required')">
-                        La profundidad es obligatoria
-                      </mat-error>
-                    </mat-form-field>
-                  </div>
+            <div class="form-row dimensions-container" formGroupName="dimensions" style="position:relative;">
+              <mat-label class="styled-label">
+                <span class="label-icon"><mat-icon>straighten</mat-icon></span>
+                <span class="label-text">Dimensiones (metros)</span>
+              </mat-label>
+              <div class="dimensions-grid">
+                <div class="dimension-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Ancho</mat-label>
+                    <input matInput type="number" formControlName="width" min="0.001" step="0.01" placeholder="0.00">
+                    <span matSuffix>m</span>
+                    <mat-error *ngIf="productForm.get('generalData.dimensions.width')?.hasError('required')">
+                      El ancho es obligatorio
+                    </mat-error>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Alto</mat-label>
+                    <input matInput type="number" formControlName="height" min="0.001" step="0.01" placeholder="0.00">
+                    <span matSuffix>m</span>
+                    <mat-error *ngIf="productForm.get('generalData.dimensions.height')?.hasError('required')">
+                      El alto es obligatorio
+                    </mat-error>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Profundidad</mat-label>
+                    <input matInput type="number" formControlName="length" min="0.001" step="0.01" placeholder="0.00">
+                    <span matSuffix>m</span>
+                    <mat-error *ngIf="productForm.get('generalData.dimensions.length')?.hasError('required')">
+                      La profundidad es obligatoria
+                    </mat-error>
+                  </mat-form-field>
                 </div>
-                <mat-hint>Use punto (.) como separador decimal</mat-hint>
               </div>
+              <mat-hint>Use punto (.) como separador decimal</mat-hint>
             </div>
 
             <!-- Descripción -->
@@ -129,7 +120,7 @@
                   <span class="label-icon"><mat-icon>description</mat-icon></span>
                   <span class="label-text">Descripción del Producto</span>
                 </mat-label>
-                <textarea matInput formControlName="description" rows="4" 
+                <textarea matInput formControlName="description" rows="4"
                   placeholder="Ventana corredera de aluminio con doble vidrio templado, perfiles de alta resistencia y sistema de apertura deslizante..."></textarea>
                 <mat-hint align="end">{{productForm.get('generalData.description')?.value?.length || 0}}/200</mat-hint>
                 <mat-error *ngIf="productForm.get('generalData.description')?.hasError('required')">
@@ -158,19 +149,15 @@
                   <div class="form-row">
                     <mat-form-field appearance="outline">
                       <mat-label>Tipo de Material</mat-label>
-                      <mat-select formControlName="type" required>
-                        <mat-option *ngFor="let type of materialTypes" [value]="type">
-                          {{type}}
-                        </mat-option>
+                      <mat-select formControlName="type">
+                        <mat-option *ngFor="let type of materialTypes" [value]="type">{{type}}</mat-option>
                       </mat-select>
                     </mat-form-field>
                     
                     <mat-form-field appearance="outline">
                       <mat-label>Perfil</mat-label>
                       <mat-select formControlName="profile">
-                        <mat-option *ngFor="let profile of profileTypes" [value]="profile">
-                          {{profile}}
-                        </mat-option>
+                        <mat-option *ngFor="let profile of profileTypes" [value]="profile">{{profile}}</mat-option>
                       </mat-select>
                     </mat-form-field>
                   </div>

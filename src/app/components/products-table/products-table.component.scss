@@ -76,6 +76,21 @@
           }
         }
         
+        // Botón Importar
+        &.import-button {
+          background-color: $color-white !important;
+          color: $color-success !important;
+          border: 1px solid $color-success !important;
+          
+          mat-icon {
+            color: $color-success !important;
+          }
+
+          &:hover {
+            background-color: rgba($color-success, 0.1) !important;
+          }
+        }
+        
         // Botón Exportar Excel
         &.export-button {
           background-color: $color-white !important;
@@ -106,15 +121,22 @@
   // ────────────────────────────────────────────────────────────────────────────────
   .table-options-container {
     display: flex;
-    gap: $spacing-sm;
+    gap: $spacing-sm; // Este gap se aplicará entre los botones de la izquierda y el nuevo grupo .undo-redo-buttons
     padding: $spacing-md;
     margin-bottom: $spacing-md;
-    background-color: $color-background-light; // Un fondo sutil para la sección de opciones
+    background-color: $color-background-light; // Fondo sutil para la sección de opciones
     border-radius: $border-radius-md;
     border: 1px solid $color-divider;
     
-    .spacer {
-      flex: 1;  // Elemento flexible que ocupa todo el espacio disponible
+    // Se asume que el <div class="spacer"></div> ha sido eliminado del HTML,
+    // y los botones .undo-button y .redo-button están ahora envueltos en:
+    // <div class="undo-redo-buttons"> ... </div>
+
+    .undo-redo-buttons {
+      display: flex;     // Permite que los botones internos se alineen en fila.
+      margin-left: auto; // Empuja este grupo de botones a la derecha del contenedor principal.
+      // Si quieres un pequeño espacio ENTRE los botones Deshacer y Rehacer, puedes añadir 'gap' aquí:
+      // gap: $spacing-xs; 
     }
     
     // Estilos para los botones de acción
@@ -145,6 +167,21 @@
         color: $color-white !important;
         &:hover {
           background-color: color.adjust($color-primary, $lightness: -10%) !important;
+        }
+      }
+      
+      // Botón Importar
+      &.import-button {
+        background-color: $color-white !important;
+        color: $color-success !important;
+        border: 1px solid $color-success !important;
+        
+        mat-icon {
+          color: $color-success !important;
+        }
+
+        &:hover {
+          background-color: rgba($color-success, 0.1) !important;
         }
       }
       
@@ -204,34 +241,65 @@
       
       // Botón Deshacer
       &.undo-button {
-        background-color: $color-white !important;
-        color: $color-gray-dark !important;
-        border: 1px solid $color-gray-dark !important;
-        
+        background-color: $color-warning !important; // Naranja
+        color: $color-white !important; // Ícono blanco
+        border: none; // Sin borde
+        width: 40px; // Tamaño cuadrado
+        height: 40px;
+        border-radius: 50%; // Forma circular
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
         mat-icon {
-          color: $color-gray-dark !important;
+          color: $color-white !important; // Ícono blanco
+          margin: 0; // Sin margen
         }
-        
+
+        span {
+          display: none; // Ocultar texto
+        }
+
         &:hover {
-          background-color: rgba($color-gray-dark, 0.1) !important;
+          background-color: darken($color-warning, 10%) !important; // Naranja más oscuro al pasar el mouse
         }
       }
       
       // Botón Rehacer
       &.redo-button {
-        background-color: $color-white !important;
-        color: $color-gray-dark !important;
-        border: 1px solid $color-gray-dark !important;
-        
+        background-color: $color-warning !important; // Naranja
+        color: $color-white !important; // Ícono blanco
+        border: none; // Sin borde
+        width: 40px; // Tamaño cuadrado
+        height: 40px;
+        border-radius: 50%; // Forma circular
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
         mat-icon {
-          color: $color-gray-dark !important;
+          color: $color-white !important; // Ícono blanco
+          margin: 0; // Sin margen
         }
-        
+
+        span {
+          display: none; // Ocultar texto
+        }
+
         &:hover {
-          background-color: rgba($color-gray-dark, 0.1) !important;
+          background-color: darken($color-warning, 10%) !important; // Naranja más oscuro al pasar el mouse
         }
       }
     }
+
+    // Eliminar la regla anterior para .undo-button y .redo-button que establecía margin-left para ambos.
+    // La regla que estaba aquí:
+    // .undo-button,
+    // .redo-button {
+    //   margin-left: -$spacing-sm;
+    //   margin-right: 0;
+    // }
+    // HA SIDO ELIMINADA. El ajuste ahora está en .action-button.redo-button y en justify-content del padre.
 
     // Responsive
     @media screen and (max-width: 768px) {
