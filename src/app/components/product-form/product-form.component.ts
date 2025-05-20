@@ -54,6 +54,7 @@ export class ProductFormComponent implements OnInit {
   @Input() initialProduct: Product3 | null = null; // Renombrado de 'product' a 'initialProduct'
   @Input() isUnifyMode: boolean = false; // Indica si el formulario está en modo unificación
   @Input() selectedProductsCount: number = 0; // Número de productos seleccionados para unificar
+  @Input() showSubmitButton: boolean = true; // <-- NUEVA LÍNEA
   @Output() saveProduct = new EventEmitter<Product3>(); // Renombrado de 'productSaved' a 'saveProduct'
   @Output() cancelEdit = new EventEmitter<void>(); // Nuevo EventEmitter
   @Output() saveUnifiedChanges = new EventEmitter<{[key: string]: any}>(); // Para guardar cambios en modo unificación
@@ -128,66 +129,66 @@ export class ProductFormComponent implements OnInit {
 
   private createForm(): void {
     this.productForm = this.fb.nonNullable.group({
-      id: [null as string | null], // Añadir ID al formulario para manejar ediciones
+      id: [null as string | null],
       generalData: this.fb.group({
-        productType: ['ventana'],
-        productCode: [''],
-        quantity: [1, [Validators.required, Validators.min(1)]],  // Removidos validadores iniciales
+        productType: ['ventana'], // Valor inicial, sin validadores
+        productCode: [''], // Sin validadores
+        quantity: [1], // Sin validadores
         dimensions: this.fb.group({
-          width: [0, [Validators.required, Validators.min(0.001)]],
-          height: [0, [Validators.required, Validators.min(0.001)]],
-          length: [0], // Length puede no ser siempre requerido o ser 0
-          unit: ['mm']
+          width: [0], // Sin validadores
+          height: [0], // Sin validadores
+          length: [0], // Sin validadores
+          unit: ['mm'] // Sin validadores
         }),
         locations: this.fb.group({
-          roomType: [''],
-          housingType: [''],
-          customName: ['']
+          roomType: [''], // Sin validadores
+          housingType: [''], // Sin validadores
+          customName: [''] // Sin validadores
         }),
-        productImage: ['']
+        productImage: [''] // Sin validadores
       }),
       
       technicalSpecs: this.fb.group({
         material: this.fb.group({
-          type: [''],
-          profile: [''],
-          color: [''],
-          customColor: ['']
+          type: [''], // Sin validadores
+          profile: [''], // Sin validadores
+          color: [''], // Sin validadores
+          customColor: [''] // Sin validadores
         }),
         glass: this.fb.group({
-          type: [''],
-          thickness: [''],
-          protection: ['']
+          type: [''], // Sin validadores
+          thickness: [''], // Sin validadores
+          protection: [''] // Sin validadores
         }),
         opening: this.fb.group({
-          system: [''],
-          handle: ['']
+          system: [''], // Sin validadores
+          handle: [''] // Sin validadores
         }),
         installation: this.fb.group({
-          climateResistance: [''],
-          regulation: ['']
+          climateResistance: [''], // Sin validadores
+          regulation: [''] // Sin validadores
         }),
-        additionalFeatures: this.fb.array([])
+        additionalFeatures: this.fb.array([]) // Sin validadores para el array en sí
       }),
       
       costs: this.fb.group({
-        unitPrice: [0, [Validators.required, Validators.min(0)]],
-        currency: ['USD'],
-        tax: [0.16],
-        totalArea: [0] // Campo para mostrar el área calculada (opcional en el form)
+        unitPrice: [0], // Sin validadores
+        currency: ['USD'], // Sin validadores
+        tax: [0.16], // Sin validadores
+        totalArea: [0] // Sin validadores, se calcula dinámicamente
       }),
-      description: [''], // Campo de descripción que estaba en el modelo Product3
+      description: [''], // Sin validadores
       plans: this.fb.group({
-        technicalPlan: [''],
-        clientApproved: [false]
+        technicalPlan: [''], // Sin validadores
+        clientApproved: [false] // Sin validadores
       })
     });
 
-    // Retrasar la aplicación de validadores y suscripciones
-    // para asegurar que el DOM esté listo si es necesario.
+    // Ya no es necesario llamar a removeValidators aquí si no se añaden en la creación
+    // this.removeValidators(this.productForm); 
+
     setTimeout(() => {
-      // this.applyValidators(); // applyValidators ya no es necesario si se definen en la creación
-      this.setupValueChangesSubscriptions(); // Renombrado para claridad
+      this.setupValueChangesSubscriptions();
     }, 0);
   }
 
@@ -342,8 +343,8 @@ export class ProductFormComponent implements OnInit {
   addFeature(): void {
     const featuresArray = this.productForm.get('technicalSpecs.additionalFeatures') as FormArray;
     const featureGroup = this.fb.group({
-      name: ['', Validators.required],
-      value: ['', Validators.required]
+      name: [''], // SIN VALIDADORES
+      value: [''] // SIN VALIDADORES
     });
     featuresArray.push(featureGroup);
   }
@@ -577,58 +578,32 @@ export class ProductFormComponent implements OnInit {
   /**
    * Sobrescribe onSubmit para manejar tanto guardar normal como unificación
    */  onSubmit(): void {
+    // Log para el botón interno del formulario (cuando showSubmitButton es true y se hace click o se activa el submit)
+    // Este log se moverá al método que llama a onSubmit directamente si es un botón de tipo submit.
+    // Por ahora, lo dejamos aquí para capturar el evento de submit del formulario.
+    if (this.showSubmitButton) {
+      console.log('[ProductFormComponent] Formulario enviado (posiblemente por botón interno): ', this.getButtonText());
+    }
+    console.log("[ProductFormComponent] onSubmit triggered");
+    console.log("[ProductFormComponent] Form raw value:", this.productForm.getRawValue());
+    console.log("[ProductFormComponent] Is Unify Mode:", this.isUnifyMode);
+
     if (this.isUnifyMode) {
-      // En modo unificación, emitir solo los campos modificados con sus valores actuales
       if (Object.keys(this.modifiedFields).length === 0) {
         this.snackBar.open('No se han realizado cambios para aplicar', 'Cerrar', { duration: 3000 });
         return;
       }
-      
-      console.log('Campos modificados antes de guardar:', this.modifiedFields);
-      
-      // Obtener los valores actuales de los campos modificados
       const modifiedFieldsValues = this.getModifiedFieldsValues();
-      
-      // Verificar si hay valores para aplicar
-      if (Object.keys(modifiedFieldsValues).length === 0) {
-        this.snackBar.open('No se pudieron obtener los valores modificados', 'Cerrar', { duration: 3000 });
-        return;
+      if (Object.keys(modifiedFieldsValues).length === 0 && Object.keys(this.modifiedFields).length > 0) {
+         console.warn("[ProductFormComponent] Unify mode: modifiedFields has keys, but getModifiedFieldsValues returned empty. This might indicate an issue with retrieving values from the form for modified paths.");
+         this.snackBar.open('No se pudieron obtener los valores modificados. Revisa la consola.', 'Cerrar', { duration: 3000 });
+         return;
       }
-      
-      console.log('Emitiendo campos modificados para unificación:', modifiedFieldsValues);
+      console.log("[ProductFormComponent] Emitting unified changes:", modifiedFieldsValues);
       this.saveUnifiedChanges.emit(modifiedFieldsValues);
     } else {
-      // Comportamiento normal para guardar un producto
-      if (this.productForm.invalid) {
-        this.snackBar.open('Por favor, complete todos los campos requeridos.', 'Cerrar', { duration: 3000 });
-        // Marcar todos los campos como tocados para mostrar errores
-        Object.values(this.productForm.controls).forEach(control => {
-          control.markAsTouched();
-          if (control instanceof FormGroup) {
-            Object.values(control.controls).forEach(innerControl => {
-              innerControl.markAsTouched();
-            });
-          }
-        });
-        return;
-      }
-      // Validar que al menos un campo relevante tenga valor distinto a vacío o cero
       const formValue = this.productForm.getRawValue();
-      const isEmpty =
-        !formValue.generalData.productType &&
-        !formValue.generalData.productCode &&
-        (!formValue.generalData.quantity || formValue.generalData.quantity === 0) &&
-        (!formValue.generalData.dimensions.width || formValue.generalData.dimensions.width === 0) &&
-        (!formValue.generalData.dimensions.height || formValue.generalData.dimensions.height === 0) &&
-        (!formValue.description || formValue.description.trim() === '') &&
-        (!formValue.technicalSpecs.material.type || formValue.technicalSpecs.material.type === '') &&
-        (!formValue.costs.unitPrice || formValue.costs.unitPrice === 0);
-      if (isEmpty) {
-        this.snackBar.open('No se puede guardar un producto vacío. Complete al menos un campo relevante.', 'Cerrar', { duration: 3000 });
-        return;
-      }
       
-      // Calcular área aquí antes de construir el objeto producto, si no se actualiza en 'costs.totalArea'
       let calculatedArea = 0;
       const dims = formValue.generalData.dimensions;
       if (dims && typeof dims.width === 'number' && typeof dims.height === 'number') {
@@ -640,33 +615,108 @@ export class ProductFormComponent implements OnInit {
       }
       
       const productToSave: Product3 = {
-        id: formValue.id || 'prod-' + new Date().getTime().toString(), // Generar ID si es nuevo
-        productCode: formValue.generalData.productCode,
-        type: formValue.generalData.productType,
-        quantity: formValue.generalData.quantity,
+        id: formValue.id || `prod-${new Date().getTime().toString()}`,
+        productCode: formValue.generalData.productCode || '-',
+        type: formValue.generalData.productType || '-',
+        quantity: formValue.generalData.quantity ?? 0,
         totalArea: calculatedArea, // Usar el área calculada
-        budget: (formValue.costs.unitPrice || 0) * (formValue.generalData.quantity || 1), // Calcular presupuesto total
-        description: formValue.description,
+        budget: (formValue.costs.unitPrice ?? 0) * (formValue.generalData.quantity ?? 1),
+        description: formValue.description || '-',
         dimensions: {
-          width: formValue.generalData.dimensions.width,
-          height: formValue.generalData.dimensions.height,
-          length: formValue.generalData.dimensions.length,
-          unit: formValue.generalData.dimensions.unit,
+          width: formValue.generalData.dimensions.width ?? 0,
+          height: formValue.generalData.dimensions.height ?? 0,
+          length: formValue.generalData.dimensions.length ?? 0,
+          unit: formValue.generalData.dimensions.unit || 'mm'
         },
         material: {
-          type: formValue.technicalSpecs.material.type,
-          profile: formValue.technicalSpecs.material.profile,
-          color: formValue.technicalSpecs.material.color,
-          // customColor: formValue.technicalSpecs.material.customColor, // Si existe
+          type: formValue.technicalSpecs.material.type || '-',
+          profile: formValue.technicalSpecs.material.profile || '-',
+          color: formValue.technicalSpecs.material.color || '-',
+          customColor: formValue.technicalSpecs.material.customColor || null,
         },
         glass: {
-          type: formValue.technicalSpecs.glass.type,
-          thickness: formValue.technicalSpecs.glass.thickness,
-          protection: formValue.technicalSpecs.glass.protection,
+          type: formValue.technicalSpecs.glass.type || '-',
+          thickness: formValue.technicalSpecs.glass.thickness || '-',
+          protection: formValue.technicalSpecs.glass.protection || '-',
         },
-        // Añadir otras propiedades mapeadas desde technicalSpecs, plans, etc.
+        opening: {
+            system: formValue.technicalSpecs.opening?.system || '-',
+            handle: formValue.technicalSpecs.opening?.handle || '-',
+        },
+        installation: {
+            climateResistance: formValue.technicalSpecs.installation?.climateResistance || '-',
+            regulation: formValue.technicalSpecs.installation?.regulation || '-',
+        },
+        additionalFeatures: formValue.technicalSpecs.additionalFeatures?.map((feature: any) => ({
+            name: feature.name || '-',
+            value: feature.value || '-',
+        })) || [],
+        plans: {
+            technicalPlan: formValue.plans?.technicalPlan || null, // Podría ser string vacío o null
+            clientApproved: formValue.plans?.clientApproved || false,
+        },
+        productImage: this.imagePreview || null,
+        creationDate: this.initialProduct?.creationDate || new Date(),
+        lastModified: new Date(),
+        status: this.initialProduct?.status || 'En cotización',
+        version: this.initialProduct?.version || 1,
+        project: this.initialProduct?.project || null,
+        supplier: this.initialProduct?.supplier || null,
+        category: this.initialProduct?.category || '-',
+        tags: this.initialProduct?.tags || [],
+        notes: this.initialProduct?.notes || null,
+        attachments: this.initialProduct?.attachments || [],
+        relatedProducts: this.initialProduct?.relatedProducts || [],
+        purchaseHistory: this.initialProduct?.purchaseHistory || [],
+        stock: this.initialProduct?.stock || { quantity: 0, location: '-' },
+        leadTime: this.initialProduct?.leadTime || 0,
+        priority: this.initialProduct?.priority || 'Media',
+        assignedTo: this.initialProduct?.assignedTo || null,
+        client: this.initialProduct?.client || null,
+        currency: formValue.costs.currency || 'USD', 
+        tax: formValue.costs.tax ?? 0.16, 
+        discount: this.initialProduct?.discount || 0,
+        shippingCost: this.initialProduct?.shippingCost || 0,
+        finalPrice: 0, // Se calculará después
+        paymentTerms: this.initialProduct?.paymentTerms || '-',
+        warranty: this.initialProduct?.warranty || '-',
+        certifications: this.initialProduct?.certifications || [],
+        environmentalImpact: this.initialProduct?.environmentalImpact || null,
+        assemblyInstructions: this.initialProduct?.assemblyInstructions || null,
+        maintenanceGuide: this.initialProduct?.maintenanceGuide || null,
+        customFields: this.initialProduct?.customFields || {},
+        location: {
+          roomType: formValue.generalData.locations?.roomType || '-',
+          housingType: formValue.generalData.locations?.housingType || '-',
+          customName: formValue.generalData.locations?.customName || '-',
+        }
       };
       
+      // Calcular finalPrice (ejemplo básico, ajustar según lógica de negocio)
+      let subtotal = productToSave.budget;
+      let taxAmount = 0;
+      if (typeof productToSave.tax === 'number') {
+        taxAmount = subtotal * productToSave.tax;
+      } else if (typeof productToSave.tax === 'object' && productToSave.tax !== null && 'rate' in productToSave.tax && typeof productToSave.tax.rate === 'number') {
+        taxAmount = subtotal * productToSave.tax.rate;
+      }
+      
+      let discountAmount = 0;
+      if (typeof productToSave.discount === 'number') {
+          discountAmount = subtotal * (productToSave.discount / 100); // Asume que el número es un porcentaje
+      } else if (typeof productToSave.discount === 'object' && productToSave.discount !== null) {
+          if ('percentage' in productToSave.discount && typeof productToSave.discount.percentage === 'number') {
+            // @ts-ignore
+            discountAmount = subtotal * (productToSave.discount.percentage / 100);
+          } else if ('amount' in productToSave.discount && typeof productToSave.discount.amount === 'number') {
+            // @ts-ignore
+            discountAmount = productToSave.discount.amount;
+          }
+      }
+
+      productToSave.finalPrice = subtotal + taxAmount - discountAmount + (productToSave.shippingCost || 0);
+
+      console.log("[ProductFormComponent] Product to save:", productToSave);
       this.saveProduct.emit(productToSave);
     }
   }

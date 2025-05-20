@@ -149,46 +149,77 @@ export class CreateProductComponent implements OnInit {
   }
 
   private openProductFormModal(product: Product3 | null): void {
-    const swalContainer = document.createElement('div');    Swal.fire({      title: product ? 'Editar Producto' : 'Agregar Producto',
+    const swalContainer = document.createElement('div');
+    let componentRef: any;
+    let saveSub: any;
+    let cancelSub: any;
+
+    Swal.fire({
+      title: product ? 'Editar Producto' : 'Agregar Producto',
       html: swalContainer,
-      showConfirmButton: false,
-      showCancelButton: false,
+      showConfirmButton: true,
+      confirmButtonText: product ? 'Guardar Cambios' : 'Guardar Producto',
+      showCancelButton: true,
+      cancelButtonText: 'Cancelar',
       width: '800px',
-      allowOutsideClick: false,
+      allowOutsideClick: true, 
       customClass: {
         container: 'swal-container-with-dropdowns',
         popup: 'swal-popup-with-dropdowns',
-        htmlContainer: 'swal-html-container-with-dropdowns'
+        htmlContainer: 'swal-html-container-with-dropdowns',
+        confirmButton: 'swal-confirm-button', 
+        cancelButton: 'swal-cancel-button'
       },
       didOpen: () => {
         const factory = this.componentFactoryResolver.resolveComponentFactory(ProductFormComponent);
-        const componentRef = factory.create(this.injector, [], swalContainer);
-        this.appRef.attachView(componentRef.hostView);
+        componentRef = this.productFormContainer!.createComponent(factory, undefined, this.injector);
+        componentRef.instance.initialProduct = product;
+        componentRef.instance.isUnifyMode = false;
+        componentRef.instance.showSubmitButton = false; // Ocultar botón interno del form
+        
+        swalContainer.appendChild(componentRef.location.nativeElement);
 
-        if (product) {
-          componentRef.instance.editProduct({...product});
-        } else {
-          componentRef.instance.resetForm();
-          componentRef.instance.productForm.enable();
-        }
-
-        const saveSub = componentRef.instance.saveProduct.subscribe((savedProduct: Product3) => {
+        saveSub = componentRef.instance.saveProduct.subscribe((savedProduct: Product3) => {
           this.handleProductSave(savedProduct);
-          saveSub.unsubscribe();
-          cancelSub.unsubscribe();
-          this.appRef.detachView(componentRef.hostView);
-          componentRef.destroy();
+          // Swal.close(); // Se cierra implícitamente por preConfirm o el .then()
         });
-        const cancelSub = componentRef.instance.cancelEdit.subscribe(() => {
-          this.handleCancelEdit();
-          cancelSub.unsubscribe();
-          saveSub.unsubscribe();
-          this.appRef.detachView(componentRef.hostView);
-          componentRef.destroy();
+        cancelSub = componentRef.instance.cancelEdit.subscribe(() => {
+          Swal.close(); // Cerrar el modal al cancelar desde el form
         });
       },
+      preConfirm: () => {
+        console.log('[CreateProductComponent] Botón SweetAlert (Agregar/Editar) clickeado'); // <--- NUEVO CONSOLE.LOG
+        if (componentRef && componentRef.instance) {
+          componentRef.instance.onSubmit(); // Llama a onSubmit del formulario
+        }
+        // No retornar nada aquí explícitamente para que preConfirm no cierre el modal por sí mismo
+        // si onSubmit emite un evento que ya lo cierra (como saveProduct que llama a handleProductSave)
+        // O, si onSubmit no cierra el modal, se puede gestionar en el .then()
+        return true; // Devolver true para que el modal se cierre después de esta función.
+      },
       willClose: () => {
-        // Implementar limpieza si es necesario
+        if (saveSub) saveSub.unsubscribe();
+        if (cancelSub) cancelSub.unsubscribe();
+        if (componentRef) {
+          componentRef.destroy();
+        }
+        if (this.productFormContainer) {
+          this.productFormContainer.clear();
+        }
+      }
+    }).then((result) => {
+      if (result.isDismissed) {
+        console.log('Modal cerrado por cancelación o backdrop');
+        // Aquí se podría llamar a onCancel del form si es necesario, aunque willClose ya limpia
+        if (componentRef && componentRef.instance && typeof componentRef.instance.onCancel === 'function') {
+          // No llamar onCancel si ya se hizo desde el botón cancelar del form
+        }
+      }
+      // Limpieza final por si acaso, aunque willClose debería cubrirlo
+      if (saveSub && !saveSub.closed) saveSub.unsubscribe();
+      if (cancelSub && !cancelSub.closed) cancelSub.unsubscribe();
+      if (componentRef) {
+         // componentRef.destroy(); // Ya se destruye en willClose
       }
     });
   }
@@ -301,68 +332,70 @@ export class CreateProductComponent implements OnInit {
    * Abre un modal con el formulario en modo unificación
    */
   private openUnifyFormModal(selectedProducts: Product3[]): void {
-    const swalContainer = document.createElement('div');    Swal.fire({      title: `Unificar ${selectedProducts.length} Productos`,
+    const swalContainer = document.createElement('div');
+    let componentRef: any;
+    let unifyChangeSub: any;
+    let cancelSub: any;
+
+    Swal.fire({
+      title: `Unificar ${selectedProducts.length} Productos`,
       html: swalContainer,
-      showConfirmButton: false,
-      showCancelButton: false,
+      showConfirmButton: true,
+      confirmButtonText: 'Aplicar Cambios de Unificación',
+      showCancelButton: true,
+      cancelButtonText: 'Cancelar Unificación',
       width: '800px',
-      allowOutsideClick: false,
+      allowOutsideClick: true,
       customClass: {
         container: 'swal-container-with-dropdowns',
         popup: 'swal-popup-with-dropdowns',
-        htmlContainer: 'swal-html-container-with-dropdowns'
+        htmlContainer: 'swal-html-container-with-dropdowns',
+        confirmButton: 'swal-confirm-button', 
+        cancelButton: 'swal-cancel-button'
       },
       didOpen: () => {
         const factory = this.componentFactoryResolver.resolveComponentFactory(ProductFormComponent);
-        const componentRef = factory.create(this.injector, [], swalContainer);
-        this.appRef.attachView(componentRef.hostView);        // Configurar el componente para modo unificación
+        componentRef = this.productFormContainer!.createComponent(factory, undefined, this.injector);
         componentRef.instance.isUnifyMode = true;
         componentRef.instance.selectedProductsCount = selectedProducts.length;
-        
-        // Dar tiempo para que el formulario se inicialice correctamente
-        setTimeout(() => {
-          componentRef.instance.productForm.enable();
-          componentRef.instance.prepareForUnification();
-          
-          // Añadir clase especial para el estilo dentro de SweetAlert
-          const formContainer = swalContainer.querySelector('.product-form-container');
-          if (formContainer) {
-            formContainer.classList.add('in-sweetalert');
-          }
-          
-          // Forzar un reflow del DOM para evitar problemas de visualización
-          document.body.offsetHeight;
-          
-          // Modificar el z-index del contenedor overlay de Angular Material
-          const overlayContainer = document.querySelector('.cdk-overlay-container');
-          if (overlayContainer instanceof HTMLElement) {
-            overlayContainer.style.zIndex = '1070';
-          }
-          
-          console.log('Formulario de unificación inicializado y listo');
-        }, 150);
+        componentRef.instance.showSubmitButton = false; // Ocultar botón interno
+        // componentRef.instance.prepareForUnification(); // Ya se llama en ngOnInit si isUnifyMode es true
 
-        // Suscribirse a eventos
-        const unifyChangeSub = componentRef.instance.saveUnifiedChanges.subscribe((modifiedFields: {[key: string]: any}) => {
-          this.onSaveUnifiedChanges(modifiedFields);
-          unifyChangeSub.unsubscribe();
-          cancelSub.unsubscribe();
-          this.appRef.detachView(componentRef.hostView);
-          componentRef.destroy();
+        swalContainer.appendChild(componentRef.location.nativeElement);
+
+        unifyChangeSub = componentRef.instance.saveUnifiedChanges.subscribe((changes: any) => {
+          this.onSaveUnifiedChanges(changes);
+          // Swal.close(); // Se cierra implícitamente
         });
-        
-        const cancelSub = componentRef.instance.cancelEdit.subscribe(() => {
-          this.cancelUnify();
-          cancelSub.unsubscribe();
-          unifyChangeSub.unsubscribe();
-          this.appRef.detachView(componentRef.hostView);
-          componentRef.destroy();
+        cancelSub = componentRef.instance.cancelEdit.subscribe(() => {
+          this.cancelUnify(); // Llama a la lógica de cancelación de unificación que también cierra Swal
         });
       },
+      preConfirm: () => {
+        console.log('[CreateProductComponent] Botón SweetAlert (Unificar) clickeado'); // <--- NUEVO CONSOLE.LOG
+        if (componentRef && componentRef.instance) {
+          componentRef.instance.onSubmit(); // Llama a onSubmit del formulario
+        }
+        return true; // Para que el modal se cierre
+      },
       willClose: () => {
-        // Limpieza adicional si es necesario
-        this.cancelUnify();
+        if (unifyChangeSub) unifyChangeSub.unsubscribe();
+        if (cancelSub) cancelSub.unsubscribe();
+        if (componentRef) {
+          componentRef.destroy();
+        }
+        if (this.productFormContainer) {
+          this.productFormContainer.clear();
+        }
       }
+    }).then((result) => {
+      if (result.isDismissed) {
+        console.log('Modal de unificación cerrado por cancelación o backdrop');
+        this.cancelUnify(); // Asegurar que el modo unificación se cancela
+      }
+       // Limpieza final por si acaso
+      if (unifyChangeSub && !unifyChangeSub.closed) unifyChangeSub.unsubscribe();
+      if (cancelSub && !cancelSub.closed) cancelSub.unsubscribe();
     });
   }
   

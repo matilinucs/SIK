@@ -3,7 +3,8 @@
       <span *ngIf="isUnifyMode" class="unify-title">Unificar {{ selectedProductsCount }} Productos</span>
       <span *ngIf="!isUnifyMode">{{ initialProduct ? 'Editar Producto' : 'Agregar Producto' }}</span>
     </h2>
-    <div class="actions-container">      <!-- Botón Guardar ahora llama a onSubmit() y es de tipo submit -->
+    <div class="actions-container" *ngIf="showSubmitButton"> <!-- MODIFICADO: Condicional con showSubmitButton -->
+      <!-- Botón Guardar ahora llama a onSubmit() y es de tipo submit -->
       <button mat-raised-button 
         [color]="getButtonColor()" 
         type="submit" 
