@@ -163,7 +163,7 @@ export class ProductsTableComponent {
    * Columnas que se mostrarán en la tabla. El orden define el orden visual.
    */
   // Columns with selection
-  displayedColumns: string[] = ['select', 'productCode', 'type', 'quantity', 'totalArea', 'budget', 'actions']; // 'select' added
+  displayedColumns: string[] = ['select', 'productCode', 'type', 'quantity', 'totalArea', 'budget', 'planImage', 'actions']; // 'select' added
   /**
    * IDs de productos fijados (para mantener el estado de fijado y mostrarlos al inicio)
    */

@@ -946,3 +946,90 @@
     line-height: 1.2 !important;
   }
 }
+
+// Estilos para la columna de imagen del plano
+.plan-image-header {
+  text-align: center; // Centrar el texto del header
+}
+
+.plan-image-cell {
+  text-align: center; // Centrar el contenido de la celda
+}
+
+.plan-image {
+  width: 50px;
+  height: auto;
+  object-fit: contain;
+}
+
+// Reducir el tamaño de los íconos en la tabla
+mat-icon {
+  font-size: 18px; // Tamaño reducido
+}
+
+// Ajustar los botones de acción para que coincidan con el tamaño reducido
+.action-pin, .action-edit, .action-delete, .action-menu {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+}
+
+// Aumentar el tamaño de las imágenes en la tabla cuando está en modo de pantalla completa
+.products-table-container.is-fullscreen-mode .plan-image {
+  width: 100px; // Duplicar el tamaño de la imagen en modo pantalla completa
+  height: auto;
+}
+
+// Distribución proporcional de columnas en modo pantalla completa
+.is-fullscreen-mode {
+  .products-table {
+    // Ajuste de columnas específicas
+    .mat-column-select {
+      width: 50px;  // Checkbox
+    }
+    
+    .mat-column-productCode {
+      width: 8%; // Código
+    }
+    
+    .mat-column-type {
+      width: 15%; // Tipo de ventana
+    }
+    
+    .mat-column-quantity {
+      width: 8%; // Cantidad
+    }
+    
+    .mat-column-totalArea {
+      width: 12%; // Superficie Total
+    }
+    
+    .mat-column-budget {
+      width: 12%; // Presupuesto
+    }
+    
+    .mat-column-planImage {
+      width: 15%; // Imagen
+      
+      .plan-image {
+        width: 100px; // Duplicar el tamaño de la imagen
+        height: auto;
+        max-height: 80px; // Limitar altura para mantener proporciones
+      }
+    }
+    
+    .mat-column-actions {
+      width: 15%; // Acciones
+    }
+  }
+  
+  // Ajustar la altura de las filas en modo pantalla completa
+  .mat-mdc-row {
+    height: auto !important; // Altura automática
+    min-height: 80px !important; // Altura mínima para acomodar imágenes más grandes
+    
+    .mat-mdc-cell {
+      padding: 8px !important; // Padding uniforme
+    }
+  }
+}

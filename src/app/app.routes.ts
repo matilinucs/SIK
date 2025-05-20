@@ -55,7 +55,7 @@ export const routes: Routes = [
         component: ListQuotationComponent,
         data: { title: 'Listado de Cubicaciones' }
       },      { 
-        path: 'productos/nuevo', 
+        path: 'productos', 
         loadComponent: () => import('./pages/create-product/create-product.component').then(m => m.CreateProductComponent),
         data: { title: 'Ingresar producto' }
       },
