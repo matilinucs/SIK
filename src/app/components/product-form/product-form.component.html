@@ -1,13 +1,17 @@
-<div class="product-form-container" [class.unify-mode]="isUnifyMode">
-  <div class="header-container">
+<div class="product-form-container" [class.unify-mode]="isUnifyMode">  <div class="header-container">
     <h2 class="page-title">
-      <span *ngIf="isUnifyMode">Unificar {{ selectedProductsCount }} Productos</span>
+      <span *ngIf="isUnifyMode" class="unify-title">Unificar {{ selectedProductsCount }} Productos</span>
       <span *ngIf="!isUnifyMode">{{ initialProduct ? 'Editar Producto' : 'Agregar Producto' }}</span>
     </h2>
     <div class="actions-container">      <!-- Botón Guardar ahora llama a onSubmit() y es de tipo submit -->
-      <button mat-raised-button color="primary" type="submit" form="productFormId" class="save-button" [ngClass]="{'unify-mode': isUnifyMode}">
-        <mat-icon>{{ isUnifyMode ? 'merge_type' : 'save' }}</mat-icon> 
-        {{ isUnifyMode ? 'Unificar Productos' : (initialProduct ? 'Guardar Cambios' : 'Guardar Producto') }}
+      <button mat-raised-button 
+        [color]="getButtonColor()" 
+        type="submit" 
+        form="productFormId" 
+        class="save-button" 
+        [ngClass]="{'unify-mode': isUnifyMode, 'edit-mode': initialProduct && !isUnifyMode}">
+        <mat-icon>{{ getButtonIcon() }}</mat-icon> 
+        {{ getButtonText() }}
       </button>
     </div>
   </div>

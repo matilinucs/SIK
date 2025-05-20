@@ -641,17 +641,13 @@ export class ProductsTableComponent {
       event.preventDefault();
       this.redoLastAction();
     }
-  }
-  /**
+  }  /**
    * Copia las filas de productos seleccionadas al portapapeles
    * Las formatea en un formato de tabla con separadores de tabulación
    * Muestra una notificación al usuario cuando se completa la operación
    */
   copySelectedRows(): void {
-    if (this.selectedProductIds.size === 0) {
-      this.showNotification('Primero seleccione los productos a copiar');
-      return; // No hacer nada si no hay filas seleccionadas
-    }
+    // Ya hemos verificado que hay elementos seleccionados en copySelectedRowsButton
 
     // Filtrar los productos seleccionados
     const selectedProducts = this._products.filter(product => this.selectedProductIds.has(product.id));
@@ -881,14 +877,16 @@ export class ProductsTableComponent {
       this.showCopyNotification = false;
     }, 3000);
   }
-
   /**
    * Maneja el clic en el botón de copiar
    */
   copySelectedRowsButton(): void {
+    if (this.selectedProductIds.size === 0) {
+      this.showNotification('No se seleccionó ningún elemento');
+      return;
+    }
     this.copySelectedRows();
   }
-  
   /**
    * Maneja el clic en el botón de pegar
    */
@@ -900,10 +898,9 @@ export class ProductsTableComponent {
   /**
    * Maneja el clic en el botón de unificar productos
    * Emite el evento unifyProducts con los productos seleccionados
-   */
-  onUnifyButtonClick(): void {
+   */  onUnifyButtonClick(): void {
     if (this.selectedProductIds.size < 2) {
-      this.showNotification('Seleccione al menos 2 productos para unificar');
+      this.showNotification('No se seleccionaron elementos suficientes');
       return;
     }
     

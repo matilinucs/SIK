@@ -409,7 +409,6 @@ export class ProductFormComponent implements OnInit {
     this.productForm.enable(); // Habilita el formulario para edición
     // this.calculateAndSetTotalArea(); // Calcular y mostrar área al editar
   }
-
   resetForm(): void {
     this.initialProduct = null;
     this.productForm.reset({
@@ -419,8 +418,14 @@ export class ProductFormComponent implements OnInit {
     });
     this.imagePreview = null;
     this.planPreview = null;
-    this.productForm.disable(); // Opcional: deshabilitar hasta que se pulse "Añadir" explícitamente
-  }  /**
+    
+    // Habilitar todos los campos para el modo "Agregar Producto"
+    this.productForm.enable();
+    
+    // Reiniciar el modo del formulario y sus campos
+    this.isUnifyMode = false;
+    this.modifiedFields = {};
+  }/**
    * Prepara el formulario para el modo de unificación
    * Resetea valores y elimina validadores para facilitar la modificación compartida
    */
@@ -677,5 +682,53 @@ export class ProductFormComponent implements OnInit {
       duration: 3000,
       panelClass: ['error-snackbar'] // Puedes definir estilos para 'error-snackbar'
     });
+  }
+
+  /**
+   * Retorna el color del botón según el modo del formulario
+   * - Unificar: morado
+   * - Editar: verde
+   * - Agregar: azul (primario)
+   */
+  getButtonColor(): string {
+    if (this.isUnifyMode) {
+      return ''; // Usará la clase CSS personalizada para el color morado
+    } else if (this.initialProduct) {
+      return 'accent'; // Verde para editar
+    } else {
+      return 'primary'; // Azul para agregar
+    }
+  }
+
+  /**
+   * Retorna el icono del botón según el modo del formulario
+   * - Unificar: merge_type
+   * - Editar: edit
+   * - Agregar: save
+   */
+  getButtonIcon(): string {
+    if (this.isUnifyMode) {
+      return 'merge_type';
+    } else if (this.initialProduct) {
+      return 'edit';
+    } else {
+      return 'save';
+    }
+  }
+
+  /**
+   * Retorna el texto del botón según el modo del formulario
+   * - Unificar: Unificar Productos
+   * - Editar: Editar Producto
+   * - Agregar: Guardar Producto
+   */
+  getButtonText(): string {
+    if (this.isUnifyMode) {
+      return 'Unificar Productos';
+    } else if (this.initialProduct) {
+      return 'Editar Producto';
+    } else {
+      return 'Guardar Producto';
+    }
   }
 }

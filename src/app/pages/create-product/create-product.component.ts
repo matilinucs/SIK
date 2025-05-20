@@ -102,7 +102,6 @@ export class CreateProductComponent implements OnInit {
       }
     }
   }
-
   handleProductSave(product: Product3): void {
     const index = this.products.findIndex(p => p.id === product.id);
     if (index > -1) {
@@ -116,7 +115,10 @@ export class CreateProductComponent implements OnInit {
       Swal.close();
     }
     if (this.productFormComponentInstance && !this.isFullScreenTable) {
+      // Resetear el formulario para volver al modo de agregar producto
       this.productFormComponentInstance.resetForm();
+      // Asegurarse de que todos los campos estén habilitados
+      this.productFormComponentInstance.productForm.enable();
     }
   }
 
@@ -134,7 +136,6 @@ export class CreateProductComponent implements OnInit {
         this.productFormComponentInstance.resetForm(); // Resetea el formulario si está visible
     }
   }
-
   handleCancelEdit(): void {
     this.selectedProduct = null;
     if (Swal.isVisible()) {
@@ -142,6 +143,8 @@ export class CreateProductComponent implements OnInit {
     }
     if (this.productFormComponentInstance && !this.isFullScreenTable) {
         this.productFormComponentInstance.resetForm();
+        // Asegurarse de que todos los campos estén habilitados
+        this.productFormComponentInstance.productForm.enable();
     }
   }
 
@@ -272,9 +275,9 @@ export class CreateProductComponent implements OnInit {
       icon: 'success'
     });
   }
-
   /**
-   * Cancela el modo unificación y vuelve al estado normal
+   * Cancela el modo unificación y vuelve al estado normal de agregar producto
+   * con todos los campos habilitados
    */
   cancelUnify(): void {
     this.isUnifyMode = false;
@@ -285,6 +288,8 @@ export class CreateProductComponent implements OnInit {
       this.productFormComponentInstance.isUnifyMode = false;
       this.productFormComponentInstance.selectedProductsCount = 0;
       this.productFormComponentInstance.resetForm();
+      // Asegurarse de que todos los campos estén habilitados
+      this.productFormComponentInstance.productForm.enable();
     }
     
     if (Swal.isVisible()) {

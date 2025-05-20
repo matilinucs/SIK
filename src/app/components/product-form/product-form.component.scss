@@ -45,6 +45,41 @@
     }
   }
 
+  // Estilos para los títulos según el modo
+  .header-container {
+    .page-title {
+      .unify-title {
+        color: $color-purple; // Título morado para el modo unificación
+      }
+    }
+    
+    // Estilos para el botón según el modo
+    .save-button {
+      &.unify-mode {
+        background-color: $color-white !important;
+        color: $color-purple !important;
+        border: 1px solid $color-purple !important;
+        
+        mat-icon {
+          color: $color-purple !important;
+        }
+        
+        &:hover {
+          background-color: rgba($color-purple, 0.1) !important;
+        }
+      }
+      
+      &.edit-mode {
+        background-color: $color-success !important;
+        color: $color-white !important;
+        
+        &:hover {
+          background-color: darken($color-success, 10%) !important;
+        }
+      }
+    }
+  }
+
   // Estilos específicos para los dropdowns dentro del formulario
   ::ng-deep {
     // Corrección para menús desplegables

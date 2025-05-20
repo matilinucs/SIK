@@ -105,6 +105,21 @@
             background-color: rgba($color-success, 0.1) !important;
           }
         }
+        
+        // Botón Unificar en formulario (morado)
+        &.unify-button {
+          background-color: $color-white !important;
+          color: $color-purple !important;
+          border: 1px solid $color-purple !important;
+          
+          mat-icon {
+            color: $color-purple !important;
+          }
+          
+          &:hover {
+            background-color: rgba($color-purple, 0.1) !important;
+          }
+        }
         // Considerar si el botón PDF se mantiene o elimina
         // &.export-pdf-button {
         //   background-color: $color-error !important;
@@ -197,6 +212,21 @@
 
         &:hover {
           background-color: rgba($color-success, 0.1) !important;
+        }
+      }
+      
+      // Botón Unificar en formulario (morado)
+      &.unify-button {
+        background-color: $color-white !important;
+        color: $color-purple !important;
+        border: 1px solid $color-purple !important;
+        
+        mat-icon {
+          color: $color-purple !important;
+        }
+        
+        &:hover {
+          background-color: rgba($color-purple, 0.1) !important;
         }
       }
       
@@ -370,6 +400,12 @@
           text-overflow: ellipsis;
         }
 
+        // Estilo para la celda de código de producto
+        .code-cell {
+          color: $color-blue-vibrant; // Usa el color azul vibrante estándar
+          font-weight: 500; // Un poco más destacado
+        }
+
         // Filas de la tabla más compactas
         .mat-mdc-row {
           height: 32px; // Reducido de 36px
@@ -433,8 +469,7 @@
         .mat-column-select {
           width: 40px; // Compact width for checkbox
           padding-right: 0 !important; // Remove right padding to keep checkbox left
-        }
-        .selection-checkbox-header-cell,
+        }        .selection-checkbox-header-cell,
         .selection-checkbox-cell {
           padding-left: $spacing-sm !important; // Align checkbox with other content padding
           padding-right: 0 !important;
@@ -446,12 +481,34 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            
+            // Estilo personalizado para usar el color azul estándar
+            ::ng-deep .mdc-checkbox__background {
+              border-color: $color-blue-vibrant !important;
+            }
+            
+            ::ng-deep .mdc-checkbox__background .mdc-checkbox__checkmark {
+              color: $color-white !important;
+            }
+            
+            ::ng-deep .mdc-checkbox--selected .mdc-checkbox__ripple {
+              background-color: rgba($color-blue-vibrant, 0.2) !important;
+            }
+            
+            ::ng-deep .mat-mdc-checkbox-checked .mdc-checkbox__background {
+              background-color: $color-blue-vibrant !important;
+              border-color: $color-blue-vibrant !important;
+            }
           }
-        }
-
-        // Ajustes de columnas específicas
+        }        // Ajustes de columnas específicas
         .mat-column-productCode {
           width: 60px; // Más delgado
+          
+          // Estilo para el encabezado de la columna de código
+          &.mat-mdc-header-cell {
+            color: $color-blue-vibrant; // Color azul vibrante en el encabezado
+            font-weight: 500;
+          }
         }
 
         .mat-column-type {
@@ -463,17 +520,77 @@
         .mat-column-budget {
           width: 70px; // Más delgado para columnas numéricas
           text-align: right;
-        }
-
-        .mat-column-actions {
+        }        .mat-column-actions {
           width: 130px; // Más ancho para más iconos, pero menos padding interno
           text-align: center;
           button {
             margin: 0 2px;
-            padding: 0 2px;
+            padding: 0;
             min-width: 28px;
             width: 28px;
             height: 28px;
+            border-radius: 4px; // Botones cuadrados con bordes ligeramente redondeados
+          }          // Estilo para el botón de alfiler (mismo color que el botón de menú)
+          .action-pin {
+            background-color: rgba(117, 117, 117, 0.65) !important; // Mismo color gris que el menú
+            width: 28px !important; // Mismo tamaño que los otros botones
+            height: 28px !important;
+            line-height: 28px !important;
+            border-radius: 4px !important; // Mantener bordes cuadrados
+            
+            mat-icon {
+              color: white !important;
+              font-size: 16px !important; // Mismo tamaño que otros íconos
+              line-height: 16px !important;
+              height: 16px !important;
+              width: 16px !important;
+            }
+          }
+            
+            // Colores para los botones de acción
+          .action-edit {
+            background-color: rgba(67, 160, 71, 0.65) !important; // Verde para editar con opacidad reducida
+            width: 28px !important; // Mismo tamaño que el botón de alfiler
+            height: 28px !important;
+            line-height: 28px !important;
+            
+            mat-icon {
+              color: white !important;
+              font-size: 16px !important; // Icono ligeramente más grande para equilibrar
+              line-height: 16px !important;
+              height: 16px !important;
+              width: 16px !important;
+            }
+          }
+          
+          .action-delete {
+            background-color: rgba(229, 57, 53, 0.65) !important; // Rojo para eliminar con opacidad reducida
+            width: 28px !important; // Mismo tamaño que el botón de alfiler
+            height: 28px !important;
+            line-height: 28px !important;
+            
+            mat-icon {
+              color: white !important;
+              font-size: 16px !important; // Icono ligeramente más grande para equilibrar
+              line-height: 16px !important;
+              height: 16px !important;
+              width: 16px !important;
+            }
+          }
+          
+          .action-menu {
+            background-color: rgba(117, 117, 117, 0.65) !important; // Plomo para los 3 puntos con opacidad reducida
+            width: 28px !important; // Mismo tamaño que el botón de alfiler
+            height: 28px !important;
+            line-height: 28px !important;
+            
+            mat-icon {
+              color: white !important;
+              font-size: 16px !important; // Icono ligeramente más grande para equilibrar
+              line-height: 16px !important;
+              height: 16px !important;
+              width: 16px !important;
+            }
           }
         }
       }
@@ -792,7 +909,7 @@
   background-color: $color-black;
   color: $color-white;
   border-radius: $border-radius-md;
-  box-shadow: 0 3px 4px -2px rgba(0,0,0,.2), 0 5px 8px 0 rgba(0,0,0,.14), 0 1px 12px 0 rgba(0,0,0,.12);
+  box-shadow: 0 3px 4px -2px rgba(0, 0, 0, 0.2), 0 5px 8px 0 rgba(0, 0, 0, 0.14), 0 1px 12px 0 rgba(0, 0, 0, 0.12);
   animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
   
   .notification-content {
