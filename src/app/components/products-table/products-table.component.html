@@ -23,6 +23,7 @@
       <!-- Botón para unificar productos seleccionados -->
     <button mat-stroked-button class="action-button unify-button" 
             (click)="onUnifyButtonClick()" 
+            [disabled]="selectedProductIds.size < 2"
             matTooltip="Unificar productos seleccionados en un formulario">
       <mat-icon>merge_type</mat-icon> <span>Unificar en formulario</span>
     </button>

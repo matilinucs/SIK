@@ -15,6 +15,10 @@
         {{ getButtonText() }}
       </button>
     </div>
+    <!-- Botón X para salir del modo unificación -->
+    <button *ngIf="isUnifyMode" mat-icon-button class="close-unify-btn" (click)="onCancel()" matTooltip="Salir de unificación">
+      <mat-icon>close</mat-icon>
+    </button>
   </div>
   
   <!-- Mensaje informativo en modo unificación -->

@@ -19,7 +19,6 @@ html {
 $color-primary: #1976d2;          // Color primario de la aplicación
 $color-red-kinetta: #D32F2F;      // Color principal de la marca
 $color-red-dark: rgb(132, 27, 39);  // Variación oscura para títulos
-$color-purple: #673AB7;          // Color morado para elementos especiales
 $color-black: #000000;            // Para textos y elementos destacados
 $color-white: #FFFFFF;            // Fondos principales
 $color-gray-light: #F5F5F5;       // Fondos secundarios
@@ -321,21 +320,4 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .create-product-component { // Or a more specific selector
   background-color: $color-gray-light; 
 }
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🔘 ESTILOS PARA COMPONENTES DE MATERIAL
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-// Estilo global para los checkboxes de Material
-.mat-mdc-checkbox {
-  .mdc-checkbox__background {
-    border-color: $color-blue-vibrant !important;
-  }
-  
-  &.mat-mdc-checkbox-checked {
-    .mdc-checkbox__background {
-      background-color: $color-blue-vibrant !important;
-      border-color: $color-blue-vibrant !important;
-    }
-  }
-}
+// ...

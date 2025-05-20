@@ -33,6 +33,7 @@ export class CreateProductComponent implements OnInit {
   
   @ViewChild('productFormContainer', { read: ViewContainerRef, static: false }) productFormContainer?: ViewContainerRef;
   @ViewChild(ProductFormComponent) productFormComponentInstance?: ProductFormComponent;
+  @ViewChild(ProductsTableComponent) productTableComponentInstance?: ProductsTableComponent;
 
   constructor(
     private componentFactoryResolver: ComponentFactoryResolver,
@@ -240,6 +241,10 @@ export class CreateProductComponent implements OnInit {
 
     this.isUnifyMode = true;
     this.selectedProducts = [...selectedProducts];
+    // Notificar a la tabla para filtrar solo seleccionados
+    if (this.productTableComponentInstance) {
+      this.productTableComponentInstance.unifyModeActive = true;
+    }
     
     // Si estamos en modo tabla completa, mostramos el formulario en modal
     if (this.isFullScreenTable) {
@@ -314,6 +319,10 @@ export class CreateProductComponent implements OnInit {
     this.isUnifyMode = false;
     this.selectedProducts = [];
     this.selectedProduct = null;
+    // Restaurar la lista completa en la tabla
+    if (this.productTableComponentInstance) {
+      this.productTableComponentInstance.unifyModeActive = false;
+    }
     
     if (this.productFormComponentInstance) {
       this.productFormComponentInstance.isUnifyMode = false;

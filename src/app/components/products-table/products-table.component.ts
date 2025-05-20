@@ -110,6 +110,29 @@ export class ProductsTableComponent {
    */
   @Input() isFullScreenMode: boolean = false;
 
+  /**
+   * Activa o desactiva el modo de unificación.
+   * En modo de unificación, solo se muestran las filas de productos seleccionados.
+   */
+  private originalProducts: Product3[] = [];
+
+  @Input() set unifyModeActive(value: boolean) {
+    if (value) {
+      // Guardar la lista original solo la primera vez
+      if (!this.originalProducts.length) {
+        this.originalProducts = [...this._products];
+      }
+      // Filtrar solo los seleccionados
+      this._products = this._products.filter(p => this.selectedProductIds.has(p.id));
+    } else {
+      // Restaurar la lista original
+      if (this.originalProducts.length) {
+        this._products = [...this.originalProducts];
+        this.originalProducts = [];
+      }
+    }
+  }
+
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // PROPIEDADES DE SALIDA (OUTPUTS)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
