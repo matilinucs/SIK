@@ -7,21 +7,22 @@
   </div>
 
   <div class="content-area" [class.full-screen-table-active]="isFullScreenTable">
-    <div class="products-table-wrapper" [class.full-width]="isFullScreenTable">
-      <app-products-table 
+    <div class="products-table-wrapper" [class.full-width]="isFullScreenTable">      <app-products-table 
         [products]="products" 
         (editProduct)="handleProductSelect($event)" 
         (addProduct)="handleProductAdd()"
         (deleteProduct)="handleProductDelete($event)" 
+        (unifyProducts)="onUnifyProducts($event)"
         [isFullScreenMode]="isFullScreenTable">
       </app-products-table>
-    </div>
-
-    <div class="product-form-wrapper" *ngIf="!isFullScreenTable">
+    </div>    <div class="product-form-wrapper" *ngIf="!isFullScreenTable">
       <app-product-form 
-        [initialProduct]="selectedProduct" 
-        (saveProduct)="handleProductSave($event)" 
-        (cancelEdit)="handleCancelEdit()">
+        [initialProduct]="selectedProduct"
+        [isUnifyMode]="isUnifyMode"
+        [selectedProductsCount]="selectedProducts.length"
+        (saveProduct)="handleFormSave($event)" 
+        (saveUnifiedChanges)="onSaveUnifiedChanges($event)"
+        (cancelEdit)="handleFormCancel()">
       </app-product-form>
     </div>
   </div>

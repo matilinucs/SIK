@@ -51,13 +51,17 @@ import Swal from 'sweetalert2';
 })
 export class ProductFormComponent implements OnInit {
   @Input() initialProduct: Product3 | null = null; // Renombrado de 'product' a 'initialProduct'
+  @Input() isUnifyMode: boolean = false; // Indica si el formulario está en modo unificación
+  @Input() selectedProductsCount: number = 0; // Número de productos seleccionados para unificar
   @Output() saveProduct = new EventEmitter<Product3>(); // Renombrado de 'productSaved' a 'saveProduct'
   @Output() cancelEdit = new EventEmitter<void>(); // Nuevo EventEmitter
+  @Output() saveUnifiedChanges = new EventEmitter<{[key: string]: any}>(); // Para guardar cambios en modo unificación
 
   productForm!: FormGroup;
   imagePreview: string | null = null;
   planPreview: string | null = null;
   totalCost: number = 0;
+  modifiedFields: {[key: string]: boolean} = {}; // Registra qué campos han sido modificados
 
   // Unidades de medida
   measurementUnits = [
@@ -99,12 +103,16 @@ export class ProductFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private snackBar: MatSnackBar ) {}
-    ngOnInit(): void {
+  ngOnInit(): void {
     this.createForm();
     if (this.initialProduct) {
       this.editProduct(this.initialProduct);
     }
     // No llamar a applyValidators y setupSubscriptions aquí si se hace en createForm con setTimeout
+    
+    if (this.isUnifyMode) {
+      this.prepareForUnification();
+    }
   }
 
   private createForm(): void {
@@ -410,67 +418,196 @@ export class ProductFormComponent implements OnInit {
     this.imagePreview = null;
     this.planPreview = null;
     this.productForm.disable(); // Opcional: deshabilitar hasta que se pulse "Añadir" explícitamente
-  }
-
-  onSubmit(): void {
-    if (this.productForm.invalid) {
-      this.snackBar.open('Por favor, complete todos los campos requeridos.', 'Cerrar', { duration: 3000 });
-      // Marcar todos los campos como tocados para mostrar errores
-      Object.values(this.productForm.controls).forEach(control => {
-        control.markAsTouched();
-        if (control instanceof FormGroup) {
-          Object.values(control.controls).forEach(innerControl => {
-            innerControl.markAsTouched();
-          });
-        }
-      });
-      return;
-    }
-
-    const formValue = this.productForm.getRawValue();
+  }  /**
+   * Prepara el formulario para el modo de unificación
+   * Resetea valores y elimina validadores para facilitar la modificación compartida
+   */
+  prepareForUnification(): void {
+    console.log("Preparando formulario para unificación");
     
-    // Calcular área aquí antes de construir el objeto producto, si no se actualiza en 'costs.totalArea'
-    let calculatedArea = 0;
-    const dims = formValue.generalData.dimensions;
-    if (dims && typeof dims.width === 'number' && typeof dims.height === 'number') {
-      let wM = dims.width;
-      let hM = dims.height;
-      if (dims.unit === 'mm') { wM /= 1000; hM /= 1000; }
-      else if (dims.unit === 'cm') { wM /= 100; hM /= 100; }
-      calculatedArea = parseFloat((wM * hM).toFixed(3));
+    // Resetear el formulario para iniciar limpio
+    this.resetForm();
+    
+    // Eliminar todos los validadores para permitir ediciones parciales
+    this.removeValidators(this.productForm);
+    
+    // Limpiar registro de campos modificados
+    this.modifiedFields = {};
+    
+    // Asegurarse de que el formulario esté habilitado
+    this.productForm.enable();
+    
+    // Suscribirse a cambios en el formulario para registrar campos modificados
+    // Retrasar ligeramente para asegurar que el formulario está listo
+    setTimeout(() => {
+      this.trackFormChanges();
+      console.log("Rastreadores de cambios configurados");
+    }, 50);
+  }
+  
+  /**
+   * Elimina todos los validadores de un formGroup y sus controles hijos
+   */
+  private removeValidators(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
+      
+      if (control instanceof FormGroup) {
+        this.removeValidators(control);
+      } else if (control) {
+        control.clearValidators();
+        control.updateValueAndValidity();
+      }
+    });
+  }
+  
+  /**
+   * Configura la suscripción para seguir los cambios en cada campo del formulario
+   */
+  private trackFormChanges(): void {
+    this.trackControlChanges(this.productForm, '');
+  }
+    /**
+   * Configura recursivamente suscripciones para controles y grupos
+   */
+  private trackControlChanges(formGroup: FormGroup, path: string): void {
+    Object.keys(formGroup.controls).forEach(controlName => {
+      const control = formGroup.get(controlName);
+      const currentPath = path ? `${path}.${controlName}` : controlName;
+      
+      if (control instanceof FormGroup) {
+        this.trackControlChanges(control, currentPath);
+      } else if (control) {
+        // Limpiar cualquier suscripción anterior
+        control.valueChanges.subscribe(value => {
+          console.log(`Campo modificado: ${currentPath} => ${value}`);
+          // Marcar el campo como modificado incluso si valor es vacío o cero
+          // Esto permite establecer valores explícitamente a cadena vacía o cero
+          if (value !== null && value !== undefined) {
+            this.modifiedFields[currentPath] = true;
+          }
+        });
+      }
+    });
+  }
+    /**
+   * Obtiene un objeto con todos los campos que han sido modificados
+   * y sus valores actuales, para usar en el modo unificación
+   */
+  getModifiedFieldsValues(): {[key: string]: any} {
+    const formValue = this.productForm.getRawValue();
+    const modifiedValues: {[key: string]: any} = {};
+
+    console.log('Campos modificados registrados:', this.modifiedFields);
+    console.log('Valores del formulario:', formValue);
+
+    Object.keys(this.modifiedFields).forEach(path => {
+      if (this.modifiedFields[path]) {
+        const pathParts = path.split('.');
+        let currentValue: any = formValue;
+        
+        // Navegar por el objeto anidado siguiendo la ruta
+        for (const part of pathParts) {
+          if (currentValue === undefined || currentValue === null) {
+            console.log(`Valor indefinido en parte de la ruta: ${part} para ruta completa: ${path}`);
+            break;
+          }
+          currentValue = currentValue[part];
+        }
+        
+        // Incluir el valor aunque sea 0, cadena vacía, false, etc.
+        if (currentValue !== undefined) {
+          modifiedValues[path] = currentValue;
+          console.log(`Valor extraído para ${path}: ${JSON.stringify(currentValue)}`);
+        }
+      }
+    });
+
+    console.log('Valores modificados finales:', modifiedValues);
+    return modifiedValues;
+  }
+  /**
+   * Sobrescribe onSubmit para manejar tanto guardar normal como unificación
+   */  onSubmit(): void {
+    if (this.isUnifyMode) {
+      // En modo unificación, emitir solo los campos modificados con sus valores actuales
+      if (Object.keys(this.modifiedFields).length === 0) {
+        this.snackBar.open('No se han realizado cambios para aplicar', 'Cerrar', { duration: 3000 });
+        return;
+      }
+      
+      console.log('Campos modificados antes de guardar:', this.modifiedFields);
+      
+      // Obtener los valores actuales de los campos modificados
+      const modifiedFieldsValues = this.getModifiedFieldsValues();
+      
+      // Verificar si hay valores para aplicar
+      if (Object.keys(modifiedFieldsValues).length === 0) {
+        this.snackBar.open('No se pudieron obtener los valores modificados', 'Cerrar', { duration: 3000 });
+        return;
+      }
+      
+      console.log('Emitiendo campos modificados para unificación:', modifiedFieldsValues);
+      this.saveUnifiedChanges.emit(modifiedFieldsValues);
+    } else {
+      // Comportamiento normal para guardar un producto
+      if (this.productForm.invalid) {
+        this.snackBar.open('Por favor, complete todos los campos requeridos.', 'Cerrar', { duration: 3000 });
+        // Marcar todos los campos como tocados para mostrar errores
+        Object.values(this.productForm.controls).forEach(control => {
+          control.markAsTouched();
+          if (control instanceof FormGroup) {
+            Object.values(control.controls).forEach(innerControl => {
+              innerControl.markAsTouched();
+            });
+          }
+        });
+        return;
+      }
+      
+      const formValue = this.productForm.getRawValue();
+      
+      // Calcular área aquí antes de construir el objeto producto, si no se actualiza en 'costs.totalArea'
+      let calculatedArea = 0;
+      const dims = formValue.generalData.dimensions;
+      if (dims && typeof dims.width === 'number' && typeof dims.height === 'number') {
+        let wM = dims.width;
+        let hM = dims.height;
+        if (dims.unit === 'mm') { wM /= 1000; hM /= 1000; }
+        else if (dims.unit === 'cm') { wM /= 100; hM /= 100; }
+        calculatedArea = parseFloat((wM * hM).toFixed(3));
+      }
+      
+      const productToSave: Product3 = {
+        id: formValue.id || 'prod-' + new Date().getTime().toString(), // Generar ID si es nuevo
+        productCode: formValue.generalData.productCode,
+        type: formValue.generalData.productType,
+        quantity: formValue.generalData.quantity,
+        totalArea: calculatedArea, // Usar el área calculada
+        budget: (formValue.costs.unitPrice || 0) * (formValue.generalData.quantity || 1), // Calcular presupuesto total
+        description: formValue.description,
+        dimensions: {
+          width: formValue.generalData.dimensions.width,
+          height: formValue.generalData.dimensions.height,
+          length: formValue.generalData.dimensions.length,
+          unit: formValue.generalData.dimensions.unit,
+        },
+        material: {
+          type: formValue.technicalSpecs.material.type,
+          profile: formValue.technicalSpecs.material.profile,
+          color: formValue.technicalSpecs.material.color,
+          // customColor: formValue.technicalSpecs.material.customColor, // Si existe
+        },
+        glass: {
+          type: formValue.technicalSpecs.glass.type,
+          thickness: formValue.technicalSpecs.glass.thickness,
+          protection: formValue.technicalSpecs.glass.protection,
+        },
+        // Añadir otras propiedades mapeadas desde technicalSpecs, plans, etc.
+      };
+      
+      this.saveProduct.emit(productToSave);
     }
-
-    const productToSave: Product3 = {
-      id: formValue.id || 'prod-' + new Date().getTime().toString(), // Generar ID si es nuevo
-      productCode: formValue.generalData.productCode,
-      type: formValue.generalData.productType,
-      quantity: formValue.generalData.quantity,
-      totalArea: calculatedArea, // Usar el área calculada
-      budget: (formValue.costs.unitPrice || 0) * (formValue.generalData.quantity || 1), // Calcular presupuesto total
-      description: formValue.description,
-      dimensions: {
-        width: formValue.generalData.dimensions.width,
-        height: formValue.generalData.dimensions.height,
-        length: formValue.generalData.dimensions.length,
-        unit: formValue.generalData.dimensions.unit,
-      },
-      material: {
-        type: formValue.technicalSpecs.material.type,
-        profile: formValue.technicalSpecs.material.profile,
-        color: formValue.technicalSpecs.material.color,
-        // customColor: formValue.technicalSpecs.material.customColor, // Si existe
-      },
-      glass: {
-        type: formValue.technicalSpecs.glass.type,
-        thickness: formValue.technicalSpecs.glass.thickness,
-        protection: formValue.technicalSpecs.glass.protection,
-      },
-      // Añadir otras propiedades mapeadas desde technicalSpecs, plans, etc.
-    };
-
-    this.saveProduct.emit(productToSave);
-    // No resetear el formulario aquí si se hace en el componente padre (CreateProductComponent)
-    // o si es un modal que se cierra.
   }
 
   onCancel(): void {

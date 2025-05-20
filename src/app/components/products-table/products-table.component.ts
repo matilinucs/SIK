@@ -44,6 +44,15 @@ import { Product3 } from '../../models/product.model';
   ]
 })
 export class ProductsTableComponent {
+  // Almacenamiento interno de productos
+  private _products: Product3[] = [];
+  
+  // Gestión de selección multiple para unificación
+  selectedProducts: Product3[] = [];
+  
+  // OutputEvents
+  @Output() unifyProducts = new EventEmitter<Product3[]>(); // Evento para unificar productos seleccionados
+  
   /**
    * Constructor del componente.
    */
@@ -70,8 +79,7 @@ export class ProductsTableComponent {
     this.undoHistory = [];
     this.historyIndex = -1;
   }
-  
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // PROPIEDADES DE ENTRADA (INPUTS)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -79,7 +87,8 @@ export class ProductsTableComponent {
    * Lista de productos a mostrar en la tabla.
    * Cuando se actualiza, también se actualiza el MatTableDataSource.
    * @param value Array de objetos Product3.
-   */  @Input() set products(value: Product3[] | null | undefined) { // Allow null or undefined
+   */  
+  @Input() set products(value: Product3[] | null | undefined) { // Allow null or undefined
     this._products = value ? [...value] : []; // Ensure _products is always an array and take a copy
     this.productsDataSource.data = this._products; // Actualizar directamente los datos de la tabla
     this.updateFilterOptions(); // Update options based on the new set of products
@@ -90,6 +99,10 @@ export class ProductsTableComponent {
       this.saveStateToHistory('Estado inicial');
     }
   }
+  get products(): Product3[] {
+    return this._products;
+  }
+  
   /**
    * Indica si la tabla se está mostrando en modo de pantalla completa.
    * Esto puede usarse para ajustar el comportamiento o la apariencia de la tabla.
@@ -166,13 +179,7 @@ export class ProductsTableComponent {
    * Fuente de datos para MatTable. Se inicializa con un array vacío.
    */
   productsDataSource = new MatTableDataSource<Product3>([]);
-  
-  /**
-   * Almacenamiento interno de la lista de productos.
-   */
-  private _products: Product3[] = [];
-
-  /**
+    /**
    * Formulario reactivo para filtros avanzados de la tabla.
    * Permite filtrar por texto, tipo, material, cantidad, presupuesto, etc.
    */
@@ -870,5 +877,25 @@ export class ProductsTableComponent {
   pasteFromClipboardButton(): void {
     this.saveStateToHistory('Pegar desde el portapapeles');
     this.pasteFromClipboard();  
+  }
+
+  /**
+   * Maneja el clic en el botón de unificar productos
+   * Emite el evento unifyProducts con los productos seleccionados
+   */
+  onUnifyButtonClick(): void {
+    if (this.selectedProductIds.size < 2) {
+      this.showNotification('Seleccione al menos 2 productos para unificar');
+      return;
+    }
+    
+    // Filtrar los productos seleccionados
+    const selectedProducts = this._products.filter(product => this.selectedProductIds.has(product.id));
+    
+    // Emitir el evento unifyProducts con los productos seleccionados
+    this.unifyProducts.emit(selectedProducts);
+    
+    // Mostrar notificación
+    this.showNotification(`${selectedProducts.length} productos seleccionados para unificar`);
   }
 }

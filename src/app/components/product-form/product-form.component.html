@@ -1,11 +1,21 @@
-<div class="product-form-container">
+  <div class="product-form-container" [class.unify-mode]="isUnifyMode">
   <div class="header-container">
-    <h2 class="page-title">{{ initialProduct ? 'Editar Producto' : 'Agregar Producto' }}</h2>
+    <h2 class="page-title">
+      <span *ngIf="isUnifyMode">Unificar {{ selectedProductsCount }} Productos</span>
+      <span *ngIf="!isUnifyMode">{{ initialProduct ? 'Editar Producto' : 'Agregar Producto' }}</span>
+    </h2>
     <div class="actions-container">      <!-- Botón Guardar ahora llama a onSubmit() y es de tipo submit -->
       <button mat-raised-button color="primary" type="submit" form="productFormId" class="save-button">
-        <mat-icon>save</mat-icon> {{ initialProduct ? 'Guardar Cambios' : 'Guardar Producto' }}
+        <mat-icon>{{ isUnifyMode ? 'merge_type' : 'save' }}</mat-icon> 
+        {{ isUnifyMode ? 'Unificar Productos' : (initialProduct ? 'Guardar Cambios' : 'Guardar Producto') }}
       </button>
     </div>
+  </div>
+  
+  <!-- Mensaje informativo en modo unificación -->
+  <div *ngIf="isUnifyMode" class="unify-message">
+    <mat-icon color="accent">info</mat-icon>
+    <span>Solo se modificarán los campos que edites. Los demás campos mantendrán sus valores originales en cada producto.</span>
   </div>
 
   <!-- Se añade id al form y se vincula ngSubmit -->

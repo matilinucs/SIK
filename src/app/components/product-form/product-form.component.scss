@@ -4,6 +4,34 @@
   padding: 1rem;
   height: 100%;
   overflow-y: auto;
+
+  // Estilos para el modo de unificación
+  &.unify-mode {
+    position: relative;
+    border: 3px solid #000;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    background-color: #fff;
+
+    &::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: -1;
+    }
+    
+    // Estilos específicos cuando está dentro de SweetAlert
+    &.in-sweetalert {
+      margin: -20px;
+      padding: 20px;
+      border-radius: 0;
+    }
+  }
 }
 
 // Cabecera con título y botones de acción
@@ -24,6 +52,12 @@
     margin: 0;
     color: rgba(0, 0, 0, 0.87);
     font-weight: 500;
+    
+    // Aumentar énfasis en el título para modo unificación
+    &.unify-mode {
+      color: #000;
+      font-weight: 600;
+    }
   }
   
   .save-button {
@@ -497,5 +531,38 @@
   // Contenido interno
   .form-row {
     margin-left: $spacing-md; // Espacio para la línea azul
+  }
+}
+
+// Mensaje informativo para el modo de unificación
+.unify-message {
+  margin: 10px 0;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  background-color: #e3f2fd;
+  border-radius: 4px;
+  border-left: 4px solid #2196f3;
+
+  mat-icon {
+    margin-right: 10px;
+    color: #2196f3;
+  }
+
+  span {
+    font-size: 14px;
+    color: #444;
+  }
+}
+
+// Estilo específico para SweetAlert en modo unificación
+:host-context(.swal2-container) {
+  .product-form-container.unify-mode {
+    border-width: 3px;
+    margin: -8px;
+    
+    &::before {
+      display: none; // No necesitamos el fondo oscuro en SweetAlert
+    }
   }
 }
