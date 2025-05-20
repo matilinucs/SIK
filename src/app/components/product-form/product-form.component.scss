@@ -30,6 +30,34 @@
       margin: -20px;
       padding: 20px;
       border-radius: 0;
+      
+      // Corregir problemas de z-index para elementos en el modal
+      ::ng-deep .mat-mdc-select, 
+      ::ng-deep .mat-mdc-menu-trigger,
+      ::ng-deep .mat-mdc-form-field {
+        position: static;
+      }
+      
+      // Ajustar contenedor de dropdown
+      ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+        position: static;
+      }
+    }
+  }
+
+  // Estilos específicos para los dropdowns dentro del formulario
+  ::ng-deep {
+    // Corrección para menús desplegables
+    .mat-mdc-select-panel {
+      // Asegurar que los paneles se muestran correctamente
+      position: relative;
+      transform: none !important;
+    }
+    
+    // Ajustar posición de autocomplete y menús
+    .mat-mdc-autocomplete-panel,
+    .mat-mdc-menu-panel {
+      max-width: 100%;
     }
   }
 }

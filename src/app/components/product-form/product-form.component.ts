@@ -437,12 +437,53 @@ export class ProductFormComponent implements OnInit {
     // Asegurarse de que el formulario esté habilitado
     this.productForm.enable();
     
+    // Corregir posición de menús desplegables
+    this.fixDropdownsInModal();
+    
     // Suscribirse a cambios en el formulario para registrar campos modificados
     // Retrasar ligeramente para asegurar que el formulario está listo
     setTimeout(() => {
       this.trackFormChanges();
       console.log("Rastreadores de cambios configurados");
     }, 50);
+  }
+  
+  /**
+   * Corrige el comportamiento de los menús desplegables dentro de modales
+   * Añade listeners para ajustar la posición de los paneles de mat-select
+   */
+  private fixDropdownsInModal(): void {
+    // Solo hacer esto en modo unificación y con un pequeño retraso para asegurar que todo está listo
+    if (!this.isUnifyMode) return;
+    
+    setTimeout(() => {
+      // Obtener todos los selectores mat-select
+      const selectElements = document.querySelectorAll('mat-select');
+      
+      // Para cada select, registrar un callback que se ejecutará al abrir el panel
+      selectElements.forEach(select => {
+        // Usar atributo personalizado para evitar duplicar listeners
+        if (!select.hasAttribute('dropdown-fixed')) {
+          select.setAttribute('dropdown-fixed', 'true');
+          
+          // Añadir un listener al clic para asegurarse que el panel aparece correctamente
+          select.addEventListener('click', () => {
+            // Dar tiempo a que el panel se abra
+            setTimeout(() => {
+              const panels = document.querySelectorAll('.mat-mdc-select-panel');
+              panels.forEach(panel => {
+                // Asegurar que el panel tiene z-index correcto
+                if (panel instanceof HTMLElement) {
+                  panel.style.zIndex = '1100';
+                }
+              });
+            }, 10);
+          });
+        }
+      });
+      
+      console.log('Corrección de dropdowns aplicada');
+    }, 200);
   }
   
   /**

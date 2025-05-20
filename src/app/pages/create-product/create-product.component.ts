@@ -146,14 +146,17 @@ export class CreateProductComponent implements OnInit {
   }
 
   private openProductFormModal(product: Product3 | null): void {
-    const swalContainer = document.createElement('div');
-
-    Swal.fire({
-      title: product ? 'Editar Producto' : 'Agregar Producto',
+    const swalContainer = document.createElement('div');    Swal.fire({      title: product ? 'Editar Producto' : 'Agregar Producto',
       html: swalContainer,
       showConfirmButton: false,
       showCancelButton: false,
       width: '800px',
+      allowOutsideClick: false,
+      customClass: {
+        container: 'swal-container-with-dropdowns',
+        popup: 'swal-popup-with-dropdowns',
+        htmlContainer: 'swal-html-container-with-dropdowns'
+      },
       didOpen: () => {
         const factory = this.componentFactoryResolver.resolveComponentFactory(ProductFormComponent);
         const componentRef = factory.create(this.injector, [], swalContainer);
@@ -293,14 +296,17 @@ export class CreateProductComponent implements OnInit {
    * Abre un modal con el formulario en modo unificación
    */
   private openUnifyFormModal(selectedProducts: Product3[]): void {
-    const swalContainer = document.createElement('div');
-
-    Swal.fire({
-      title: `Unificar ${selectedProducts.length} Productos`,
+    const swalContainer = document.createElement('div');    Swal.fire({      title: `Unificar ${selectedProducts.length} Productos`,
       html: swalContainer,
       showConfirmButton: false,
       showCancelButton: false,
       width: '800px',
+      allowOutsideClick: false,
+      customClass: {
+        container: 'swal-container-with-dropdowns',
+        popup: 'swal-popup-with-dropdowns',
+        htmlContainer: 'swal-html-container-with-dropdowns'
+      },
       didOpen: () => {
         const factory = this.componentFactoryResolver.resolveComponentFactory(ProductFormComponent);
         const componentRef = factory.create(this.injector, [], swalContainer);
@@ -319,8 +325,17 @@ export class CreateProductComponent implements OnInit {
             formContainer.classList.add('in-sweetalert');
           }
           
+          // Forzar un reflow del DOM para evitar problemas de visualización
+          document.body.offsetHeight;
+          
+          // Modificar el z-index del contenedor overlay de Angular Material
+          const overlayContainer = document.querySelector('.cdk-overlay-container');
+          if (overlayContainer instanceof HTMLElement) {
+            overlayContainer.style.zIndex = '1070';
+          }
+          
           console.log('Formulario de unificación inicializado y listo');
-        }, 100);
+        }, 150);
 
         // Suscribirse a eventos
         const unifyChangeSub = componentRef.instance.saveUnifiedChanges.subscribe((modifiedFields: {[key: string]: any}) => {

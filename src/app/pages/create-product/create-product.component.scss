@@ -156,3 +156,47 @@
 .product-form-wrapper {
   flex: 0.8; // El formulario ocupa menos ancho que la tabla
 }
+
+// ────────────────────────────────────────────────────────────────────────────────
+// SWEETALERT MODAL DROPDOWN FIXES
+// ────────────────────────────────────────────────────────────────────────────────
+// Estilos específicos para corregir el comportamiento de los menús desplegables
+// dentro de los modales de SweetAlert.
+// ────────────────────────────────────────────────────────────────────────────────
+:host ::ng-deep {
+  // Clases personalizadas para el contenedor SweetAlert
+  .swal-container-with-dropdowns {
+    z-index: 1060; // Mayor z-index para el contenedor
+    
+    // Hacer que los paneles de mat-select se muestren correctamente
+    .cdk-overlay-container {
+      z-index: 1070 !important; // Mayor z-index que el contenedor SweetAlert
+    }
+  }
+  
+  .swal-popup-with-dropdowns {
+    // Permitir que elementos hijos aparezcan por encima del modal
+    overflow: visible !important;
+
+    // Estilos específicos para componentes material dentro del modal
+    .mat-mdc-form-field {
+      width: 100%;
+    }
+    
+    // Estilos para corregir posicionamiento de menús desplegables
+    .mat-mdc-select-panel {
+      max-height: 250px; // Altura máxima para evitar desbordamiento
+      position: relative; // Ayuda con el posicionamiento
+    }
+    
+    .mat-mdc-select-panel-above {
+      bottom: 0; // Asegurarse de que aparece por encima
+    }
+  }
+  
+  // Asegurar que los overlays de Angular Material se muestren correctamente
+  .cdk-overlay-connected-position-bounding-box,
+  .cdk-global-overlay-wrapper {
+    z-index: 1080 !important; // Mayor que cualquier otro elemento
+  }
+}

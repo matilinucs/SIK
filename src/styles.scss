@@ -92,6 +92,40 @@ body {
   font-size: $font-size-base;
 }
 
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🌐 OVERLAY Y MODAL FIXES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// Mejoras para la visualización de overlays en modales y SweetAlert
+.cdk-overlay-container {
+  // Overlay global container
+  z-index: 9999 !important; // Z-index muy alto para asegurar que siempre aparezca sobre SweetAlert
+}
+
+// Estilos específicos para SweetAlert con menús desplegables
+.swal2-container.swal-container-with-dropdowns {
+  z-index: 1060 !important;
+  
+  // Asegurarse de que el popup permita overflow para los dropdowns
+  .swal2-popup.swal-popup-with-dropdowns {
+    overflow: visible !important;
+  }
+  
+  // Cuando SweetAlert está activo, ajustar los z-index de los overlays
+  ~ .cdk-overlay-container {
+    z-index: 1070 !important;
+    
+    .cdk-overlay-pane {
+      z-index: 1080 !important;
+    }
+    
+    .mat-mdc-select-panel, 
+    .mat-mdc-autocomplete-panel,
+    .mat-mdc-menu-panel {
+      max-height: 250px;
+    }
+  }
+}
+
 a {
   text-decoration: none;
   color: $color-black;
