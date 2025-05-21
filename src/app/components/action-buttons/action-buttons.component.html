@@ -1,0 +1,69 @@
+<!-- 
+  ================================================================================================
+  COMPONENTE: BOTONES DE ACCIÓN RESPONSIVOS
+  ================================================================================================
+  Este componente muestra botones de acción que pueden ser:
+  1. Mostrados como una fila de botones en pantallas grandes
+  2. Colapsados en un menú desplegable en pantallas pequeñas
+  ================================================================================================
+-->
+
+<!-- Modo pantalla normal: Mostrar todos los botones -->
+<div class="action-buttons-container" *ngIf="!isMobile">
+  <ng-container *ngFor="let button of buttons">
+    <ng-container [ngSwitch]="size">
+      <button *ngSwitchCase="'mini'" mat-mini-fab
+              [color]="getButtonColor(button)"
+              [class]="getButtonClass(button)"
+              [matTooltip]="button.tooltip"
+              [disabled]="button.disabled"
+              (click)="handleAction(button.action, $event, button.customData)">
+        <mat-icon>{{ button.icon }}</mat-icon>
+      </button>
+      <button *ngSwitchCase="'default'" mat-fab
+              [color]="getButtonColor(button)"
+              [class]="getButtonClass(button)"
+              [matTooltip]="button.tooltip"
+              [disabled]="button.disabled"
+              (click)="handleAction(button.action, $event, button.customData)">
+        <mat-icon>{{ button.icon }}</mat-icon>
+      </button>
+      <button *ngSwitchCase="'small'" mat-icon-button
+              [color]="getButtonColor(button)"
+              [class]="getButtonClass(button)"
+              [matTooltip]="button.tooltip"
+              [disabled]="button.disabled"
+              (click)="handleAction(button.action, $event, button.customData)">
+        <mat-icon>{{ button.icon }}</mat-icon>
+      </button>
+      <button *ngSwitchDefault mat-button
+              [color]="getButtonColor(button)"
+              [class]="getButtonClass(button)"
+              [matTooltip]="button.tooltip"
+              [disabled]="button.disabled"
+              (click)="handleAction(button.action, $event, button.customData)">
+        <mat-icon>{{ button.icon }}</mat-icon>
+      </button>
+    </ng-container>
+  </ng-container>
+</div>
+
+<!-- Modo móvil: Mostrar botón de menú -->
+<div class="action-buttons-container mobile" *ngIf="isMobile">
+  <button mat-icon-button
+          [color]="menuButtonColor"
+          [matMenuTriggerFor]="actionsMenu"
+          class="actions-menu-button">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  
+  <mat-menu #actionsMenu="matMenu" class="actions-menu">
+    <button mat-menu-item
+            *ngFor="let button of buttons"
+            [disabled]="button.disabled"
+            (click)="handleAction(button.action, $event, button.customData)">
+      <mat-icon [color]="getButtonColor(button)">{{ button.icon }}</mat-icon>
+      <span>{{ button.tooltip }}</span>
+    </button>
+  </mat-menu>
+</div>

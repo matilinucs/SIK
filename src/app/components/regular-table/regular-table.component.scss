@@ -1,0 +1,154 @@
+@use 'sass:color';
+@use '../../../styles.scss' as *;
+
+/**
+ * Estilos para el componente de tabla regular reutilizable
+ */
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 1️⃣ ESTRUCTURA GENERAL
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.table-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 2️⃣ ESTRUCTURA DE LA TABLA
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.table-container {
+  overflow-x: auto;
+  border-radius: 8px 8px 0 0; // Bordes redondeados solo arriba
+  position: relative;
+  
+  // Línea vertical azul en el lado izquierdo
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 4px;
+    background-color: #1976d2; // Color azul primario
+    border-top-left-radius: 8px;
+    z-index: 1;
+  }
+  
+  .regular-table {
+    width: 100%;
+    
+    // Estilos para celdas de la tabla - FONDO BLANCO EN TODAS LAS FILAS
+    .mat-mdc-header-row {
+      background-color: $color-white;
+    }
+      .mat-mdc-cell, 
+    .mat-mdc-header-cell {
+      padding: 14px 16px;
+      color: $color-black;
+      background-color: $color-white;
+    }
+    
+    .mat-mdc-header-cell {
+      font-weight: 600;
+      border-bottom: 2px solid $color-gray-mid;
+      text-align: center; // Centrar el texto en los encabezados
+    }
+    
+    // Quitar fondos alternados
+    .mat-mdc-row {
+      background-color: $color-white;
+    }
+    
+    // Solo cambiar color al hacer hover
+    .mat-mdc-row:hover {
+      background-color: rgba($color-blue-vibrant, 0.05);
+    }
+    
+    // Estilo específico para la primera columna (texto azul)
+    .first-column {
+      font-weight: 500;
+      color: $color-blue-vibrant;
+    }
+    
+    // Celda de acciones
+    .actions-cell {
+      white-space: nowrap;
+      width: 120px;
+      text-align: right;
+    }
+  }
+  
+  // Mensaje cuando no hay datos
+  .no-data-cell {
+    padding: $spacing-xl;
+    text-align: center;
+    font-style: italic;
+    color: $color-gray-dark;
+    background-color: $color-white;
+  }
+    // Estilos para el paginador (se eliminó la barra azul)
+  .mat-mdc-paginator {
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 3️⃣ ESTILOS DEL PAGINADOR
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.paginator-container {
+  // El paginador no tiene la línea azul
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center; // Centrar el paginador
+  
+  .mat-mdc-paginator {
+    background-color: $color-white;
+    width: 100%; // Asegurar que el paginador ocupe todo el ancho
+  }
+  
+  // Centrar el contenido dentro del paginador
+  ::ng-deep .mat-mdc-paginator-container {
+    justify-content: center;
+    padding: 0 16px;
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 4️⃣ ESTILOS PARA BOTONES DE ACCIÓN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+:host ::ng-deep {
+  .action-button {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+    border-radius: 4px;
+  
+    mat-icon {
+      font-size: 16px;
+      line-height: 16px;
+      height: 16px;
+      width: 16px;
+      color: $color-white;
+    }
+  
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 3️⃣ RESPONSIVIDAD
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@media (max-width: $breakpoint-md) {
+  .table-container {
+    .regular-table {
+      min-width: 800px; // Forzar scroll horizontal en pantallas pequeñas
+    }
+  }
+}

@@ -1,0 +1,129 @@
+@use '../../../styles.scss' as *;
+@use 'sass:color';
+
+/**
+ * Estilos para el componente de botones de acción
+ */
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// CONTENEDOR DE BOTONES
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+.action-buttons-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+
+  // Modo móvil (menú desplegable)
+  &.mobile {
+    display: inline-flex;
+    
+    .actions-menu-button {
+      margin: 0;
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ESTILOS DE LOS BOTONES DE ACCIÓN
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+button.action-button {
+  // Tamaños reducidos para mini-fab
+  &[mat-mini-fab] {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    
+    ::ng-deep .mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+      line-height: 18px;
+    }
+  }
+  
+  // Espaciado para icon-button
+  &[mat-icon-button] {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    
+    ::ng-deep .mat-icon {
+      font-size: 16px;
+      height: 16px;
+      width: 16px;
+      line-height: 16px;
+    }
+  }
+
+  // Estilos específicos para botones comunes
+  &.action-view {
+    background-color: $color-primary;
+    color: $color-white;
+    
+    &:hover {
+      background-color: color.adjust($color-primary, $lightness: -10%);
+    }
+  }
+
+  &.action-edit {
+    background-color: rgba(67, 160, 71, 0.85);
+    color: $color-white;
+    
+    &:hover {
+      background-color: rgba(67, 160, 71, 1);
+    }
+  }
+
+  &.action-delete {
+    background-color: rgba(229, 57, 53, 0.85);
+    color: $color-white;
+    
+    &:hover {
+      background-color: rgba(229, 57, 53, 1);
+    }
+  }
+  
+  &.action-add-products {
+    background-color: $color-primary !important;
+    
+    ::ng-deep .mat-icon {
+      color: $color-white !important;
+    }
+    
+    &:hover {
+      background-color: color.adjust($color-primary, $lightness: -10%) !important;
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// ESTILOS PARA EL MENÚ DE ACCIONES (MÓVIL)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+::ng-deep .actions-menu {
+  .mat-mdc-menu-content {
+    padding: 0;
+  }
+  
+  .mat-mdc-menu-item {
+    min-height: 40px;
+    line-height: 40px;
+    
+    .mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// RESPONSIVIDAD
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+@media screen and (max-width: 768px) {
+  .action-buttons-container {
+    margin: 0;
+    
+    .actions-menu-button {
+      margin: 0;
+    }
+  }
+}

@@ -134,6 +134,22 @@
 
 .table-container {
   overflow-x: auto;
+  border-radius: 8px;
+  position: relative;
+  
+  // Línea vertical azul en el lado izquierdo
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 4px;
+    background-color: #1976d2;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    z-index: 1;
+  }
   
   .quotation-table {
     width: 100%;
@@ -765,6 +781,22 @@
 
 .table-container {
   overflow-x: auto;
+  border-radius: 8px;
+  position: relative;
+  
+  // Línea vertical azul en el lado izquierdo
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 4px;
+    background-color: #1976d2;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    z-index: 1;
+  }
   
   .quotation-table {
     width: 100%;

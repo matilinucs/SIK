@@ -59,6 +59,12 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/create-product/create-product.component').then(m => m.CreateProductComponent),
         data: { title: 'Ingresar producto' }
       },
+      // Ruta para la demostración de tabla
+      { 
+        path: 'demo/tabla', 
+        loadComponent: () => import('./pages/table-demo/table-demo.component').then(m => m.TableDemoComponent),
+        data: { title: 'Demostración de Tabla Reutilizable' }
+      },
     ]
   },
     // Manejo de rutas no encontradas

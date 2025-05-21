@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatSort, MatSortModule } from '@angular/material/sort';
+import { RegularTableComponent } from '../../components/regular-table/regular-table.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -94,7 +95,10 @@ interface FilterOptions {
     MatIconModule,
     MatChipsModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    
+    // Componentes personalizados
+    RegularTableComponent
   ],
   templateUrl: './list-quotation.component.html',
   styleUrl: './list-quotation.component.scss'

@@ -1,0 +1,216 @@
+/**
+ * Estilos para la página de listado de clientes
+ * Sistema SIK - 2025
+ */
+:host {
+  display: block;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.list-container {
+  width: 100%;
+}
+
+// Estilos para la cabecera
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  
+  .page-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .add-button {
+    background-color: #1976d2;
+    color: white;
+    border-radius: 22px;
+    padding: 0 20px;
+    height: 44px;
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Panel de filtros
+.filters-panel {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  
+  .filters-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    
+    mat-form-field {
+      flex: 1;
+      min-width: 180px;
+      max-width: 300px;
+    }
+    
+    .clear-filters-button {
+      height: 40px;
+      margin-top: 4px;
+    }
+  }
+}
+
+// Tabla de clientes
+.table-container {
+  overflow: auto;
+  border-radius: 8px;
+  position: relative;
+  
+  // Línea vertical azul en el lado izquierdo
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 4px;
+    background-color: #1976d2;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    z-index: 1;
+  }
+  
+  table {
+    width: 100%;
+    
+    .mat-mdc-header-cell {
+      font-weight: bold;
+      color: #333;
+      background-color: #f9f9f9;
+    }
+    
+    .mat-mdc-row:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    
+    .mat-mdc-row:hover {
+      background-color: #e9f1f9;
+    }
+  }
+  
+  .name-column {
+    font-weight: 500;
+    color: #333;
+    max-width: 300px;
+  }
+  
+  .actions-column {
+    width: 140px;
+    text-align: center;
+    
+    .action-button {
+      margin: 0 4px;
+      width: 28px;
+      height: 28px;
+      line-height: 28px;
+      
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+      }
+    }
+    
+    .view-button {
+      background-color: #1976d2;
+    }
+    
+    .edit-button {
+      background-color: #43a047;
+    }
+    
+    .delete-button {
+      background-color: #e53935;
+    }
+  }
+  
+  // Sin resultados
+  .mat-mdc-row.no-data {
+    text-align: center;
+    height: 48px;
+    
+    td {
+      text-align: center;
+    }
+  }
+}
+
+// Estilo para los badge de tipo de persona
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 20px;
+  font-weight: 500;
+  white-space: nowrap;
+  
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    margin-right: 4px;
+  }
+  
+  &.type-natural {
+    background-color: #e3f2fd;
+    color: #0277bd;
+  }
+  
+  &.type-empresa {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+}
+
+// Estilo para los badges de contadores
+.count-badge {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #424242;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .header-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .filters-panel {
+    .filters-row {
+      flex-direction: column;
+      align-items: stretch;
+      
+      mat-form-field {
+        max-width: none;
+      }
+    }
+  }
+}

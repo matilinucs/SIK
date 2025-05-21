@@ -1,0 +1,70 @@
+<!-- 
+  ================================================================================================
+  COMPONENTE: TABLA REGULAR REUTILIZABLE
+  ================================================================================================
+  Este componente implementa una tabla reutilizable con funcionalidades comunes:
+  - Estilos consistentes y línea vertical azul
+  - Paginación
+  - Ordenamiento
+  - Estilo de primera columna con texto azul
+  - Contenido personalizable mediante ng-content y plantillas
+  ================================================================================================
+-->
+
+<div class="table-wrapper">
+  <!-- Tabla con ordenamiento -->
+  <div class="table-container mat-elevation-z2">
+    <table mat-table [dataSource]="dataSource" matSort class="regular-table">
+      
+      <!-- Columnas dinámicas basadas en displayedColumns -->
+      <ng-container *ngFor="let column of displayedColumns">
+        <ng-container [matColumnDef]="column">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> 
+            <!-- Encabezado personalizable mediante ng-content -->
+            <ng-content select="[headerLabel]" *ngIf="column === displayedColumns[0]"></ng-content>
+            <!-- Encabezado predeterminado si no se proporciona uno personalizado -->
+            <span *ngIf="!(column === displayedColumns[0] && hasCustomHeader)">{{ column }}</span>
+          </th>
+          
+          <td mat-cell *matCellDef="let row" 
+              [ngClass]="{'first-column': column === displayedColumns[0], 'actions-cell': column === 'actions'}" 
+              (click)="onRowClick(row)">
+            
+            <!-- Si se proporciona una plantilla personalizada para la celda, se usa -->
+            <ng-container *ngIf="cellTemplate && column !== 'actions'; else defaultCell">
+              <ng-container *ngTemplateOutlet="cellTemplate; context: {$implicit: row, column: column}"></ng-container>
+            </ng-container>
+            
+            <!-- Plantilla por defecto para celdas -->
+            <ng-template #defaultCell>
+              <span *ngIf="column !== 'actions'">{{ row[column] }}</span>
+            </ng-template>
+            
+            <!-- Si la columna es 'actions' y se proporciona una plantilla para acciones, se usa -->
+            <ng-container *ngIf="column === 'actions' && actionsTemplate">
+              <ng-container *ngTemplateOutlet="actionsTemplate; context: {$implicit: row}"></ng-container>
+            </ng-container>
+          </td>
+        </ng-container>
+      </ng-container>
+
+      <!-- Definición de filas -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <!-- Mensaje cuando no hay datos -->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell no-data-cell" [attr.colspan]="displayedColumns.length">
+          {{ noDataMessage }}
+        </td>
+      </tr>
+    </table>
+  </div>  <!-- Paginador separado -->
+  <div class="paginator-container">
+    <mat-paginator 
+      [pageSizeOptions]="pageSizeOptions"
+      showFirstLastButtons
+      aria-label="Seleccionar página">
+    </mat-paginator>
+  </div>
+</div>

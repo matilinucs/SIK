@@ -18,13 +18,29 @@
         <span>Proyectos</span>
       </a>
     </div>
-    
-    <!-- Categoría: Cubicaciones -->
+      <!-- Categoría: Cubicaciones -->
     <div class="nav-category">
       <a routerLink="/cubicaciones/lista" routerLinkActive="active" class="category-title" [class.active]="isActiveCategory('/cubicaciones')">
         <i class="fas fa-file-invoice-dollar"></i>
         <span>Cubicaciones</span>
       </a>
+    </div>
+    
+    <!-- Categoría: Componentes Demo -->
+    <div class="nav-category">
+      <a class="category-title" [class.active]="isActiveCategory('/demo')">
+        <i class="fas fa-flask"></i>
+        <span>Demostraciones</span>
+      </a>      <div class="subcategories">
+        <a routerLink="/demo/tabla" routerLinkActive="active" class="subcategory-item">
+          <i class="fas fa-table"></i>
+          <span>Tabla Reutilizable</span>
+        </a>
+        <a routerLink="/demo/botones-accion" routerLinkActive="active" class="subcategory-item">
+          <i class="fas fa-mouse-pointer"></i>
+          <span>Botones de Acción</span>
+        </a>
+      </div>
     </div>
   </nav>
   
