@@ -5,6 +5,8 @@ import { MatPaginator, MatPaginatorModule, MatPaginatorIntl } from '@angular/mat
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 /**
  * Clase personalizada para los textos del paginador en español
@@ -39,14 +41,15 @@ export function createSpanishPaginatorIntl() {
  */
 @Component({
   selector: 'app-regular-table',
-  standalone: true,
-  imports: [
+  standalone: true,  imports: [
     CommonModule,
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule
   ],
   providers: [
     { provide: MatPaginatorIntl, useFactory: createSpanishPaginatorIntl }
@@ -119,12 +122,27 @@ export class RegularTableComponent<T> implements AfterViewInit {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
-
   /**
    * Maneja el evento de clic en una fila
    * @param row Fila en la que se hizo clic
    */
   onRowClick(row: T): void {
     this.rowClick.emit(row);
+  }
+  
+  /**
+   * Abre el diálogo de filtro
+   */
+  openFilterDialog(): void {
+    console.log('Abrir diálogo de filtro');
+    // Aquí se implementará la lógica para abrir el diálogo de filtro
+  }
+  
+  /**
+   * Abre el diálogo selector de columnas
+   */
+  openColumnSelectorDialog(): void {
+    console.log('Abrir selector de columnas');
+    // Aquí se implementará la lógica para abrir el selector de columnas
   }
 }

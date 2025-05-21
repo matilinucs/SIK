@@ -12,6 +12,57 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+    // Estilos para los botones de acción
+  .table-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: $spacing-md;
+    gap: $spacing-md;
+    
+    // Estilos para el botón de filtro
+    .filter-button {
+      background-color: white;
+      color: $color-blue-vibrant;
+      border-radius: 20px; // Bordes ovalados
+      padding: $spacing-xs $spacing-md;
+      font-size: $font-size-small;
+      border: 1px solid $color-blue-vibrant;
+      transition: all 0.3s ease;
+      
+      mat-icon {
+        margin-right: $spacing-xs;
+        vertical-align: middle;
+        color: $color-blue-vibrant;
+      }
+      
+      &:hover {
+        background-color: rgba($color-blue-vibrant, 0.1);
+        box-shadow: 0 2px 4px rgba($color-blue-vibrant, 0.3);
+      }
+    }
+    
+    // Estilos para el botón de columnas
+    .column-selector-button {
+      background-color: white;
+      color: purple; // Color púrpura para el texto
+      border-radius: 20px; // Bordes ovalados
+      padding: $spacing-xs $spacing-md;
+      font-size: $font-size-small;
+      border: 1px solid purple; // Borde púrpura
+      transition: all 0.3s ease;
+      
+      mat-icon {
+        margin-right: $spacing-xs;
+        vertical-align: middle;
+        color: purple; // Color púrpura para el icono
+      }
+      
+      &:hover {
+        background-color: rgba(purple, 0.1);
+        box-shadow: 0 2px 4px rgba(purple, 0.3);
+      }
+    }
+  }
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

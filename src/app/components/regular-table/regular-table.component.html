@@ -12,6 +12,16 @@
 -->
 
 <div class="table-wrapper">
+  <!-- Botones de filtro y selector de columnas -->
+  <div class="table-actions">
+    <button mat-button class="filter-button" (click)="openFilterDialog()">
+      <mat-icon>filter_list</mat-icon> Filtrar
+    </button>
+    <button mat-button class="column-selector-button" (click)="openColumnSelectorDialog()">
+      <mat-icon>view_column</mat-icon> Columnas
+    </button>
+  </div>
+
   <!-- Tabla con ordenamiento -->
   <div class="table-container mat-elevation-z2">
     <table mat-table [dataSource]="dataSource" matSort class="regular-table">
