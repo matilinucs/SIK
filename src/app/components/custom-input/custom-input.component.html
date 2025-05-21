@@ -1,0 +1,133 @@
+<div class="custom-input-container" [class.full-width]="fullWidth" [ngClass]="customClass">
+  <mat-form-field [appearance]="appearance" [class.full-width]="fullWidth">
+    <!-- Label con indicador de campo requerido -->
+    <mat-label *ngIf="label">
+      {{ label }} <span *ngIf="required" class="required-indicator">*</span>
+    </mat-label>
+    
+    <!-- Icono prefijo si está configurado -->
+    <div *ngIf="prefixIcon" matPrefix class="input-icon prefix-icon">
+      <mat-icon 
+        [matTooltip]="prefixTooltip" 
+        [matTooltipDisabled]="!prefixTooltip"
+        (click)="onPrefixIconClick($event)">
+        {{ prefixIcon }}
+      </mat-icon>
+    </div>
+    
+    <!-- Input adecuado según el tipo -->
+    
+    <!-- Input de texto normal -->
+    <input *ngIf="type === 'text'" 
+      matInput 
+      [formControl]="inputControl"
+      [placeholder]="placeholder"
+      [required]="required"
+      [disabled]="disabled"
+      [maxLength]="maxLength"
+      [minLength]="minLength"
+      [attr.pattern]="pattern"
+      type="text"
+      (blur)="onTouched()">
+    
+    <!-- Input numérico -->
+    <input *ngIf="type === 'number'" 
+      matInput 
+      [formControl]="inputControl"
+      [placeholder]="placeholder"
+      [required]="required"
+      [disabled]="disabled"
+      [min]="min"
+      [max]="max"
+      type="number"
+      (blur)="onTouched()">
+    
+    <!-- Input email -->
+    <input *ngIf="type === 'email'" 
+      matInput 
+      [formControl]="inputControl"
+      [placeholder]="placeholder"
+      [required]="required"
+      [disabled]="disabled"
+      type="email"
+      (blur)="onTouched()">
+    
+    <!-- Input contraseña -->
+    <input *ngIf="type === 'password'" 
+      matInput 
+      [formControl]="inputControl"
+      [placeholder]="placeholder"
+      [required]="required"
+      [disabled]="disabled"
+      [type]="getPasswordInputType()"
+      (blur)="onTouched()">
+    
+    <!-- Input teléfono -->
+    <input *ngIf="type === 'tel'" 
+      matInput 
+      [formControl]="inputControl"
+      [placeholder]="placeholder"
+      [required]="required"
+      [disabled]="disabled"
+      type="tel"
+      (blur)="onTouched()">
+    
+    <!-- Selector de fecha -->
+    <input *ngIf="type === 'date'" 
+      matInput 
+      [matDatepicker]="picker"
+      [formControl]="inputControl"
+      [placeholder]="placeholder"
+      [required]="required"
+      [disabled]="disabled"
+      (blur)="onTouched()">
+    <mat-datepicker-toggle *ngIf="type === 'date'" matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+    
+    <!-- Selector desplegable -->
+    <mat-select *ngIf="type === 'select'" 
+      [formControl]="inputControl"
+      [placeholder]="placeholder"
+      [required]="required"
+      [disabled]="disabled"
+      (blur)="onTouched()">
+      <mat-option *ngFor="let option of options" [value]="option.value">
+        {{ option.viewValue }}
+      </mat-option>
+    </mat-select>
+    
+    <!-- Área de texto -->
+    <textarea *ngIf="type === 'textarea'" 
+      matInput 
+      [formControl]="inputControl"
+      [placeholder]="placeholder"
+      [required]="required"
+      [disabled]="disabled"
+      [maxLength]="maxLength"
+      [minLength]="minLength"
+      rows="3"
+      (blur)="onTouched()"></textarea>
+    
+    <!-- Icono sufijo si está configurado -->
+    <div *ngIf="suffixIcon || type === 'password'" matSuffix class="input-icon suffix-icon">
+      <mat-icon 
+        [matTooltip]="type === 'password' ? (showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña') : suffixTooltip" 
+        [matTooltipDisabled]="!suffixTooltip && type !== 'password'"
+        (click)="onSuffixIconClick($event)">
+        {{ type === 'password' ? getPasswordVisibilityIcon() : suffixIcon }}
+      </mat-icon>
+    </div>
+    
+    <!-- Texto de ayuda o hint -->
+    <mat-hint *ngIf="hint">{{ hint }}</mat-hint>
+    
+    <!-- Contador de caracteres -->
+    <mat-hint *ngIf="maxLength && (type === 'text' || type === 'textarea')" align="end">
+      {{ inputControl.value?.length || 0 }}/{{ maxLength }}
+    </mat-hint>
+    
+    <!-- Mensajes de error -->
+    <mat-error *ngIf="hasError">{{ getErrorMessage() }}</mat-error>
+    
+  </mat-form-field>
+</div>

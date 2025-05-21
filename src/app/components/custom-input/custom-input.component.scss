@@ -1,0 +1,81 @@
+@use '../../../styles.scss' as *;
+
+.custom-input-container {
+  margin-bottom: 1rem;
+  
+  &.full-width {
+    width: 100%;
+  }
+  
+  // Asegurar que el mat-form-field se comporte correctamente con el ancho completo
+  .mat-mdc-form-field {
+    &.full-width {
+      width: 100%;
+    }
+  }
+  
+  // Personalización de íconos
+  .input-icon {
+    display: inline-flex;
+    align-items: center;
+    color: $color-gray-dark;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    
+    &:hover {
+      color: $color-blue-vibrant;
+    }
+    
+    &.prefix-icon {
+      margin-right: 8px;
+    }
+    
+    &.suffix-icon {
+      margin-left: 8px;
+    }
+    
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+    }
+  }
+}
+
+// Indicador de campo requerido
+.required-indicator {
+  color: $color-error;
+  margin-left: 2px;
+}
+
+// Estilos adaptables a dark mode
+@media (prefers-color-scheme: dark) {
+  .custom-input-container {
+    .input-icon {
+      color: darken($color-white, 15%);
+      
+      &:hover {
+        color: $color-blue;
+      }
+    }
+  }
+}
+
+// Estilos responsivos
+@media (max-width: $breakpoint-md) {
+  .custom-input-container {
+    margin-bottom: 0.8rem;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .custom-input-container {
+    .input-icon {
+      mat-icon {
+        font-size: 16px;
+        height: 16px;
+        width: 16px;
+      }
+    }
+  }
+}
