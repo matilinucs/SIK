@@ -15,6 +15,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-custom-input',
@@ -28,7 +29,8 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatTooltipModule,
     MatSelectModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatButtonModule
   ],
   templateUrl: './custom-input.component.html',
   styleUrl: './custom-input.component.scss',
@@ -138,11 +140,15 @@ export class CustomInputComponent implements ControlValueAccessor, OnInit {
    * Apariencia del campo de Material Design
    */
   @Input() appearance: 'outline' | 'fill' = 'outline';
-  
-  /**
+    /**
    * Patrón de validación para el campo
    */
   @Input() pattern?: string;
+  
+  /**
+   * Indica si el campo puede ser limpiado con un botón
+   */
+  @Input() clearable: boolean = false;
   
   /**
    * Evento emitido cuando se hace clic en el icono prefijo
@@ -153,6 +159,11 @@ export class CustomInputComponent implements ControlValueAccessor, OnInit {
    * Evento emitido cuando se hace clic en el icono sufijo
    */
   @Output() suffixIconClick = new EventEmitter<void>();
+  
+  /**
+   * Evento emitido cuando se limpia el valor del campo
+   */
+  @Output() cleared = new EventEmitter<void>();
   
   /**
    * Control del formulario
@@ -229,8 +240,7 @@ export class CustomInputComponent implements ControlValueAccessor, OnInit {
     event.stopPropagation();
     this.prefixIconClick.emit();
   }
-  
-  /**
+    /**
    * Maneja el clic en el icono sufijo
    */
   onSuffixIconClick(event: Event): void {
@@ -241,6 +251,15 @@ export class CustomInputComponent implements ControlValueAccessor, OnInit {
     } else {
       this.suffixIconClick.emit();
     }
+  }
+  
+  /**
+   * Maneja el clic en el botón de limpiar
+   */
+  onClearClick(event: Event): void {
+    event.stopPropagation();
+    this.inputControl.setValue(null);
+    this.cleared.emit();
   }
   
   /**

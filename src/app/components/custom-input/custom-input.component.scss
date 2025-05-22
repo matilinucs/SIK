@@ -48,6 +48,25 @@
   margin-left: 2px;
 }
 
+// Botón para limpiar el campo
+.clear-button {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+    line-height: 16px;
+    color: $color-gray-dark;
+  }
+  
+  &:hover mat-icon {
+    color: $color-error;
+  }
+}
+
 // Estilos adaptables a dark mode
 @media (prefers-color-scheme: dark) {
   .custom-input-container {

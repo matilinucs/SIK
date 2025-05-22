@@ -29,16 +29,15 @@
       [attr.pattern]="pattern"
       type="text"
       (blur)="onTouched()">
-    
-    <!-- Input numérico -->
+      <!-- Input numérico -->
     <input *ngIf="type === 'number'" 
       matInput 
       [formControl]="inputControl"
       [placeholder]="placeholder"
       [required]="required"
       [disabled]="disabled"
-      [min]="min"
-      [max]="max"
+      [attr.min]="min"
+      [attr.max]="max"
       type="number"
       (blur)="onTouched()">
     
@@ -106,7 +105,15 @@
       [maxLength]="maxLength"
       [minLength]="minLength"
       rows="3"
-      (blur)="onTouched()"></textarea>
+      (blur)="onTouched()"></textarea>    
+    <!-- Botón de limpiar si está habilitado -->
+    <button *ngIf="clearable && inputControl.value" 
+      matSuffix mat-icon-button 
+      aria-label="Limpiar" 
+      class="clear-button"
+      (click)="onClearClick($event)">
+      <mat-icon>close</mat-icon>
+    </button>
     
     <!-- Icono sufijo si está configurado -->
     <div *ngIf="suffixIcon || type === 'password'" matSuffix class="input-icon suffix-icon">

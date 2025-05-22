@@ -1,0 +1,713 @@
+import { Component, Input, Output, EventEmitter, ViewChild, ContentChild, TemplateRef, AfterViewInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule, MatPaginatorIntl } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormControl } from '@angular/forms';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { CustomInputComponent } from '../custom-input/custom-input.component';
+
+/**
+ * Clase personalizada para los textos del paginador en español
+ */
+export class SpanishPaginatorIntl extends MatPaginatorIntl {
+  override itemsPerPageLabel = 'Filas por página:';
+  override nextPageLabel = 'Siguiente';
+  override previousPageLabel = 'Anterior';
+  override firstPageLabel = 'Primera página';
+  override lastPageLabel = 'Última página';
+  
+  override getRangeLabel = (page: number, pageSize: number, length: number) => {
+    if (length === 0) {
+      return 'Página 1 de 1';
+    }
+    const amountPages = Math.ceil(length / pageSize);
+    return `Página ${page + 1} de ${amountPages}`;
+  };
+}
+
+/**
+ * Función para crear una instancia de SpanishPaginatorIntl
+ */
+export function createSpanishPaginatorIntl() {
+  return new SpanishPaginatorIntl();
+}
+
+// Interfaces para los datos del diálogo de filtros
+export interface FilterOption {
+  value: any;
+  viewValue: string;
+}
+
+export interface ColumnFilter {
+  type: 'text' | 'number' | 'date' | 'select';
+  value: any;
+  min?: number;
+  max?: number;
+  startDate?: Date;
+  endDate?: Date;
+  options?: FilterOption[];
+}
+
+export interface FilterDialogData {
+  columns: string[];
+  columnTypes?: { [key: string]: 'text' | 'number' | 'date' | 'select' };
+  filterValues?: { [key: string]: ColumnFilter };
+  selectOptions?: { [key: string]: FilterOption[] };
+}
+
+// Interfaces para el selector de columnas
+export interface ColumnSelectorDialogData {
+  columns: string[];
+  selectedColumns: string[];
+}
+
+/**
+ * Componente de diálogo de filtros
+ */
+@Component({
+  selector: 'app-filter-dialog',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatDividerModule,
+    CustomInputComponent
+  ],
+  template: `
+    <h2 mat-dialog-title>Filtrar tabla</h2>
+    <mat-dialog-content class="filter-dialog-content">
+      <form [formGroup]="filterForm">
+        <div class="filters-container">
+          <div *ngFor="let column of columns" class="filter-row">
+            <h3 class="column-name">{{ column }}</h3>
+            
+            <!-- Filtro de texto/selección -->
+            <div *ngIf="getFilterType(column) === 'text' || getFilterType(column) === 'select'" class="filter-field">
+              <app-custom-input
+                *ngIf="getFilterType(column) === 'text'"
+                [label]="'Filtrar por ' + column"
+                [type]="'text'"
+                [formControlName]="column"
+                [clearable]="true"
+                (cleared)="clearFilter(column)">
+              </app-custom-input>
+              
+              <app-custom-input
+                *ngIf="getFilterType(column) === 'select'"
+                [label]="'Filtrar por ' + column"
+                [type]="'select'"
+                [formControlName]="column"
+                [options]="getSelectOptions(column)"
+                [clearable]="true"
+                (cleared)="clearFilter(column)">
+              </app-custom-input>
+            </div>
+            
+            <!-- Filtro de fecha (rango) -->
+            <div *ngIf="getFilterType(column) === 'date'" class="date-range-filter">
+              <div class="date-inputs">
+                <app-custom-input
+                  [label]="'Desde'"
+                  [type]="'date'"
+                  [formControlName]="column + '_start'"
+                  [clearable]="true"
+                  (cleared)="clearDateFilter(column, 'start')">
+                </app-custom-input>
+                
+                <app-custom-input
+                  [label]="'Hasta'"
+                  [type]="'date'"
+                  [formControlName]="column + '_end'"
+                  [clearable]="true"
+                  (cleared)="clearDateFilter(column, 'end')">
+                </app-custom-input>
+              </div>
+            </div>
+            
+            <!-- Filtro numérico (rango) -->
+            <div *ngIf="getFilterType(column) === 'number'" class="number-range-filter">
+              <div class="number-inputs">
+                <app-custom-input
+                  [label]="'Desde'"
+                  [type]="'number'"
+                  [formControlName]="column + '_min'"
+                  [clearable]="true"
+                  (cleared)="clearNumberFilter(column, 'min')">
+                </app-custom-input>
+                
+                <app-custom-input
+                  [label]="'Hasta'"
+                  [type]="'number'"
+                  [formControlName]="column + '_max'"
+                  [clearable]="true"
+                  (cleared)="clearNumberFilter(column, 'max')">
+                </app-custom-input>
+              </div>
+            </div>
+            
+            <button 
+              mat-icon-button 
+              color="warn" 
+              class="clear-filter-button"
+              matTooltip="Limpiar filtro"
+              (click)="clearAllFiltersForColumn(column)">
+              <mat-icon>clear</mat-icon>
+            </button>
+          </div>
+        </div>
+      </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="clearAllFilters()">Limpiar todos los filtros</button>
+      <button mat-button (click)="onCancelClick()">Cancelar</button>
+      <button mat-raised-button color="primary" (click)="onApplyClick()">Aplicar filtros</button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    .filter-dialog-content {
+      max-height: 70vh;
+      min-width: 500px;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    
+    .filters-container {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    
+    .filter-row {
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+      position: relative;
+    }
+    
+    .column-name {
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: #1976d2;
+      font-weight: 500;
+    }
+    
+    .filter-field {
+      width: 100%;
+    }
+    
+    .date-range-filter,
+    .number-range-filter {
+      width: 100%;
+    }
+    
+    .date-inputs,
+    .number-inputs {
+      display: flex;
+      gap: 16px;
+    }
+    
+    .clear-filter-button {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+    }
+    
+    @media (max-width: 768px) {
+      .date-inputs,
+      .number-inputs {
+        flex-direction: column;
+        gap: 8px;
+      }
+      
+      .filter-dialog-content {
+        min-width: unset;
+      }
+    }
+  `]
+})
+export class FilterDialogComponent {
+  filterForm: FormGroup;
+  columns: string[] = [];
+  
+  constructor(
+    private fb: FormBuilder,
+    public dialogRef: MatDialogRef<FilterDialogComponent>,
+    @inject(MAT_DIALOG_DATA) public data: FilterDialogData
+  ) {
+    this.columns = data.columns || [];
+    this.filterForm = this.fb.group({});
+    this.initForm();
+  }
+  
+  initForm(): void {
+    const existingFilters = this.data.filterValues || {};
+    
+    // Crear controles para cada columna
+    this.columns.forEach(column => {
+      const columnType = this.getFilterType(column);
+      const columnFilter = existingFilters[column] || { type: columnType, value: null };
+      
+      switch (columnType) {
+        case 'text':
+        case 'select':
+          this.filterForm.addControl(column, this.fb.control(columnFilter.value));
+          break;
+        case 'number':
+          this.filterForm.addControl(`${column}_min`, this.fb.control(columnFilter.min || null));
+          this.filterForm.addControl(`${column}_max`, this.fb.control(columnFilter.max || null));
+          break;
+        case 'date':
+          this.filterForm.addControl(`${column}_start`, this.fb.control(columnFilter.startDate || null));
+          this.filterForm.addControl(`${column}_end`, this.fb.control(columnFilter.endDate || null));
+          break;
+      }
+    });
+  }
+  
+  getFilterType(column: string): 'text' | 'number' | 'date' | 'select' {
+    if (this.data.columnTypes && this.data.columnTypes[column]) {
+      return this.data.columnTypes[column];
+    }
+    
+    // Valores por defecto basados en nombres comunes
+    if (column.toLowerCase().includes('fecha') || column.toLowerCase().includes('date')) {
+      return 'date';
+    } else if (column.toLowerCase().includes('precio') || 
+               column.toLowerCase().includes('monto') || 
+               column.toLowerCase().includes('total') ||
+               column.toLowerCase().includes('cantidad')) {
+      return 'number';
+    } else if (column.toLowerCase().includes('estado') || 
+               column.toLowerCase().includes('status') ||
+               column.toLowerCase().includes('tipo')) {
+      return 'select';
+    }
+    
+    return 'text';
+  }
+  
+  getSelectOptions(column: string): any[] {
+    if (this.data.selectOptions && this.data.selectOptions[column]) {
+      return this.data.selectOptions[column];
+    }
+    return [];
+  }
+  
+  onCancelClick(): void {
+    this.dialogRef.close();
+  }
+  
+  onApplyClick(): void {
+    const result: { [key: string]: ColumnFilter } = {};
+    
+    this.columns.forEach(column => {
+      const columnType = this.getFilterType(column);
+      
+      switch (columnType) {
+        case 'text':
+        case 'select':
+          const value = this.filterForm.get(column)?.value;
+          if (value !== null && value !== undefined && value !== '') {
+            result[column] = {
+              type: columnType,
+              value: value
+            };
+          }
+          break;
+        case 'number':
+          const min = this.filterForm.get(`${column}_min`)?.value;
+          const max = this.filterForm.get(`${column}_max`)?.value;
+          if ((min !== null && min !== undefined) || (max !== null && max !== undefined)) {
+            result[column] = {
+              type: 'number',
+              value: null, // No se usa para números
+              min: min,
+              max: max
+            };
+          }
+          break;
+        case 'date':
+          const startDate = this.filterForm.get(`${column}_start`)?.value;
+          const endDate = this.filterForm.get(`${column}_end`)?.value;
+          if (startDate || endDate) {
+            result[column] = {
+              type: 'date',
+              value: null, // No se usa para fechas
+              startDate: startDate,
+              endDate: endDate
+            };
+          }
+          break;
+      }
+    });
+    
+    this.dialogRef.close(result);
+  }
+  
+  clearFilter(column: string): void {
+    const control = this.filterForm.get(column);
+    if (control) {
+      control.setValue(null);
+    }
+  }
+  
+  clearDateFilter(column: string, type: 'start' | 'end'): void {
+    const control = this.filterForm.get(`${column}_${type}`);
+    if (control) {
+      control.setValue(null);
+    }
+  }
+  
+  clearNumberFilter(column: string, type: 'min' | 'max'): void {
+    const control = this.filterForm.get(`${column}_${type}`);
+    if (control) {
+      control.setValue(null);
+    }
+  }
+  
+  clearAllFiltersForColumn(column: string): void {
+    const columnType = this.getFilterType(column);
+    
+    switch (columnType) {
+      case 'text':
+      case 'select':
+        this.clearFilter(column);
+        break;
+      case 'number':
+        this.clearNumberFilter(column, 'min');
+        this.clearNumberFilter(column, 'max');
+        break;
+      case 'date':
+        this.clearDateFilter(column, 'start');
+        this.clearDateFilter(column, 'end');
+        break;
+    }
+  }
+  
+  clearAllFilters(): void {
+    this.filterForm.reset();
+  }
+}
+
+/**
+ * Componente de diálogo selector de columnas
+ */
+@Component({
+  selector: 'app-column-selector-dialog',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatDividerModule,
+    MatIconModule
+  ],
+  template: `
+    <h2 mat-dialog-title>Seleccionar columnas</h2>
+    <mat-dialog-content class="column-selector-content">
+      <div class="column-options">
+        <div *ngFor="let column of data.columns; let i = index" class="column-option">
+          <mat-checkbox 
+            [checked]="isSelected(column)"
+            [disabled]="isFirstColumn(column) || column === 'actions'"
+            (change)="toggleColumn($event, column)">
+            {{ column }}
+            <span *ngIf="isFirstColumn(column)" class="required-badge">Requerido</span>
+          </mat-checkbox>
+        </div>
+      </div>
+    </mat-dialog-content>
+    <mat-divider></mat-divider>
+    <mat-dialog-actions align="end">
+      <div class="select-actions">
+        <button mat-button (click)="selectAll()">Seleccionar todo</button>
+        <button mat-button (click)="deselectAll()">Deseleccionar todo</button>
+      </div>
+      <button mat-button (click)="onCancelClick()">Cancelar</button>
+      <button mat-raised-button color="primary" (click)="onApplyClick()">Aplicar</button>
+    </mat-dialog-actions>
+  `,
+  styles: [`
+    .column-selector-content {
+      max-height: 60vh;
+      min-width: 300px;
+      overflow-y: auto;
+      padding: 16px;
+    }
+    
+    .column-options {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .column-option {
+      display: flex;
+      align-items: center;
+    }
+    
+    .required-badge {
+      margin-left: 8px;
+      font-size: 12px;
+      background-color: #e3f2fd;
+      color: #1976d2;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    
+    .select-actions {
+      flex: 1;
+      display: flex;
+      gap: 8px;
+    }
+    
+    mat-dialog-actions {
+      padding: 16px;
+    }
+    
+    @media (max-width: 500px) {
+      .select-actions {
+        flex-direction: column;
+      }
+      
+      mat-dialog-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+    }
+  `]
+})
+export class ColumnSelectorDialogComponent {
+  selectedColumns: string[] = [];
+  
+  constructor(
+    public dialogRef: MatDialogRef<ColumnSelectorDialogComponent>,
+    @inject(MAT_DIALOG_DATA) public data: ColumnSelectorDialogData
+  ) {
+    this.selectedColumns = [...data.selectedColumns];
+  }
+  
+  isSelected(column: string): boolean {
+    return this.selectedColumns.includes(column);
+  }
+  
+  isFirstColumn(column: string): boolean {
+    return this.data.columns.indexOf(column) === 0;
+  }
+  
+  toggleColumn(event: any, column: string): void {
+    if (event.checked) {
+      // Añadir columna si no existe
+      if (!this.selectedColumns.includes(column)) {
+        // Mantener orden original
+        const newSelectedColumns: string[] = [];
+        this.data.columns.forEach(col => {
+          if (col === column || this.selectedColumns.includes(col)) {
+            newSelectedColumns.push(col);
+          }
+        });
+        this.selectedColumns = newSelectedColumns;
+      }
+    } else {
+      // Remover columna si no es la primera
+      if (!this.isFirstColumn(column)) {
+        this.selectedColumns = this.selectedColumns.filter(col => col !== column);
+      }
+    }
+  }
+  
+  selectAll(): void {
+    this.selectedColumns = [...this.data.columns];
+  }
+  
+  deselectAll(): void {
+    // Mantener solo la primera columna y 'actions' si existe
+    this.selectedColumns = this.data.columns.filter(
+      (column, index) => index === 0 || column === 'actions'
+    );
+  }
+  
+  onCancelClick(): void {
+    this.dialogRef.close();
+  }
+  
+  onApplyClick(): void {
+    this.dialogRef.close(this.selectedColumns);
+  }
+}
+
+/**
+ * Componente reusable para tablas en la aplicación
+ * Implementa estilos y funcionalidades comunes como paginación,
+ * ordenamiento y línea vertical azul.
+ */
+@Component({
+  selector: 'app-regular-table',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
+    FilterDialogComponent,
+    ColumnSelectorDialogComponent
+  ],
+  providers: [
+    { provide: MatPaginatorIntl, useFactory: createSpanishPaginatorIntl }
+  ],
+  templateUrl: './regular-table.component.html',
+  styleUrl: './regular-table.component.scss'
+})
+export class RegularTableComponent<T> implements AfterViewInit {
+  
+  /**
+   * Columnas a mostrar en la tabla
+   */
+  @Input() displayedColumns: string[] = [];
+
+  /**
+   * Mensaje a mostrar cuando no hay datos
+   */
+  @Input() noDataMessage: string = 'No hay datos disponibles.';
+
+  /**
+   * Fuente de datos para la tabla
+   */
+  @Input() dataSource = new MatTableDataSource<T>([]);
+
+  /**
+   * Opciones de tamaño de página para la paginación
+   */
+  @Input() pageSizeOptions: number[] = [5, 10, 20];
+
+  /**
+   * Evento emitido cuando se hace clic en una fila
+   */
+  @Output() rowClick = new EventEmitter<T>();
+
+  /**
+   * Referencia al paginador de la tabla
+   */
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  /**
+   * Referencia al ordenador de la tabla
+   */
+  @ViewChild(MatSort) sort!: MatSort;
+
+  /**
+   * Plantilla personalizada para las celdas
+   */
+  @ContentChild('cellTemplate') cellTemplate!: TemplateRef<any>;
+  
+  /**
+   * Plantilla personalizada para las acciones
+   */
+  @ContentChild('actionsTemplate') actionsTemplate!: TemplateRef<any>;
+  
+  /**
+   * Plantilla personalizada para el encabezado de la primera columna
+   */
+  @ContentChild('headerLabel') headerLabel?: TemplateRef<any>;
+
+  /**
+   * Indica si se proporciona un encabezado personalizado
+   */
+  get hasCustomHeader(): boolean {
+    return !!this.headerLabel;
+  }
+  
+  /**
+   * Servicio de diálogos
+   */
+  private dialog = inject(MatDialog);
+  
+  /**
+   * Configura el paginador y el ordenador después de la inicialización de la vista
+   */
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+  
+  /**
+   * Maneja el evento de clic en una fila
+   * @param row Fila en la que se hizo clic
+   */
+  onRowClick(row: T): void {
+    this.rowClick.emit(row);
+  }
+  
+  /**
+   * Abre el diálogo de filtro
+   */  openFilterDialog(): void {
+    const dialogRef = this.dialog.open(FilterDialogComponent, {
+      width: '500px',
+      maxWidth: '90vw',
+      data: {
+        columns: this.displayedColumns.filter(col => col !== 'actions')
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Aquí se implementarán los filtros
+        console.log('Filtros aplicados:', result);
+        
+        // Implementar la lógica de filtrado aquí cuando esté listo
+        // this.dataSource.filter = ...
+      }
+    });
+  }
+  
+  /**
+   * Abre el diálogo selector de columnas
+   */
+  openColumnSelectorDialog(): void {
+    const dialogRef = this.dialog.open(ColumnSelectorDialogComponent, {
+      width: '500px',
+      maxWidth: '90vw',
+      data: {
+        columns: this.displayedColumns,
+        selectedColumns: [...this.displayedColumns]
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && Array.isArray(result)) {
+        // Actualizar columnas mostradas
+        this.displayedColumns = result;
+      }
+    });
+  }
+}

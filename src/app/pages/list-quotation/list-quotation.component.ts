@@ -81,7 +81,6 @@ interface FilterOptions {
     // Módulos Angular
     CommonModule,
     ReactiveFormsModule,
-    
     // Componentes Material
     MatTableModule,
     MatPaginatorModule,
@@ -95,11 +94,8 @@ interface FilterOptions {
     MatIconModule,
     MatChipsModule,
     MatTooltipModule,
-    MatDialogModule,
-    
-    // Componentes personalizados
-    RegularTableComponent
-  ],
+    MatDialogModule
+],
   templateUrl: './list-quotation.component.html',
   styleUrl: './list-quotation.component.scss'
 })
